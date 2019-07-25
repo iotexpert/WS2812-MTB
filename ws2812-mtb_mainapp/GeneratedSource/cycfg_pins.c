@@ -24,11 +24,11 @@
 
 #include "cycfg_pins.h"
 
-const cy_stc_gpio_pin_config_t ioss_0_port_0_pin_2_config = 
+const cy_stc_gpio_pin_config_t ioss_0_port_10_pin_0_config = 
 {
 	.outVal = 1,
 	.driveMode = CY_GPIO_DM_STRONG_IN_OFF,
-	.hsiom = ioss_0_port_0_pin_2_HSIOM,
+	.hsiom = ioss_0_port_10_pin_0_HSIOM,
 	.intEdge = CY_GPIO_INTR_DISABLE,
 	.intMask = 0UL,
 	.vtrip = CY_GPIO_VTRIP_CMOS,
@@ -40,43 +40,11 @@ const cy_stc_gpio_pin_config_t ioss_0_port_0_pin_2_config =
 	.vrefSel = 0UL,
 	.vohSel = 0UL,
 };
-const cy_stc_gpio_pin_config_t ioss_0_port_0_pin_3_config = 
-{
-	.outVal = 1,
-	.driveMode = CY_GPIO_DM_OD_DRIVESLOW,
-	.hsiom = ioss_0_port_0_pin_3_HSIOM,
-	.intEdge = CY_GPIO_INTR_DISABLE,
-	.intMask = 0UL,
-	.vtrip = CY_GPIO_VTRIP_CMOS,
-	.slewRate = CY_GPIO_SLEW_FAST,
-	.driveSel = CY_GPIO_DRIVE_FULL,
-	.vregEn = 0UL,
-	.ibufMode = 0UL,
-	.vtripSel = 0UL,
-	.vrefSel = 0UL,
-	.vohSel = 0UL,
-};
-const cy_stc_gpio_pin_config_t ioss_0_port_0_pin_4_config = 
-{
-	.outVal = 1,
-	.driveMode = CY_GPIO_DM_HIGHZ,
-	.hsiom = ioss_0_port_0_pin_4_HSIOM,
-	.intEdge = CY_GPIO_INTR_DISABLE,
-	.intMask = 0UL,
-	.vtrip = CY_GPIO_VTRIP_CMOS,
-	.slewRate = CY_GPIO_SLEW_FAST,
-	.driveSel = CY_GPIO_DRIVE_FULL,
-	.vregEn = 0UL,
-	.ibufMode = 0UL,
-	.vtripSel = 0UL,
-	.vrefSel = 0UL,
-	.vohSel = 0UL,
-};
-const cy_stc_gpio_pin_config_t green_config = 
+const cy_stc_gpio_pin_config_t ioss_0_port_12_pin_0_config = 
 {
 	.outVal = 1,
 	.driveMode = CY_GPIO_DM_STRONG_IN_OFF,
-	.hsiom = green_HSIOM,
+	.hsiom = ioss_0_port_12_pin_0_HSIOM,
 	.intEdge = CY_GPIO_INTR_DISABLE,
 	.intMask = 0UL,
 	.vtrip = CY_GPIO_VTRIP_CMOS,
@@ -104,11 +72,11 @@ const cy_stc_gpio_pin_config_t red_config =
 	.vrefSel = 0UL,
 	.vohSel = 0UL,
 };
-const cy_stc_gpio_pin_config_t ioss_0_port_5_pin_0_config = 
+const cy_stc_gpio_pin_config_t UART_RX_config = 
 {
 	.outVal = 1,
 	.driveMode = CY_GPIO_DM_HIGHZ,
-	.hsiom = ioss_0_port_5_pin_0_HSIOM,
+	.hsiom = UART_RX_HSIOM,
 	.intEdge = CY_GPIO_INTR_DISABLE,
 	.intMask = 0UL,
 	.vtrip = CY_GPIO_VTRIP_CMOS,
@@ -120,11 +88,27 @@ const cy_stc_gpio_pin_config_t ioss_0_port_5_pin_0_config =
 	.vrefSel = 0UL,
 	.vohSel = 0UL,
 };
-const cy_stc_gpio_pin_config_t ioss_0_port_5_pin_1_config = 
+const cy_stc_gpio_pin_config_t UART_TX_config = 
 {
 	.outVal = 1,
 	.driveMode = CY_GPIO_DM_STRONG_IN_OFF,
-	.hsiom = ioss_0_port_5_pin_1_HSIOM,
+	.hsiom = UART_TX_HSIOM,
+	.intEdge = CY_GPIO_INTR_DISABLE,
+	.intMask = 0UL,
+	.vtrip = CY_GPIO_VTRIP_CMOS,
+	.slewRate = CY_GPIO_SLEW_FAST,
+	.driveSel = CY_GPIO_DRIVE_FULL,
+	.vregEn = 0UL,
+	.ibufMode = 0UL,
+	.vtripSel = 0UL,
+	.vrefSel = 0UL,
+	.vohSel = 0UL,
+};
+const cy_stc_gpio_pin_config_t ioss_0_port_6_pin_0_config = 
+{
+	.outVal = 1,
+	.driveMode = CY_GPIO_DM_STRONG_IN_OFF,
+	.hsiom = ioss_0_port_6_pin_0_HSIOM,
 	.intEdge = CY_GPIO_INTR_DISABLE,
 	.intMask = 0UL,
 	.vtrip = CY_GPIO_VTRIP_CMOS,
@@ -184,27 +168,61 @@ const cy_stc_gpio_pin_config_t SWCLK_config =
 	.vrefSel = 0UL,
 	.vohSel = 0UL,
 };
+const cy_stc_gpio_pin_config_t ioss_0_port_8_pin_0_config = 
+{
+	.outVal = 1,
+	.driveMode = CY_GPIO_DM_STRONG_IN_OFF,
+	.hsiom = ioss_0_port_8_pin_0_HSIOM,
+	.intEdge = CY_GPIO_INTR_DISABLE,
+	.intMask = 0UL,
+	.vtrip = CY_GPIO_VTRIP_CMOS,
+	.slewRate = CY_GPIO_SLEW_FAST,
+	.driveSel = CY_GPIO_DRIVE_FULL,
+	.vregEn = 0UL,
+	.ibufMode = 0UL,
+	.vtripSel = 0UL,
+	.vrefSel = 0UL,
+	.vohSel = 0UL,
+};
+const cy_stc_gpio_pin_config_t ioss_0_port_9_pin_0_config = 
+{
+	.outVal = 1,
+	.driveMode = CY_GPIO_DM_STRONG_IN_OFF,
+	.hsiom = ioss_0_port_9_pin_0_HSIOM,
+	.intEdge = CY_GPIO_INTR_DISABLE,
+	.intMask = 0UL,
+	.vtrip = CY_GPIO_VTRIP_CMOS,
+	.slewRate = CY_GPIO_SLEW_FAST,
+	.driveSel = CY_GPIO_DRIVE_FULL,
+	.vregEn = 0UL,
+	.ibufMode = 0UL,
+	.vtripSel = 0UL,
+	.vrefSel = 0UL,
+	.vohSel = 0UL,
+};
 
 
 void init_cycfg_pins(void)
 {
-	Cy_GPIO_Pin_Init(ioss_0_port_0_pin_2_PORT, ioss_0_port_0_pin_2_PIN, &ioss_0_port_0_pin_2_config);
+	Cy_GPIO_Pin_Init(ioss_0_port_10_pin_0_PORT, ioss_0_port_10_pin_0_PIN, &ioss_0_port_10_pin_0_config);
 
-	Cy_GPIO_Pin_Init(ioss_0_port_0_pin_3_PORT, ioss_0_port_0_pin_3_PIN, &ioss_0_port_0_pin_3_config);
-
-	Cy_GPIO_Pin_Init(ioss_0_port_0_pin_4_PORT, ioss_0_port_0_pin_4_PIN, &ioss_0_port_0_pin_4_config);
-
-	Cy_GPIO_Pin_Init(green_PORT, green_PIN, &green_config);
+	Cy_GPIO_Pin_Init(ioss_0_port_12_pin_0_PORT, ioss_0_port_12_pin_0_PIN, &ioss_0_port_12_pin_0_config);
 
 	Cy_GPIO_Pin_Init(red_PORT, red_PIN, &red_config);
 
-	Cy_GPIO_Pin_Init(ioss_0_port_5_pin_0_PORT, ioss_0_port_5_pin_0_PIN, &ioss_0_port_5_pin_0_config);
+	Cy_GPIO_Pin_Init(UART_RX_PORT, UART_RX_PIN, &UART_RX_config);
 
-	Cy_GPIO_Pin_Init(ioss_0_port_5_pin_1_PORT, ioss_0_port_5_pin_1_PIN, &ioss_0_port_5_pin_1_config);
+	Cy_GPIO_Pin_Init(UART_TX_PORT, UART_TX_PIN, &UART_TX_config);
+
+	Cy_GPIO_Pin_Init(ioss_0_port_6_pin_0_PORT, ioss_0_port_6_pin_0_PIN, &ioss_0_port_6_pin_0_config);
 
 	Cy_GPIO_Pin_Init(SWO_PORT, SWO_PIN, &SWO_config);
 
 	Cy_GPIO_Pin_Init(SWDIO_PORT, SWDIO_PIN, &SWDIO_config);
 
 	Cy_GPIO_Pin_Init(SWCLK_PORT, SWCLK_PIN, &SWCLK_config);
+
+	Cy_GPIO_Pin_Init(ioss_0_port_8_pin_0_PORT, ioss_0_port_8_pin_0_PIN, &ioss_0_port_8_pin_0_config);
+
+	Cy_GPIO_Pin_Init(ioss_0_port_9_pin_0_PORT, ioss_0_port_9_pin_0_PIN, &ioss_0_port_9_pin_0_config);
 }

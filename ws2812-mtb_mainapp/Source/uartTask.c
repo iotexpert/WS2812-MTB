@@ -48,7 +48,7 @@ void uartTask(void *arg)
     setvbuf( stdin, NULL, _IONBF, 0 ); // Turn off Input buffering on STDIO
 	Cy_SCB_UART_Enable(UART_STDIO_HW);
 
-	printf("Starting UART Task\n");
+	printf("Starting UART Task\r\n");
 
 	for(;;)
 	{
@@ -60,68 +60,107 @@ void uartTask(void *arg)
 			switch(c)
 			{
 			case 'u':
-				printf("Enable auto DMA updating\n");
+				printf("Enable auto DMA updating\r\n");
 				ws2812_autoUpdate(true);
 				break;
 			case 'U':
-				printf("Disable auto DMA updating\n");
-
+				printf("Disable auto DMA updating\r\n");
 				ws2812_autoUpdate(false);
 				break;
 			case 't':
-				printf("Update LEDs\n");
-				ws2812_update();
+				printf("Update LEDs\r\n");
+				ws2812_update(1);
+				ws2812_update(2);
+				ws2812_update(3);
+				ws2812_update(4);
+				ws2812_update(5);
 				break;
 			case 'r':
-				ws2812_setRGB(0,0xFF,0,0);
-				printf("Set LED0 Red\n");
+				ws2812_setRGB(1, 0,0xFF,0,0);
+				ws2812_setRGB(2, 0,0xFF,0,0);
+				ws2812_setRGB(3, 0,0xFF,0,0);
+				ws2812_setRGB(4, 0,0xFF,0,0);
+				ws2812_setRGB(5, 0,0xFF,0,0);
+				printf("Set LED0 Red\r\n");
 				break;
 			case 'g':
-				ws2812_setRGB(0,0,0xFF,0);
-				printf("Set LED0 Green\n");
+				ws2812_setRGB(1, 0,0,0xFF,0);
+				ws2812_setRGB(2, 0,0,0xFF,0);
+				ws2812_setRGB(3, 0,0,0xFF,0);
+				ws2812_setRGB(4, 0,0,0xFF,0);
+				ws2812_setRGB(5, 0,0,0xFF,0);
+				printf("Set LED0 Green\r\n");
 				break;
 			case 'O':
-				ws2812_setRange(0,ws2812_NUM_PIXELS-1,0,0,0);
-				printf("Turn off all LEDs\n");
+				ws2812_setRange(1, 0,ws2812_NUM_PIXELS_WS1-1,0,0,0);
+				ws2812_setRange(2, 0,ws2812_NUM_PIXELS_WS1-1,0,0,0);
+				ws2812_setRange(3, 0,ws2812_NUM_PIXELS_WS1-1,0,0,0);
+				ws2812_setRange(4, 0,ws2812_NUM_PIXELS_WS1-1,0,0,0);
+				ws2812_setRange(5, 0,ws2812_NUM_PIXELS_WS1-1,0,0,0);
+				printf("Turn off all LEDs\r\n");
 				break;
 			case 'o':
-				ws2812_setRange(0,ws2812_NUM_PIXELS-1,0xFF,0xFF,0xFF);
-				printf("Turn on all LEDs\n");
+				ws2812_setRange(1, 0,ws2812_NUM_PIXELS_WS1-1,0xFF,0xFF,0xFF);
+				ws2812_setRange(2, 0,ws2812_NUM_PIXELS_WS1-1,0xFF,0xFF,0xFF);
+				ws2812_setRange(3, 0,ws2812_NUM_PIXELS_WS1-1,0xFF,0xFF,0xFF);
+				ws2812_setRange(4, 0,ws2812_NUM_PIXELS_WS1-1,0xFF,0xFF,0xFF);
+				ws2812_setRange(5, 0,ws2812_NUM_PIXELS_WS1-1,0xFF,0xFF,0xFF);
+				printf("Turn on all LEDs\r\n");
 				break;
 			case 'b':
-				ws2812_setRGB(0,0,0,0xFF);
-				printf("Set LED0 Blue\n");
+				ws2812_setRGB(1, 0,0,0,0xFF);
+				ws2812_setRGB(2, 0,0,0,0xFF);
+				ws2812_setRGB(3, 0,0,0,0xFF);
+				ws2812_setRGB(4, 0,0,0,0xFF);
+				ws2812_setRGB(5, 0,0,0,0xFF);
+				printf("Set LED0 Blue\r\n");
 				break;
 			case 'R':
-				ws2812_setRange(0,ws2812_NUM_PIXELS-1,0x80,0,0);
-				printf("Turn on all LEDs RED\n");
+				ws2812_setRange(1, 0,ws2812_NUM_PIXELS_WS1-1,0x80,0,0);
+				ws2812_setRange(2, 0,ws2812_NUM_PIXELS_WS1-1,0x80,0,0);
+				ws2812_setRange(3, 0,ws2812_NUM_PIXELS_WS1-1,0x80,0,0);
+				ws2812_setRange(4, 0,ws2812_NUM_PIXELS_WS1-1,0x80,0,0);
+				ws2812_setRange(5, 0,ws2812_NUM_PIXELS_WS1-1,0x80,0,0);
+				printf("Turn on all LEDs RED\r\n");
 				break;
 			case 'G':
-				ws2812_setRange(0,ws2812_NUM_PIXELS-1,0,0x80,0);
-				printf("Turn on all LEDs Green\n");
+				ws2812_setRange(1, 0,ws2812_NUM_PIXELS_WS1-1,0,0x80,0);
+				ws2812_setRange(2, 0,ws2812_NUM_PIXELS_WS1-1,0,0x80,0);
+				ws2812_setRange(3, 0,ws2812_NUM_PIXELS_WS1-1,0,0x80,0);
+				ws2812_setRange(4, 0,ws2812_NUM_PIXELS_WS1-1,0,0x80,0);
+				ws2812_setRange(5, 0,ws2812_NUM_PIXELS_WS1-1,0,0x80,0);
+				printf("Turn on all LEDs Green\r\n");
 				break;
 			case 'B':
-				ws2812_setRange(0,ws2812_NUM_PIXELS-1,0,0,0x80);
-				printf("Turn on all LEDs Blue\n");
+				ws2812_setRange(1, 0,ws2812_NUM_PIXELS_WS1-1,0,0,0x80);
+				ws2812_setRange(2, 0,ws2812_NUM_PIXELS_WS1-1,0,0,0x80);
+				ws2812_setRange(3, 0,ws2812_NUM_PIXELS_WS1-1,0,0,0x80);
+				ws2812_setRange(4, 0,ws2812_NUM_PIXELS_WS1-1,0,0,0x80);
+				ws2812_setRange(5, 0,ws2812_NUM_PIXELS_WS1-1,0,0,0x80);
+				printf("Turn on all LEDs Blue\r\n");
 				break;
 			case 'a':
-				ws2812_initMixColorRGB();
-				printf("Turn on all LEDs RGB Pattern\n");
+				ws2812_initMixColorRGB(1);
+				ws2812_initMixColorRGB(2);
+				ws2812_initMixColorRGB(3);
+				ws2812_initMixColorRGB(4);
+				ws2812_initMixColorRGB(5);
+				printf("Turn on all LEDs RGB Pattern\r\n");
 				break;
 			case '?':
-				printf("u\tEnable Auto Update of LEDs\n");
-				printf("U\tDisable Auto Update of LEDs\n");
-				printf("t\tTrigger the DMA\n");
-				printf("r\tSet the first pixel Red\n");
-				printf("g\tSet the first pixel Green\n");
-				printf("b\tSet the first pixel Blue\n");
-				printf("O\tTurn off all of the pixels\n");
-				printf("o\tSet the pixels to white full on\n");
-				printf("R\tSet all of the pixels to Red\n");
-				printf("G\tSet all of the pixels to Green\n");
-				printf("B\tSet all of the pixels to Blue\n");
-				printf("a\tSet pixels to repeating RGBRGB\n");
-				printf("?\tHelp\n");
+				printf("u\tEnable Auto Update of LEDs\r\n");
+				printf("U\tDisable Auto Update of LEDs\r\n");
+				printf("t\tTrigger the DMA\r\n");
+				printf("r\tSet the first pixel Red\r\n");
+				printf("g\tSet the first pixel Green\r\n");
+				printf("b\tSet the first pixel Blue\r\n");
+				printf("O\tTurn off all of the pixels\r\n");
+				printf("o\tSet the pixels to white full on\r\n");
+				printf("R\tSet all of the pixels to Red\r\n");
+				printf("G\tSet all of the pixels to Green\r\n");
+				printf("B\tSet all of the pixels to Blue\r\n");
+				printf("a\tSet pixels to repeating RGBRGB\r\n");
+				printf("?\tHelp\r\n");
 				break;
 			}
 		}

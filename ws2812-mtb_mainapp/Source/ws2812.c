@@ -1,26 +1,38 @@
-/*
- * ws2812.c
- *
- *  Created on: Jun 15, 2019
- *      Author: arh
- */
+/** @source __WS2812.c__
+**
+** __Code for the WS2812 Example Application_
+**
+** @author Copyright (C) June 15, 2019 __Alan Hawse__
+** @version __1.0__   __Gen 1__</replaceable>
+** @modified ____7/25/2019__Hassane El-Khoury__  __description of edit__</replaceable>
+** @@
+**
+********************************************************************/
 
+/* ==================================================================== */
+/* ========================== include files =========================== */
+/* ==================================================================== */
+/* Inclusion of system and local header files goes here */
+/* Header file includes */
 #include "cy_pdl.h"
 #include "cycfg.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 #include "ws2812.h"
-#include "FreeRTOS.h"
-#include "queue.h"
-#include "timers.h"
 
-QueueHandle_t ws2812QueueHandle;
-TimerHandle_t ws2812TimerHandle;
+/* Kernel includes. */
+#include "FreeRTOS.h" /* Must come first. */
+#include "task.h"     /* RTOS task related API prototypes. */
+#include "queue.h"    /* RTOS queue related API prototypes. */
+#include "timers.h"   /* Software timer related API prototypes. */
 
-bool wsAutoUpdateState = false;
-
+/* ==================================================================== */
+/* ============================ constants ============================= */
+/* ==================================================================== */
+/* #define and enum statements go here */
 #define WS_ZOFFSET (1)
 #define WS_ONE3  (0b110<<24)
 #define WS_ZERO3 (0b100<<24)
@@ -28,73 +40,27 @@ bool wsAutoUpdateState = false;
 #define WS_COLOR_PER_PIXEL (3)
 #define WS_BYTES_PER_PIXEL (WS_SPI_BIT_PER_BIT * WS_COLOR_PER_PIXEL)
 
-static uint8_t WS1_frameBuffer[ws2812_NUM_PIXELS_WS1 * WS_BYTES_PER_PIXEL + WS_ZOFFSET];
-static uint8_t WS2_frameBuffer[ws2812_NUM_PIXELS_WS2 * WS_BYTES_PER_PIXEL + WS_ZOFFSET];
-static uint8_t WS3_frameBuffer[ws2812_NUM_PIXELS_WS3 * WS_BYTES_PER_PIXEL + WS_ZOFFSET];
-static uint8_t WS4_frameBuffer[ws2812_NUM_PIXELS_WS4 * WS_BYTES_PER_PIXEL + WS_ZOFFSET];
-static uint8_t WS5_frameBuffer[ws2812_NUM_PIXELS_WS5 * WS_BYTES_PER_PIXEL + WS_ZOFFSET];
-
-// These functions are helpers to create the message to send to the ws2812 task.
-
-void ws2812_update(uint8_t stringNumber)
-{
-	ws2812_msg_t msg;
-	msg.cmd = ws2812_cmd_update;
-	msg.stringNumber = stringNumber;
-	xQueueSend(ws2812QueueHandle, &msg, 0);
-}
-
-void ws2812_autoUpdate(bool option)
-{
-	ws2812_msg_t msg;
-	msg.cmd = ws2812_cmd_autoUpdate;
-	msg.data = option;
-	xQueueSend(ws2812QueueHandle, &msg, 0);
-}
-
-void ws2812_setRGB(uint8_t stringNumber, uint32_t led, uint8_t red, uint8_t green, uint8_t blue)
-{
-	ws2812_msg_t msg;
-	msg.cmd = ws2812_cmd_setRGB;
-	msg.stringNumber = stringNumber;
-	msg.red = red;
-	msg.blue = blue;
-	msg.green = green;
-	msg.data = led;
-	xQueueSend(ws2812QueueHandle, &msg, 0);
-
-}
-
-void ws2812_setRange(uint8_t stringNumber, uint32_t start, uint32_t end, uint8_t red, uint8_t green, uint8_t blue)
-{
-
-	ws2812_msg_t msg;
-	msg.cmd = ws2812_cmd_setRange;
-	msg.stringNumber = stringNumber;
-	msg.red = red;
-	msg.blue = blue;
-	msg.green = green;
-	msg.data = start << 16 | end;
-	xQueueSend(ws2812QueueHandle, &msg, 0);
-
-}
-
-void ws2812_initMixColorRGB(uint8_t stringNumber)
-{
-	ws2812_msg_t msg;
-	msg.cmd = ws2812_cmd_initMixColorRGB;
-	msg.stringNumber = stringNumber;
-	xQueueSend(ws2812QueueHandle, &msg, 0);
-}
-
-// Function WS_DMAConfiguration
-// This function sets up the DMA and the descriptors
-
 #define WS1_NUM_DESCRIPTORS (sizeof(WS1_frameBuffer) / 256 + 1)
 #define WS2_NUM_DESCRIPTORS (sizeof(WS2_frameBuffer) / 256 + 1)
 #define WS3_NUM_DESCRIPTORS (sizeof(WS3_frameBuffer) / 256 + 1)
 #define WS4_NUM_DESCRIPTORS (sizeof(WS4_frameBuffer) / 256 + 1)
 #define WS5_NUM_DESCRIPTORS (sizeof(WS5_frameBuffer) / 256 + 1)
+
+/* Define delay to wait for Queue to be free */
+#define WS2812_QUEUE_DELAY_MS	(pdMS_TO_TICKS(2))
+/* The length of the queue used to hold the WS2812 messages */
+#define WS2812_QUEUE_SIZE       	20
+/* The Auto-Update Timer */
+#define WS2812_AUTOUPDATE_TIMER_MS	pdMS_TO_TICKS(30)
+/* ==================================================================== */
+/* ======================== global variables ========================== */
+/* ==================================================================== */
+/* Global variables definitions go here */
+static uint8_t WS1_frameBuffer[ws2812_NUM_PIXELS_WS1 * WS_BYTES_PER_PIXEL + WS_ZOFFSET];
+static uint8_t WS2_frameBuffer[ws2812_NUM_PIXELS_WS2 * WS_BYTES_PER_PIXEL + WS_ZOFFSET];
+static uint8_t WS3_frameBuffer[ws2812_NUM_PIXELS_WS3 * WS_BYTES_PER_PIXEL + WS_ZOFFSET];
+static uint8_t WS4_frameBuffer[ws2812_NUM_PIXELS_WS4 * WS_BYTES_PER_PIXEL + WS_ZOFFSET];
+static uint8_t WS5_frameBuffer[ws2812_NUM_PIXELS_WS5 * WS_BYTES_PER_PIXEL + WS_ZOFFSET];
 
 static cy_stc_dma_descriptor_t WS1Descriptors[WS1_NUM_DESCRIPTORS];
 static cy_stc_dma_descriptor_t WS2Descriptors[WS2_NUM_DESCRIPTORS];
@@ -102,10 +68,265 @@ static cy_stc_dma_descriptor_t WS3Descriptors[WS3_NUM_DESCRIPTORS];
 static cy_stc_dma_descriptor_t WS4Descriptors[WS4_NUM_DESCRIPTORS];
 static cy_stc_dma_descriptor_t WS5Descriptors[WS5_NUM_DESCRIPTORS];
 
+/* Declare queue for the WS2812 Task */
+QueueHandle_t ws2812QueueHandle = NULL;
+
+/* Declare the LED refresh timer handle */
+TimerHandle_t ws2812TimerHandle = NULL;
+
+/* Declare the LED Auto-Update flag and set the default to true */
+bool wsAutoUpdateState = true;
+
+/* ==================================================================== */
+/* ============================== data ================================ */
+/* ==================================================================== */
+/* Definition of datatypes go here */
+
+
+/* ==================================================================== */
+/* ==================== function prototypes =========================== */
+/* ==================================================================== */
+/* Function prototypes for public (external) functions go here */
+
+
+
+/* ==================================================================== */
+/* ============================ functions ============================= */
+/* ==================================================================== */
+
+/*******************************************************************************
+* Function Name: ws2812_update
+********************************************************************************
+* Summary:
+*  Helper function to transmit the data to control the LEDs of the passed
+*  stringNumber
+*  The function will configure the message to be sent to the Queue for the LED
+*  controlling task
+*
+* Parameters:
+*  stringNumbner: The string number to address
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+void ws2812_update(uint8_t stringNumber)
+{
+	/* Declare message struct. */
+	ws2812_msg_t msg;
+
+	/* Configure command Parameters */
+	msg.cmd = ws2812_cmd_update;
+	msg.stringNumber = stringNumber;
+
+	/* Transmit the data to the queue safely */
+	if(ws2812QueueHandle != NULL)
+	{
+		/* Send to Queue and wait forever */
+		if( xQueueSend( ws2812QueueHandle, ( void * ) &msg, portMAX_DELAY  ) != pdPASS)
+		{
+			printf("ws2812QueueHandle Full even after waiting\r\n");
+		}
+	}
+	else
+	{
+		printf("ws2812QueueHandle does not exist\r\n");
+	}
+
+}
+
+/*******************************************************************************
+* Function Name: ws2812_autoUpdate
+********************************************************************************
+* Summary:
+*  Helper function to transmit the data to turn on the Auto-Update
+*  The function will configure the message to be sent to the Queue for the LED
+*  controlling task
+*
+* Parameters:
+*  option: 	true = Auto-Update ON
+*  			false = Auto-Update OFF
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+void ws2812_autoUpdate(bool option)
+{
+	/* Declare message struct. */
+	ws2812_msg_t msg;
+
+	/* Configure command Parameters */
+	msg.cmd = ws2812_cmd_autoUpdate;
+	msg.data = option;
+
+	/* Transmit the data to the queue safely */
+	if(ws2812QueueHandle != NULL)
+	{
+		/* Send to Queue and wait forever */
+		if( xQueueSend( ws2812QueueHandle, ( void * ) &msg, portMAX_DELAY  ) != pdPASS)
+		{
+			printf("ws2812QueueHandle Full even after waiting\r\n");
+		}
+	}
+	else
+	{
+		printf("ws2812QueueHandle does not exist\r\n");
+	}
+}
+
+/*******************************************************************************
+* Function Name: ws2812_setRGB
+********************************************************************************
+* Summary:
+*  Helper function to control a single LED
+*  The function will configure the message to be sent to the Queue for the LED
+*  controlling task
+*
+* Parameters:
+*  stringNumbner: The string number to address
+*  led: the number of the LED to address
+*  red: Hex code for RED
+*  green: Hex code for GREEN
+*  blue: HEX code for BLUE
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+void ws2812_setRGB(uint8_t stringNumber, uint32_t led, uint8_t red, uint8_t green, uint8_t blue)
+{
+	/* Declare message struct. */
+	ws2812_msg_t msg;
+
+	/* Configure command Parameters */
+	msg.cmd = ws2812_cmd_setRGB;
+	msg.stringNumber = stringNumber;
+	msg.red = red;
+	msg.blue = blue;
+	msg.green = green;
+	msg.data = led;
+
+	/* Transmit the data to the queue safely */
+	if(ws2812QueueHandle != NULL)
+	{
+		/* Send to Queue and wait forever */
+		if( xQueueSend( ws2812QueueHandle, ( void * ) &msg, portMAX_DELAY  ) != pdPASS)
+		{
+			printf("ws2812QueueHandle Full even after waiting\r\n");
+		}
+	}
+	else
+	{
+		printf("ws2812QueueHandle does not exist\r\n");
+	}
+}
+
+/*******************************************************************************
+* Function Name: ws2812_setRange
+********************************************************************************
+* Summary:
+*  Helper function to transmit the data to control the LEDs in the range passed
+*  The function will configure the message to be sent to the Queue for the LED
+*  controlling task
+*
+* Parameters:
+*  stringNumbner: The string number to address
+*  start: the index of the first LED to address
+*  end: the index of the last LED to address
+*  red: Hex code for RED
+*  green: Hex code for GREEN
+*  blue: HEX code for BLUE
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+void ws2812_setRange(uint8_t stringNumber, uint32_t start, uint32_t end, uint8_t red, uint8_t green, uint8_t blue)
+{
+	/* Declare message struct. */
+	ws2812_msg_t msg;
+
+	/* Configure command Parameters */
+	msg.cmd = ws2812_cmd_setRange;
+	msg.stringNumber = stringNumber;
+	msg.red = red;
+	msg.blue = blue;
+	msg.green = green;
+	msg.data = start << 16 | end;
+
+	/* Transmit the data to the queue safely */
+	if(ws2812QueueHandle != NULL)
+	{
+		/* Send to Queue and wait forever */
+		if( xQueueSend( ws2812QueueHandle, ( void * ) &msg, portMAX_DELAY  ) != pdPASS)
+		{
+			printf("ws2812QueueHandle Full even after waiting\r\n");
+		}
+	}
+	else
+	{
+		printf("ws2812QueueHandle does not exist\r\n");
+	}
+}
+
+/*******************************************************************************
+* Function Name: ws2812_initMixColorRGB
+********************************************************************************
+* Summary:
+*  Helper function to alternate the color of LEDs in a string passed
+*  The function will configure the message to be sent to the Queue for the LED
+*  controlling task
+*
+* Parameters:
+*  stringNumbner: The string number to address
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+void ws2812_initMixColorRGB(uint8_t stringNumber)
+{
+	/* Declare message struct. */
+	ws2812_msg_t msg;
+
+	/* Configure command Parameters */
+	msg.cmd = ws2812_cmd_initMixColorRGB;
+	msg.stringNumber = stringNumber;
+
+	/* Transmit the data to the queue safely */
+	if(ws2812QueueHandle != NULL)
+	{
+		/* Send to Queue and wait forever */
+		if( xQueueSend( ws2812QueueHandle, ( void * ) &msg, portMAX_DELAY  ) != pdPASS)
+		{
+			printf("ws2812QueueHandle Full even after waiting\r\n");
+		}
+	}
+	else
+	{
+		printf("ws2812QueueHandle does not exist\r\n");
+	}
+}
+
+/*******************************************************************************
+* Function Name: WSx_DMAConfigure
+********************************************************************************
+* Summary:
+*  Function WS_DMAConfiguration.
+*  This function sets up the DMA and the descriptors
+*
+* Parameters:
+*  void
+*
+* Return:
+*  void
+*
+*******************************************************************************/
 static void WS1_DMAConfigure(void)
 {
-    // I copies this structure from the PSoC Creator Component configuration
-    // in generated source
+    /* I copies this structure from the PSoC Creator Component configuration
+    	in generated source */
     const cy_stc_dma_descriptor_config_t WS1_DMA_Descriptors_config =
     {
     .retrigger       = CY_DMA_RETRIG_IM,
@@ -147,8 +368,8 @@ static void WS1_DMAConfigure(void)
 
 static void WS2_DMAConfigure(void)
 {
-    // I copies this structure from the PSoC Creator Component configuration
-    // in generated source
+	/* I copies this structure from the PSoC Creator Component configuration
+	    	in generated source */
     const cy_stc_dma_descriptor_config_t WS2_DMA_Descriptors_config =
     {
     .retrigger       = CY_DMA_RETRIG_IM,
@@ -190,8 +411,8 @@ static void WS2_DMAConfigure(void)
 
 static void WS3_DMAConfigure(void)
 {
-    // I copies this structure from the PSoC Creator Component configuration
-    // in generated source
+	/* I copies this structure from the PSoC Creator Component configuration
+	    	in generated source */
     const cy_stc_dma_descriptor_config_t WS3_DMA_Descriptors_config =
     {
     .retrigger       = CY_DMA_RETRIG_IM,
@@ -230,10 +451,11 @@ static void WS3_DMAConfigure(void)
 
     Cy_DMA_Enable(WS3_DMA_HW);
 }
+
 static void WS4_DMAConfigure(void)
 {
-    // I copies this structure from the PSoC Creator Component configuration
-    // in generated source
+	/* I copies this structure from the PSoC Creator Component configuration
+	    	in generated source */
     const cy_stc_dma_descriptor_config_t WS4_DMA_Descriptors_config =
     {
     .retrigger       = CY_DMA_RETRIG_IM,
@@ -275,8 +497,8 @@ static void WS4_DMAConfigure(void)
 
 static void WS5_DMAConfigure(void)
 {
-    // I copies this structure from the PSoC Creator Component configuration
-    // in generated source
+	/* I copies this structure from the PSoC Creator Component configuration
+	    	in generated source */
     const cy_stc_dma_descriptor_config_t WS5_DMA_Descriptors_config =
     {
     .retrigger       = CY_DMA_RETRIG_IM,
@@ -316,8 +538,20 @@ static void WS5_DMAConfigure(void)
     Cy_DMA_Enable(WS5_DMA_HW);
 }
 
-// Function: WS_DMATrigger
-// This function sets up the channel... then enables it to dump the frameBuffer to pixels
+/*******************************************************************************
+* Function Name: WS_DMATrigger
+********************************************************************************
+* Summary:
+*  Function This function sets up the channel...
+*  then enables it to dump the frameBuffer to pixels
+*
+* Parameters:
+*  stringNumbner: The string number to address
+*
+* Return:
+*  void
+*
+*******************************************************************************/
 void WS_DMATrigger(uint8_t stringNumber)
 {
 	switch(stringNumber)
@@ -382,9 +616,21 @@ void WS_DMATrigger(uint8_t stringNumber)
 	}
 }
 
-
-// This function is called by the software timer which is used to auto-update the LEDs
-// It checks to make sure that the DMA is done... if not it doesn't do anything
+/*******************************************************************************
+* Function Name: ws2812CallbackFunction
+********************************************************************************
+* Summary:
+*  Function This function is called by the software timer which is used to
+*  auto-update the LEDs. It checks to make sure that the DMA is done...
+*  if not it doesn't do anything
+*
+* Parameters:
+*  xTimer: Timer callback handle
+*
+* Return:
+*  void
+*
+*******************************************************************************/
 void ws2812CallbackFunction( TimerHandle_t xTimer )
 {
     if((Cy_DMA_Channel_GetStatus(WS1_DMA_HW, WS1_DMA_CHANNEL) & CY_DMA_INTR_CAUSE_COMPLETION))
@@ -407,13 +653,23 @@ void ws2812CallbackFunction( TimerHandle_t xTimer )
     {
     	WS_DMATrigger(5);
     }
-
 }
 
-// Function: convert3Code
-// This function takes an 8-bit value representing a color
-// and turns it into a WS2812 bit code... where 1=110 and 0=011
-// 1 input byte turns into three output bytes of a uint32_t
+/*******************************************************************************
+* Function Name: WS_convert3Code
+********************************************************************************
+* Summary:
+*  Function This function takes an 8-bit value representing a color and turns it
+*  into a WS2812 bit code... where 1=110 and 0=011.
+*  1 input byte turns into three output bytes of a uint32_t
+*
+* Parameters:
+*  input: Input byte to convert
+*
+* Return:
+*  void
+*
+*******************************************************************************/
 static uint32_t WS_convert3Code(uint8_t input)
 {
     uint32_t rval=0;
@@ -434,8 +690,24 @@ static uint32_t WS_convert3Code(uint8_t input)
     return rval;
 }
 
-// Function: WS_setRGB
-// Takes a position and a three byte rgb value and updates the WS_frameBuffer with the correct 9-bytes
+/*******************************************************************************
+* Function Name: WS_setRGB
+********************************************************************************
+* Summary:
+*  Function This function Takes a position and a three byte rgb value and
+*  updates the WS_frameBuffer with the correct 9-bytes
+*
+* Parameters:
+*  stringNumbner: The string number to address
+*  led: the number of the LED to address
+*  red: Hex code for RED
+*  green: Hex code for GREEN
+*  blue: HEX code for BLUE
+*
+* Return:
+*  void
+*
+*******************************************************************************/
 static void WS_setRGB(uint8_t stringNumber, uint32_t led, uint8_t red, uint8_t green, uint8_t blue)
 {
     typedef union {
@@ -545,8 +817,25 @@ static void WS_setRGB(uint8_t stringNumber, uint32_t led, uint8_t red, uint8_t g
     }
 }
 
-// Function WS_setRange
-// Sets all of the pixels from start to end with the red,green,blue value
+/*******************************************************************************
+* Function Name: WS_setRange
+********************************************************************************
+* Summary:
+*  Function This function Sets all of the pixels from start to end with the
+*  red, green, and blue value
+*
+* Parameters:
+*  stringNumbner: The string number to address
+*  start: the index of the first LED to address
+*  end: the index of the last LED to address
+*  red: Hex code for RED
+*  green: Hex code for GREEN
+*  blue: HEX code for BLUE
+*
+* Return:
+*  void
+*
+*******************************************************************************/
 static void WS_setRange(uint8_t stringNumber, uint32_t start, uint32_t end, uint8_t red, uint8_t green, uint8_t blue)
 {
     CY_ASSERT(start >= 0);
@@ -734,8 +1023,19 @@ static void WS1_runTest()
     printf("\r\n");
 }
 
-
-// Initializes the RGB frame buffer to RGBRGBRGB...RGB
+/*******************************************************************************
+* Function Name: WS_initMixColorRGB
+********************************************************************************
+* Summary:
+*  Function This function  Initializes the RGB frame buffer to RGBRGBRGB...RGB
+*
+* Parameters:
+*  stringNumbner: The string number to address
+*
+* Return:
+*  void
+*
+*******************************************************************************/
 static void WS_initMixColorRGB(uint8_t stringNumber)
 {
 	uint32_t loopCounter;
@@ -788,101 +1088,137 @@ static void WS_initMixColorRGB(uint8_t stringNumber)
     }
 }
 
-
-
+/*******************************************************************************
+* Function Name: ws2812Task
+********************************************************************************
+* Summary:
+*  Function This is the main RGB controller task
+*
+* Parameters:
+*  arg
+*
+* Return:
+*  void
+*
+*******************************************************************************/
 void ws2812Task(void *arg)
 {
+	/* Declare message struct. */
 	ws2812_msg_t msg;
+
+	/* Declare all the SPI channel context */
 	cy_stc_scb_spi_context_t WS1_SPI_context;
 	cy_stc_scb_spi_context_t WS2_SPI_context;
 	cy_stc_scb_spi_context_t WS3_SPI_context;
 	cy_stc_scb_spi_context_t WS4_SPI_context;
 	cy_stc_scb_spi_context_t WS5_SPI_context;
 
-	vTaskDelay(100);
+	/* Delay 100ms */
+	vTaskDelay(pdMS_TO_TICKS(100));
 
-	printf("Starting ws2812 task\r\n");
+	printf("Starting WS2812 task\r\n");
+
 	//WS1_runTest();
 
+	/* Initialize the FrameBuffers */
     WS1_frameBuffer[0] = 0x00;
     WS2_frameBuffer[0] = 0x00;
     WS3_frameBuffer[0] = 0x00;
     WS4_frameBuffer[0] = 0x00;
     WS5_frameBuffer[0] = 0x00;
 
-    WS_setRange(1, 0, ws2812_NUM_PIXELS_WS1 - 1, 0, 0, 0); // Initialize everything OFF
-    WS_setRange(2, 0, ws2812_NUM_PIXELS_WS2 - 1, 0, 0, 0); // Initialize everything OFF
-    WS_setRange(3, 0, ws2812_NUM_PIXELS_WS3 - 1, 0, 0, 0); // Initialize everything OFF
-    WS_setRange(4, 0, ws2812_NUM_PIXELS_WS4 - 1, 0, 0, 0); // Initialize everything OFF
-    WS_setRange(5, 0, ws2812_NUM_PIXELS_WS5 - 1, 0, 0, 0); // Initialize everything OFF
-
+    /* Initialize all LEDs Off and update the DMA trigger to load */
+    WS_setRange(1, 0, ws2812_NUM_PIXELS_WS1 - 1, 0, 0, 0);
     WS_DMATrigger(1);
-    WS_DMATrigger(2);
-    WS_DMATrigger(3);
-    WS_DMATrigger(4);
-    WS_DMATrigger(5);
-
     Cy_SCB_SPI_Init(WS1_SPI_HW, &WS1_SPI_config, &WS1_SPI_context);
     Cy_SCB_SPI_Enable(WS1_SPI_HW);
-    WS1_DMAConfigure();
 
+    WS1_DMAConfigure();
+    WS_setRange(2, 0, ws2812_NUM_PIXELS_WS2 - 1, 0, 0, 0);
+    WS_DMATrigger(2);
     Cy_SCB_SPI_Init(WS2_SPI_HW, &WS2_SPI_config, &WS2_SPI_context);
     Cy_SCB_SPI_Enable(WS2_SPI_HW);
     WS2_DMAConfigure();
 
+    WS_setRange(3, 0, ws2812_NUM_PIXELS_WS3 - 1, 0, 0, 0);
+    WS_DMATrigger(3);
     Cy_SCB_SPI_Init(WS3_SPI_HW, &WS3_SPI_config, &WS3_SPI_context);
     Cy_SCB_SPI_Enable(WS3_SPI_HW);
     WS3_DMAConfigure();
 
+    WS_setRange(4, 0, ws2812_NUM_PIXELS_WS4 - 1, 0, 0, 0);
+    WS_DMATrigger(4);
     Cy_SCB_SPI_Init(WS4_SPI_HW, &WS4_SPI_config, &WS4_SPI_context);
     Cy_SCB_SPI_Enable(WS4_SPI_HW);
     WS4_DMAConfigure();
 
+    WS_setRange(5, 0, ws2812_NUM_PIXELS_WS5 - 1, 0, 0, 0);
+    WS_DMATrigger(5);
     Cy_SCB_SPI_Init(WS5_SPI_HW, &WS5_SPI_config, &WS5_SPI_context);
     Cy_SCB_SPI_Enable(WS5_SPI_HW);
     WS5_DMAConfigure();
 
-    // This queue handles messages from the keyboard
-    ws2812QueueHandle = xQueueCreate(20, sizeof(ws2812_msg_t));
-    // This timer calls the update function every 30ms if it is turned on.
-    ws2812TimerHandle = xTimerCreate("ws2812 timer", pdMS_TO_TICKS(30), pdTRUE, 0, ws2812CallbackFunction );
+    /* This queue handles messages sent to the queue to execute */
+    ws2812QueueHandle = xQueueCreate(WS2812_QUEUE_SIZE, sizeof(ws2812_msg_t));
 
+    /* This timer calls the update function every 30ms if it is turned on. */
+    ws2812TimerHandle = xTimerCreate(	/* A text name, purely to help debugging. */
+    									"ws2812 timer",
+    									/* The timer period, in ms */
+										WS2812_AUTOUPDATE_TIMER_MS,
+										/* This is a periodic timer, so
+										   xAutoReload is set to pdTRUE. */
+										pdTRUE,
+										/* The ID is not used, so can be set
+										   to anything. */
+										( void * ) 0,
+										/* The callback function */
+										ws2812CallbackFunction
+										);
     while(1)
     {
-    		xQueueReceive(ws2812QueueHandle, &msg, 0xFFFFFFFF);
-    		switch(msg.cmd)
-    		{
-				case ws2812_cmd_update:
-					if(!wsAutoUpdateState)
-					{
-						WS_DMATrigger(1);
-						WS_DMATrigger(2);
-						WS_DMATrigger(3);
-						WS_DMATrigger(4);
-						WS_DMATrigger(5);
-					}
-					break;
-				case ws2812_cmd_autoUpdate:
-					if(wsAutoUpdateState && msg.data == false)
-					{
-						xTimerStop(ws2812TimerHandle, 0);
-					}
-					else if(!wsAutoUpdateState && msg.data == true)
-					{
-						xTimerStart(ws2812TimerHandle, 0);
-					}
-					wsAutoUpdateState = msg.data;
-
-					break;
-				case ws2812_cmd_setRGB:
-					WS_setRGB(msg.stringNumber, msg.data, msg.red, msg.green ,msg.blue);
-					break;
-				case ws2812_cmd_setRange:
-					WS_setRange(msg.stringNumber, msg.data>>16 & 0xFFFF, msg.data&0xFFFF, msg.red,msg.green ,msg.blue);
-					break;
-				case ws2812_cmd_initMixColorRGB:
-					WS_initMixColorRGB(msg.stringNumber);
-					break;
-    		}
+    	/* Block task until a message is received in the Queue */
+    	xQueueReceive(ws2812QueueHandle, &msg, portMAX_DELAY);
+    	/* Switch Statement to execute any message in the Queue */
+    	switch(msg.cmd)
+    	{
+			case ws2812_cmd_update:
+				if(!wsAutoUpdateState)
+				{
+					WS_DMATrigger(1);
+					WS_DMATrigger(2);
+					WS_DMATrigger(3);
+					WS_DMATrigger(4);
+					WS_DMATrigger(5);
+				}
+				break;
+			case ws2812_cmd_autoUpdate:
+				if(wsAutoUpdateState && msg.data == false)
+				{
+					/* Stop the refresh timer */
+					xTimerStop(ws2812TimerHandle, 0);
+				}
+				else if(!wsAutoUpdateState && msg.data == true)
+				{
+					/* Start the refresh timer */
+					xTimerStart(ws2812TimerHandle, 0);
+					/* Reset the refresh timer to start from 0 */
+					xTimerReset(ws2812TimerHandle, 0);
+				}
+				/* Load the last state of the Auto-Update flag */
+				wsAutoUpdateState = msg.data;
+				break;
+			case ws2812_cmd_setRGB:
+				WS_setRGB(msg.stringNumber, msg.data, msg.red, msg.green ,msg.blue);
+				break;
+			case ws2812_cmd_setRange:
+				WS_setRange(msg.stringNumber, msg.data>>16 & 0xFFFF, msg.data&0xFFFF, msg.red,msg.green ,msg.blue);
+				break;
+			case ws2812_cmd_initMixColorRGB:
+				WS_initMixColorRGB(msg.stringNumber);
+				break;
+			default:
+				break;
+    	}
     }
 }

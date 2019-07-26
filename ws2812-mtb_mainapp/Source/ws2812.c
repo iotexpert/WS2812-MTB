@@ -75,7 +75,7 @@ QueueHandle_t ws2812QueueHandle = NULL;
 TimerHandle_t ws2812TimerHandle = NULL;
 
 /* Declare the LED Auto-Update flag and set the default to true */
-bool wsAutoUpdateState = true;
+bool wsAutoUpdateState = false;
 
 /* ==================================================================== */
 /* ============================== data ================================ */

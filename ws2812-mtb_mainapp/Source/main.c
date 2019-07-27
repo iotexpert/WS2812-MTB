@@ -1,4 +1,4 @@
-/** @source __WS2812.c__
+/** @source __main.c__
 **
 ** __Code for the WS2812 Example Application_
 **

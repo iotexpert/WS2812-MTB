@@ -1129,34 +1129,35 @@ void ws2812Task(void *arg)
 
     /* Initialize all LEDs Off and update the DMA trigger to load */
     WS_setRange(1, 0, ws2812_NUM_PIXELS_WS1 - 1, 0, 0, 0);
-    WS_DMATrigger(1);
     Cy_SCB_SPI_Init(WS1_SPI_HW, &WS1_SPI_config, &WS1_SPI_context);
     Cy_SCB_SPI_Enable(WS1_SPI_HW);
-
     WS1_DMAConfigure();
+
     WS_setRange(2, 0, ws2812_NUM_PIXELS_WS2 - 1, 0, 0, 0);
-    WS_DMATrigger(2);
     Cy_SCB_SPI_Init(WS2_SPI_HW, &WS2_SPI_config, &WS2_SPI_context);
     Cy_SCB_SPI_Enable(WS2_SPI_HW);
     WS2_DMAConfigure();
 
     WS_setRange(3, 0, ws2812_NUM_PIXELS_WS3 - 1, 0, 0, 0);
-    WS_DMATrigger(3);
     Cy_SCB_SPI_Init(WS3_SPI_HW, &WS3_SPI_config, &WS3_SPI_context);
     Cy_SCB_SPI_Enable(WS3_SPI_HW);
     WS3_DMAConfigure();
 
     WS_setRange(4, 0, ws2812_NUM_PIXELS_WS4 - 1, 0, 0, 0);
-    WS_DMATrigger(4);
     Cy_SCB_SPI_Init(WS4_SPI_HW, &WS4_SPI_config, &WS4_SPI_context);
     Cy_SCB_SPI_Enable(WS4_SPI_HW);
     WS4_DMAConfigure();
 
     WS_setRange(5, 0, ws2812_NUM_PIXELS_WS5 - 1, 0, 0, 0);
-    WS_DMATrigger(5);
     Cy_SCB_SPI_Init(WS5_SPI_HW, &WS5_SPI_config, &WS5_SPI_context);
     Cy_SCB_SPI_Enable(WS5_SPI_HW);
     WS5_DMAConfigure();
+
+    WS_DMATrigger(1);
+    WS_DMATrigger(2);
+    WS_DMATrigger(3);
+    WS_DMATrigger(4);
+    WS_DMATrigger(5);
 
     /* This queue handles messages sent to the queue to execute */
     ws2812QueueHandle = xQueueCreate(WS2812_QUEUE_SIZE, sizeof(ws2812_msg_t));

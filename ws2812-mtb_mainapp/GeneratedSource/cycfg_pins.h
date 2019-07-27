@@ -33,6 +33,15 @@
 extern "C" {
 #endif
 
+#define ioss_0_port_0_pin_2_PORT GPIO_PRT0
+#define ioss_0_port_0_pin_2_PIN 2U
+#define ioss_0_port_0_pin_2_NUM 2U
+#define ioss_0_port_0_pin_2_DRIVEMODE CY_GPIO_DM_STRONG_IN_OFF
+#define ioss_0_port_0_pin_2_INIT_DRIVESTATE 1
+#ifndef ioss_0_port_0_pin_2_HSIOM
+	#define ioss_0_port_0_pin_2_HSIOM HSIOM_SEL_GPIO
+#endif
+#define ioss_0_port_0_pin_2_IRQ ioss_interrupts_gpio_0_IRQn
 #define ioss_0_port_10_pin_0_PORT GPIO_PRT10
 #define ioss_0_port_10_pin_0_PIN 0U
 #define ioss_0_port_10_pin_0_NUM 0U
@@ -139,6 +148,7 @@ extern "C" {
 #endif
 #define ioss_0_port_9_pin_0_IRQ ioss_interrupts_gpio_9_IRQn
 
+extern const cy_stc_gpio_pin_config_t ioss_0_port_0_pin_2_config;
 extern const cy_stc_gpio_pin_config_t ioss_0_port_10_pin_0_config;
 extern const cy_stc_gpio_pin_config_t ioss_0_port_12_pin_0_config;
 extern const cy_stc_gpio_pin_config_t red_config;

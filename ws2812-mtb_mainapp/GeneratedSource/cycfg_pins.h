@@ -133,7 +133,7 @@ extern "C" {
 #define ioss_0_port_8_pin_0_PIN 0U
 #define ioss_0_port_8_pin_0_NUM 0U
 #define ioss_0_port_8_pin_0_DRIVEMODE CY_GPIO_DM_STRONG_IN_OFF
-#define ioss_0_port_8_pin_0_INIT_DRIVESTATE 1
+#define ioss_0_port_8_pin_0_INIT_DRIVESTATE 0
 #ifndef ioss_0_port_8_pin_0_HSIOM
 	#define ioss_0_port_8_pin_0_HSIOM HSIOM_SEL_GPIO
 #endif

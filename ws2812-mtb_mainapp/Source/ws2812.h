@@ -12,11 +12,27 @@
 #include "FreeRTOS.h"
 #include "queue.h"
 
+#define INCLUDE_WS1				(0UL)
+#define INCLUDE_WS2				(0UL)
+#define INCLUDE_WS3				(0UL)
+#define INCLUDE_WS4				(0UL)
+#define INCLUDE_WS5				(1UL)
+
+#if INCLUDE_WS1
 #define ws2812_NUM_PIXELS_WS1 (3)
+#endif
+#if INCLUDE_WS2
 #define ws2812_NUM_PIXELS_WS2 (3)
+#endif
+#if INCLUDE_WS3
 #define ws2812_NUM_PIXELS_WS3 (3)
+#endif
+#if INCLUDE_WS4
 #define ws2812_NUM_PIXELS_WS4 (3)
-#define ws2812_NUM_PIXELS_WS5 (3)
+#endif
+#if INCLUDE_WS5
+#define ws2812_NUM_PIXELS_WS5 (24)
+#endif
 
 extern QueueHandle_t ws2812QueueHandle;
 

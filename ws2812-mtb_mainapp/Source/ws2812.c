@@ -40,11 +40,21 @@
 #define WS_COLOR_PER_PIXEL (3)
 #define WS_BYTES_PER_PIXEL (WS_SPI_BIT_PER_BIT * WS_COLOR_PER_PIXEL)
 
+#if INCLUDE_WS1
 #define WS1_NUM_DESCRIPTORS (sizeof(WS1_frameBuffer) / 256 + 1)
+#endif
+#if INCLUDE_WS2
 #define WS2_NUM_DESCRIPTORS (sizeof(WS2_frameBuffer) / 256 + 1)
+#endif
+#if INCLUDE_WS3
 #define WS3_NUM_DESCRIPTORS (sizeof(WS3_frameBuffer) / 256 + 1)
+#endif
+#if INCLUDE_WS4
 #define WS4_NUM_DESCRIPTORS (sizeof(WS4_frameBuffer) / 256 + 1)
+#endif
+#if INCLUDE_WS5
 #define WS5_NUM_DESCRIPTORS (sizeof(WS5_frameBuffer) / 256 + 1)
+#endif
 
 /* Define delay to wait for Queue to be free */
 #define WS2812_QUEUE_DELAY_MS	(pdMS_TO_TICKS(2))
@@ -56,17 +66,26 @@
 /* ======================== global variables ========================== */
 /* ==================================================================== */
 /* Global variables definitions go here */
+#if INCLUDE_WS1
 static uint8_t WS1_frameBuffer[ws2812_NUM_PIXELS_WS1 * WS_BYTES_PER_PIXEL + WS_ZOFFSET];
-static uint8_t WS2_frameBuffer[ws2812_NUM_PIXELS_WS2 * WS_BYTES_PER_PIXEL + WS_ZOFFSET];
-static uint8_t WS3_frameBuffer[ws2812_NUM_PIXELS_WS3 * WS_BYTES_PER_PIXEL + WS_ZOFFSET];
-static uint8_t WS4_frameBuffer[ws2812_NUM_PIXELS_WS4 * WS_BYTES_PER_PIXEL + WS_ZOFFSET];
-static uint8_t WS5_frameBuffer[ws2812_NUM_PIXELS_WS5 * WS_BYTES_PER_PIXEL + WS_ZOFFSET];
-
 static cy_stc_dma_descriptor_t WS1Descriptors[WS1_NUM_DESCRIPTORS];
+#endif
+#if INCLUDE_WS2
+static uint8_t WS2_frameBuffer[ws2812_NUM_PIXELS_WS2 * WS_BYTES_PER_PIXEL + WS_ZOFFSET];
 static cy_stc_dma_descriptor_t WS2Descriptors[WS2_NUM_DESCRIPTORS];
+#endif
+#if INCLUDE_WS3
+static uint8_t WS3_frameBuffer[ws2812_NUM_PIXELS_WS3 * WS_BYTES_PER_PIXEL + WS_ZOFFSET];
 static cy_stc_dma_descriptor_t WS3Descriptors[WS3_NUM_DESCRIPTORS];
+#endif
+#if INCLUDE_WS4
+static uint8_t WS4_frameBuffer[ws2812_NUM_PIXELS_WS4 * WS_BYTES_PER_PIXEL + WS_ZOFFSET];
 static cy_stc_dma_descriptor_t WS4Descriptors[WS4_NUM_DESCRIPTORS];
+#endif
+#if INCLUDE_WS5
+static uint8_t WS5_frameBuffer[ws2812_NUM_PIXELS_WS5 * WS_BYTES_PER_PIXEL + WS_ZOFFSET];
 static cy_stc_dma_descriptor_t WS5Descriptors[WS5_NUM_DESCRIPTORS];
+#endif
 
 /* Declare queue for the WS2812 Task */
 QueueHandle_t ws2812QueueHandle = NULL;
@@ -323,6 +342,7 @@ void ws2812_initMixColorRGB(uint8_t stringNumber)
 *  void
 *
 *******************************************************************************/
+#if INCLUDE_WS1
 static void WS1_DMAConfigure(void)
 {
     /* I copies this structure from the PSoC Creator Component configuration
@@ -365,7 +385,8 @@ static void WS1_DMAConfigure(void)
 
     Cy_DMA_Enable(WS1_DMA_HW);
 }
-
+#endif
+#if INCLUDE_WS2
 static void WS2_DMAConfigure(void)
 {
 	/* I copies this structure from the PSoC Creator Component configuration
@@ -408,7 +429,8 @@ static void WS2_DMAConfigure(void)
 
     Cy_DMA_Enable(WS2_DMA_HW);
 }
-
+#endif
+#if INCLUDE_WS3
 static void WS3_DMAConfigure(void)
 {
 	/* I copies this structure from the PSoC Creator Component configuration
@@ -451,7 +473,8 @@ static void WS3_DMAConfigure(void)
 
     Cy_DMA_Enable(WS3_DMA_HW);
 }
-
+#endif
+#if INCLUDE_WS4
 static void WS4_DMAConfigure(void)
 {
 	/* I copies this structure from the PSoC Creator Component configuration
@@ -494,7 +517,8 @@ static void WS4_DMAConfigure(void)
 
     Cy_DMA_Enable(WS4_DMA_HW);
 }
-
+#endif
+#if INCLUDE_WS5
 static void WS5_DMAConfigure(void)
 {
 	/* I copies this structure from the PSoC Creator Component configuration
@@ -537,7 +561,7 @@ static void WS5_DMAConfigure(void)
 
     Cy_DMA_Enable(WS5_DMA_HW);
 }
-
+#endif
 /*******************************************************************************
 * Function Name: WS_DMATrigger
 ********************************************************************************
@@ -558,6 +582,7 @@ void WS_DMATrigger(uint8_t stringNumber)
 	{
 		case 1:
 		{
+#if INCLUDE_WS1
 			cy_stc_dma_channel_config_t channelConfigWS1;
 			channelConfigWS1.descriptor  = &WS1Descriptors[0];
 			channelConfigWS1.preemptable = false;
@@ -565,10 +590,12 @@ void WS_DMATrigger(uint8_t stringNumber)
 			channelConfigWS1.enable      = false;
 			Cy_DMA_Channel_Init(WS1_DMA_HW, WS1_DMA_CHANNEL, &channelConfigWS1);
 			Cy_DMA_Channel_Enable(WS1_DMA_HW, WS1_DMA_CHANNEL);
+#endif
 			break;
 		}
 		case 2:
 		{
+#if INCLUDE_WS2
 			cy_stc_dma_channel_config_t channelConfigWS2;
 			channelConfigWS2.descriptor  = &WS2Descriptors[0];
 			channelConfigWS2.preemptable = false;
@@ -576,10 +603,12 @@ void WS_DMATrigger(uint8_t stringNumber)
 			channelConfigWS2.enable      = false;
 			Cy_DMA_Channel_Init(WS2_DMA_HW, WS2_DMA_CHANNEL, &channelConfigWS2);
 			Cy_DMA_Channel_Enable(WS2_DMA_HW, WS2_DMA_CHANNEL);
+#endif
 			break;
 		}
 		case 3:
 		{
+#if INCLUDE_WS3
 			cy_stc_dma_channel_config_t channelConfigWS3;
 			channelConfigWS3.descriptor  = &WS3Descriptors[0];
 			channelConfigWS3.preemptable = false;
@@ -587,10 +616,12 @@ void WS_DMATrigger(uint8_t stringNumber)
 			channelConfigWS3.enable      = false;
 			Cy_DMA_Channel_Init(WS3_DMA_HW, WS3_DMA_CHANNEL, &channelConfigWS3);
 			Cy_DMA_Channel_Enable(WS3_DMA_HW, WS3_DMA_CHANNEL);
+#endif
 			break;
 		}
 		case 4:
 		{
+#if INCLUDE_WS4
 			cy_stc_dma_channel_config_t channelConfigWS4;
 			channelConfigWS4.descriptor  = &WS4Descriptors[0];
 			channelConfigWS4.preemptable = false;
@@ -598,10 +629,12 @@ void WS_DMATrigger(uint8_t stringNumber)
 			channelConfigWS4.enable      = false;
 			Cy_DMA_Channel_Init(WS4_DMA_HW, WS4_DMA_CHANNEL, &channelConfigWS4);
 			Cy_DMA_Channel_Enable(WS4_DMA_HW, WS4_DMA_CHANNEL);
+#endif
 			break;
 		}
 		case 5:
 		{
+#if INCLUDE_WS5
 			cy_stc_dma_channel_config_t channelConfigWS5;
 			channelConfigWS5.descriptor  = &WS5Descriptors[0];
 			channelConfigWS5.preemptable = false;
@@ -609,6 +642,7 @@ void WS_DMATrigger(uint8_t stringNumber)
 			channelConfigWS5.enable      = false;
 			Cy_DMA_Channel_Init(WS5_DMA_HW, WS5_DMA_CHANNEL, &channelConfigWS5);
 			Cy_DMA_Channel_Enable(WS5_DMA_HW, WS5_DMA_CHANNEL);
+#endif
 			break;
 		}
 		default:
@@ -633,26 +667,36 @@ void WS_DMATrigger(uint8_t stringNumber)
 *******************************************************************************/
 void ws2812CallbackFunction( TimerHandle_t xTimer )
 {
-    if((Cy_DMA_Channel_GetStatus(WS1_DMA_HW, WS1_DMA_CHANNEL) & CY_DMA_INTR_CAUSE_COMPLETION))
-    {
-        WS_DMATrigger(1);
-    }
-    if((Cy_DMA_Channel_GetStatus(WS2_DMA_HW, WS2_DMA_CHANNEL) & CY_DMA_INTR_CAUSE_COMPLETION))
-    {
-    	WS_DMATrigger(2);
-    }
-    if((Cy_DMA_Channel_GetStatus(WS3_DMA_HW, WS3_DMA_CHANNEL) & CY_DMA_INTR_CAUSE_COMPLETION))
-    {
-    	WS_DMATrigger(3);
-    }
-    if((Cy_DMA_Channel_GetStatus(WS4_DMA_HW, WS4_DMA_CHANNEL) & CY_DMA_INTR_CAUSE_COMPLETION))
-    {
-    	WS_DMATrigger(4);
-    }
-    if((Cy_DMA_Channel_GetStatus(WS5_DMA_HW, WS5_DMA_CHANNEL) & CY_DMA_INTR_CAUSE_COMPLETION))
-    {
-    	WS_DMATrigger(5);
-    }
+#if INCLUDE_WS1
+	if((Cy_DMA_Channel_GetStatus(WS1_DMA_HW, WS1_DMA_CHANNEL) & CY_DMA_INTR_CAUSE_COMPLETION))
+	{
+		WS_DMATrigger(1);
+	}
+#endif
+#if INCLUDE_WS2
+	if((Cy_DMA_Channel_GetStatus(WS2_DMA_HW, WS2_DMA_CHANNEL) & CY_DMA_INTR_CAUSE_COMPLETION))
+	{
+		WS_DMATrigger(2);
+	}
+#endif
+#if INCLUDE_WS3
+	if((Cy_DMA_Channel_GetStatus(WS3_DMA_HW, WS3_DMA_CHANNEL) & CY_DMA_INTR_CAUSE_COMPLETION))
+	{
+		WS_DMATrigger(3);
+	}
+#endif
+#if INCLUDE_WS4
+	if((Cy_DMA_Channel_GetStatus(WS4_DMA_HW, WS4_DMA_CHANNEL) & CY_DMA_INTR_CAUSE_COMPLETION))
+	{
+		WS_DMATrigger(4);
+	}
+#endif
+#if INCLUDE_WS5
+	if((Cy_DMA_Channel_GetStatus(WS5_DMA_HW, WS5_DMA_CHANNEL) & CY_DMA_INTR_CAUSE_COMPLETION))
+	{
+		WS_DMATrigger(5);
+	}
+#endif
 }
 
 /*******************************************************************************
@@ -719,6 +763,7 @@ static void WS_setRGB(uint8_t stringNumber, uint32_t led, uint8_t red, uint8_t g
     {
 		case 1:
 		{
+#if INCLUDE_WS1
 			WS_colorUnion color;
 			color.word = WS_convert3Code(green);
 			WS1_frameBuffer[led * WS_BYTES_PER_PIXEL + WS_ZOFFSET] = color.bytes[2];
@@ -734,10 +779,12 @@ static void WS_setRGB(uint8_t stringNumber, uint32_t led, uint8_t red, uint8_t g
 			WS1_frameBuffer[led * WS_BYTES_PER_PIXEL + 6 + WS_ZOFFSET] = color.bytes[2];
 			WS1_frameBuffer[led * WS_BYTES_PER_PIXEL + 7 + WS_ZOFFSET] = color.bytes[1];
 			WS1_frameBuffer[led * WS_BYTES_PER_PIXEL + 8 + WS_ZOFFSET] = color.bytes[0];
+#endif
 			break;
 		}
 		case 2:
 		{
+#if INCLUDE_WS2
 			WS_colorUnion color;
 			color.word = WS_convert3Code(green);
 			WS2_frameBuffer[led * WS_BYTES_PER_PIXEL + WS_ZOFFSET] = color.bytes[2];
@@ -753,10 +800,12 @@ static void WS_setRGB(uint8_t stringNumber, uint32_t led, uint8_t red, uint8_t g
 			WS2_frameBuffer[led * WS_BYTES_PER_PIXEL + 6 + WS_ZOFFSET] = color.bytes[2];
 			WS2_frameBuffer[led * WS_BYTES_PER_PIXEL + 7 + WS_ZOFFSET] = color.bytes[1];
 			WS2_frameBuffer[led * WS_BYTES_PER_PIXEL + 8 + WS_ZOFFSET] = color.bytes[0];
+#endif
 			break;
 		}
 		case 3:
 		{
+#if INCLUDE_WS3
 			WS_colorUnion color;
 			color.word = WS_convert3Code(green);
 			WS3_frameBuffer[led * WS_BYTES_PER_PIXEL + WS_ZOFFSET] = color.bytes[2];
@@ -772,10 +821,12 @@ static void WS_setRGB(uint8_t stringNumber, uint32_t led, uint8_t red, uint8_t g
 			WS3_frameBuffer[led * WS_BYTES_PER_PIXEL + 6 + WS_ZOFFSET] = color.bytes[2];
 			WS3_frameBuffer[led * WS_BYTES_PER_PIXEL + 7 + WS_ZOFFSET] = color.bytes[1];
 			WS3_frameBuffer[led * WS_BYTES_PER_PIXEL + 8 + WS_ZOFFSET] = color.bytes[0];
+#endif
 			break;
 		}
 		case 4:
 		{
+#if INCLUDE_WS4
 			WS_colorUnion color;
 			color.word = WS_convert3Code(green);
 			WS4_frameBuffer[led * WS_BYTES_PER_PIXEL + WS_ZOFFSET] = color.bytes[2];
@@ -791,10 +842,12 @@ static void WS_setRGB(uint8_t stringNumber, uint32_t led, uint8_t red, uint8_t g
 			WS4_frameBuffer[led * WS_BYTES_PER_PIXEL + 6 + WS_ZOFFSET] = color.bytes[2];
 			WS4_frameBuffer[led * WS_BYTES_PER_PIXEL + 7 + WS_ZOFFSET] = color.bytes[1];
 			WS4_frameBuffer[led * WS_BYTES_PER_PIXEL + 8 + WS_ZOFFSET] = color.bytes[0];
+#endif
 			break;
 		}
 		case 5:
 		{
+#if INCLUDE_WS5
 			WS_colorUnion color;
 			color.word = WS_convert3Code(green);
 			WS5_frameBuffer[led * WS_BYTES_PER_PIXEL + WS_ZOFFSET] = color.bytes[2];
@@ -810,6 +863,7 @@ static void WS_setRGB(uint8_t stringNumber, uint32_t led, uint8_t red, uint8_t g
 			WS5_frameBuffer[led * WS_BYTES_PER_PIXEL + 6 + WS_ZOFFSET] = color.bytes[2];
 			WS5_frameBuffer[led * WS_BYTES_PER_PIXEL + 7 + WS_ZOFFSET] = color.bytes[1];
 			WS5_frameBuffer[led * WS_BYTES_PER_PIXEL + 8 + WS_ZOFFSET] = color.bytes[0];
+#endif
 			break;
 		}
 		default:
@@ -845,6 +899,7 @@ static void WS_setRange(uint8_t stringNumber, uint32_t start, uint32_t end, uint
     {
 		case 1:
 		{
+#if INCLUDE_WS1
 			CY_ASSERT(end <= ws2812_NUM_PIXELS_WS1 - 1);
 
 			WS_setRGB(1, start, red, green, blue);
@@ -853,10 +908,12 @@ static void WS_setRange(uint8_t stringNumber, uint32_t start, uint32_t end, uint
 				memcpy(&WS1_frameBuffer[start * WS_BYTES_PER_PIXEL + i * WS_BYTES_PER_PIXEL + WS_ZOFFSET],
 						&WS1_frameBuffer[start * WS_BYTES_PER_PIXEL + WS_ZOFFSET], WS_BYTES_PER_PIXEL);
 			}
+#endif
 			break;
 		}
 		case 2:
 		{
+#if INCLUDE_WS2
 			CY_ASSERT(end <= ws2812_NUM_PIXELS_WS2 - 1);
 
 			WS_setRGB(2, start, red, green, blue);
@@ -865,10 +922,12 @@ static void WS_setRange(uint8_t stringNumber, uint32_t start, uint32_t end, uint
 				memcpy(&WS2_frameBuffer[start * WS_BYTES_PER_PIXEL + i * WS_BYTES_PER_PIXEL + WS_ZOFFSET],
 						&WS2_frameBuffer[start * WS_BYTES_PER_PIXEL + WS_ZOFFSET], WS_BYTES_PER_PIXEL);
 			}
+#endif
 			break;
 		}
 		case 3:
 		{
+#if INCLUDE_WS3
 			CY_ASSERT(end <= ws2812_NUM_PIXELS_WS3 - 1);
 
 			WS_setRGB(3, start, red, green, blue);
@@ -877,10 +936,12 @@ static void WS_setRange(uint8_t stringNumber, uint32_t start, uint32_t end, uint
 				memcpy(&WS3_frameBuffer[start * WS_BYTES_PER_PIXEL + i * WS_BYTES_PER_PIXEL + WS_ZOFFSET],
 						&WS3_frameBuffer[start * WS_BYTES_PER_PIXEL + WS_ZOFFSET], WS_BYTES_PER_PIXEL);
 			}
+#endif
 			break;
 		}
 		case 4:
 		{
+#if INCLUDE_WS4
 			CY_ASSERT(end <= ws2812_NUM_PIXELS_WS4 - 1);
 
 			WS_setRGB(4, start, red, green, blue);
@@ -889,10 +950,12 @@ static void WS_setRange(uint8_t stringNumber, uint32_t start, uint32_t end, uint
 				memcpy(&WS4_frameBuffer[start * WS_BYTES_PER_PIXEL + i * WS_BYTES_PER_PIXEL + WS_ZOFFSET],
 						&WS4_frameBuffer[start * WS_BYTES_PER_PIXEL + WS_ZOFFSET], WS_BYTES_PER_PIXEL);
 			}
+#endif
 			break;
 		}
 		case 5:
 		{
+#if INCLUDE_WS5
 			CY_ASSERT(end <= ws2812_NUM_PIXELS_WS5 - 1);
 
 			WS_setRGB(5, start, red, green, blue);
@@ -901,126 +964,12 @@ static void WS_setRange(uint8_t stringNumber, uint32_t start, uint32_t end, uint
 				memcpy(&WS5_frameBuffer[start * WS_BYTES_PER_PIXEL + i * WS_BYTES_PER_PIXEL + WS_ZOFFSET],
 						&WS5_frameBuffer[start * WS_BYTES_PER_PIXEL + WS_ZOFFSET], WS_BYTES_PER_PIXEL);
 			}
+#endif
 			break;
 		}
     default:
     	break;
     }
-}
-
-// Function: WS_runTest
-// This function just runs test-asserts against the pixel calculation functions
-static void WS1_runTest()
-{
-    printf("Size of WS_frameBuffer = %d\r\n", sizeof(WS1_frameBuffer));
-
-    // Some unit tests for the convert3Code Function
-    printf("Test 0x00 = %0X\r\n", (unsigned int)WS_convert3Code(0));
-    printf("Test 0xFF = %0X\r\n", (unsigned int)WS_convert3Code(0xFF));
-    printf("Test 0x80 = %0X\r\n", (unsigned int)WS_convert3Code(0x80));
-
-    // Make sure that WS_convert3Code does the right thing
-    CY_ASSERT(WS_convert3Code(0x00) == 0b00000000100100100100100100100100);
-    CY_ASSERT(WS_convert3Code(0x80) == 0b00000000110100100100100100100100);
-    CY_ASSERT(WS_convert3Code(0xFF) == 0b00000000110110110110110110110110);
-
-
-    CY_ASSERT(ws2812_NUM_PIXELS_WS1 >= 3); // we are going to test 3 locations
-    // Test the WS_setRGB
-    WS_setRGB(1, 0, 0x80, 0, 0xFF);
-
-    // 0
-    CY_ASSERT(WS1_frameBuffer[0 * 9 + WS_ZOFFSET + 0] == 0b10010010);
-    CY_ASSERT(WS1_frameBuffer[0 * 9 + WS_ZOFFSET + 1] == 0b01001001);
-    CY_ASSERT(WS1_frameBuffer[0 * 9 + WS_ZOFFSET + 2] == 0b00100100);
-
-    // 0x80
-    CY_ASSERT(WS1_frameBuffer[0 * 9 + WS_ZOFFSET + 3] == 0b11010010);
-    CY_ASSERT(WS1_frameBuffer[0 * 9 + WS_ZOFFSET + 4] == 0b01001001);
-    CY_ASSERT(WS1_frameBuffer[0 * 9+ WS_ZOFFSET + 5] == 0b00100100);
-
-    // 0xFF
-    CY_ASSERT(WS1_frameBuffer[0 * 9 + WS_ZOFFSET + 6] == 0b11011011);
-    CY_ASSERT(WS1_frameBuffer[0 * 9 + WS_ZOFFSET + 7] == 0b01101101);
-    CY_ASSERT(WS1_frameBuffer[0 * 9 + WS_ZOFFSET + 8] == 0b10110110);
-
-    WS_setRGB(1, 1, 0, 0xFF, 0x80);
-
-    // 0xFF
-    CY_ASSERT(WS1_frameBuffer[1 * 9 + WS_ZOFFSET + 0] == 0b11011011);
-    CY_ASSERT(WS1_frameBuffer[1 * 9 + WS_ZOFFSET + 1] == 0b01101101);
-    CY_ASSERT(WS1_frameBuffer[1 * 9 + WS_ZOFFSET + 2] == 0b10110110);
-
-    // 0
-    CY_ASSERT(WS1_frameBuffer[1 * 9 + WS_ZOFFSET + 3] == 0b10010010);
-    CY_ASSERT(WS1_frameBuffer[1 * 9 + WS_ZOFFSET + 4] == 0b01001001);
-    CY_ASSERT(WS1_frameBuffer[1 * 9 + WS_ZOFFSET + 5] == 0b00100100);
-
-    // 0x80
-    CY_ASSERT(WS1_frameBuffer[1 * 9 + WS_ZOFFSET + 6] == 0b11010010);
-    CY_ASSERT(WS1_frameBuffer[1 * 9 + WS_ZOFFSET + 7] == 0b01001001);
-    CY_ASSERT(WS1_frameBuffer[1 * 9 + WS_ZOFFSET + 8] == 0b00100100);
-
-    WS_setRGB(1, 2, 0xFF, 0x80, 0);
-
-    // 0x80
-    CY_ASSERT(WS1_frameBuffer[2 * 9 + WS_ZOFFSET + 0] == 0b11010010);
-    CY_ASSERT(WS1_frameBuffer[2 * 9 + WS_ZOFFSET + 1] == 0b01001001);
-    CY_ASSERT(WS1_frameBuffer[2 * 9 + WS_ZOFFSET + 2] == 0b00100100);
-
-    // 0xFF
-    CY_ASSERT(WS1_frameBuffer[2 * 9 + WS_ZOFFSET + 3] == 0b11011011);
-    CY_ASSERT(WS1_frameBuffer[2 * 9 + WS_ZOFFSET + 4] == 0b01101101);
-    CY_ASSERT(WS1_frameBuffer[2 * 9 + WS_ZOFFSET + 5] == 0b10110110);
-
-    // 0
-    CY_ASSERT(WS1_frameBuffer[2 * 9 + WS_ZOFFSET + 6] == 0b10010010);
-    CY_ASSERT(WS1_frameBuffer[2 * 9 + WS_ZOFFSET + 7] == 0b01001001);
-    CY_ASSERT(WS1_frameBuffer[2 * 9 + WS_ZOFFSET + 8] == 0b00100100);
-
-
-    // change the values of the range
-    WS_setRGB(1, 2, 0, 0, 0);
-    WS_setRGB(1, 3, 0, 0, 0);
-
-    // Test the WS_setRange
-    WS_setRange(1, 1, 3, 0xFF, 0x80, 0);
-
-    // 0x80
-    CY_ASSERT(WS1_frameBuffer[2 * 9 + WS_ZOFFSET + 0] == 0b11010010);
-    CY_ASSERT(WS1_frameBuffer[2 * 9 + WS_ZOFFSET + 1] == 0b01001001);
-    CY_ASSERT(WS1_frameBuffer[2 * 9 + WS_ZOFFSET + 2] == 0b00100100);
-
-    // 0xFF
-    CY_ASSERT(WS1_frameBuffer[2 * 9 + WS_ZOFFSET + 3] == 0b11011011);
-    CY_ASSERT(WS1_frameBuffer[2 * 9 + WS_ZOFFSET + 4] == 0b01101101);
-    CY_ASSERT(WS1_frameBuffer[2 * 9 + WS_ZOFFSET + 5] == 0b10110110);
-
-    // 0
-    CY_ASSERT(WS1_frameBuffer[2 * 9 + WS_ZOFFSET + 6] == 0b10010010);
-    CY_ASSERT(WS1_frameBuffer[2 * 9 + WS_ZOFFSET + 7] == 0b01001001);
-    CY_ASSERT(WS1_frameBuffer[2 * 9 + WS_ZOFFSET + 8] == 0b00100100);
-
-    // 0x80
-    CY_ASSERT(WS1_frameBuffer[3 * 9 + WS_ZOFFSET + 0] == 0b11010010);
-    CY_ASSERT(WS1_frameBuffer[3 * 9 + WS_ZOFFSET + 1] == 0b01001001);
-    CY_ASSERT(WS1_frameBuffer[3 * 9 + WS_ZOFFSET + 2] == 0b00100100);
-
-    // 0xFF
-    CY_ASSERT(WS1_frameBuffer[3 * 9 + WS_ZOFFSET + 3] == 0b11011011);
-    CY_ASSERT(WS1_frameBuffer[3 * 9 + WS_ZOFFSET + 4] == 0b01101101);
-    CY_ASSERT(WS1_frameBuffer[3 * 9 + WS_ZOFFSET + 5] == 0b10110110);
-
-    // 0
-    CY_ASSERT(WS1_frameBuffer[3 * 9 + WS_ZOFFSET + 6] == 0b10010010);
-    CY_ASSERT(WS1_frameBuffer[3 * 9 + WS_ZOFFSET + 7] == 0b01001001);
-    CY_ASSERT(WS1_frameBuffer[3 * 9 + WS_ZOFFSET + 8] == 0b00100100);
-
-    for(uint8_t i = 0; i < (ws2812_NUM_PIXELS_WS1 * WS_BYTES_PER_PIXEL + WS_ZOFFSET); i++)
-    {
-        printf("%02X ", WS1_frameBuffer[i]);
-    }
-    printf("\r\n");
 }
 
 /*******************************************************************************
@@ -1043,31 +992,41 @@ static void WS_initMixColorRGB(uint8_t stringNumber)
 	{
 		case 1:
 		{
+#if INCLUDE_WS1
 			loopCounter = ws2812_NUM_PIXELS_WS1;
+#endif
 			break;
 		}
 		case 2:
 		{
+#if INCLUDE_WS2
 			loopCounter = ws2812_NUM_PIXELS_WS2;
+#endif
 			break;
 		}
 		case 3:
 		{
+#if INCLUDE_WS3
 			loopCounter = ws2812_NUM_PIXELS_WS3;
+#endif
 			break;
 		}
 		case 4:
 		{
+#if INCLUDE_WS4
 			loopCounter = ws2812_NUM_PIXELS_WS4;
+#endif
 			break;
 		}
 		case 5:
 		{
+#if INCLUDE_WS5
 			loopCounter = ws2812_NUM_PIXELS_WS5;
+#endif
 			break;
 		}
 		default:
-			loopCounter = ws2812_NUM_PIXELS_WS1;
+
 			break;
 	}
 
@@ -1107,57 +1066,70 @@ void ws2812Task(void *arg)
 	ws2812_msg_t msg;
 
 	/* Declare all the SPI channel context */
+#if INCLUDE_WS1
 	cy_stc_scb_spi_context_t WS1_SPI_context;
+#endif
+#if INCLUDE_WS2
 	cy_stc_scb_spi_context_t WS2_SPI_context;
+#endif
+#if INCLUDE_WS3
 	cy_stc_scb_spi_context_t WS3_SPI_context;
+#endif
+#if INCLUDE_WS4
 	cy_stc_scb_spi_context_t WS4_SPI_context;
+#endif
+#if INCLUDE_WS5
 	cy_stc_scb_spi_context_t WS5_SPI_context;
+#endif
 
 	/* Delay 100ms */
 	vTaskDelay(pdMS_TO_TICKS(100));
 
 	printf("Starting WS2812 task\r\n");
 
-	//WS1_runTest();
-
-	/* Initialize the FrameBuffers */
-    WS1_frameBuffer[0] = 0x00;
-    WS2_frameBuffer[0] = 0x00;
-    WS3_frameBuffer[0] = 0x00;
-    WS4_frameBuffer[0] = 0x00;
-    WS5_frameBuffer[0] = 0x00;
-
-    /* Initialize all LEDs Off and update the DMA trigger to load */
-    WS_setRange(1, 0, ws2812_NUM_PIXELS_WS1 - 1, 0, 0, 0);
-    Cy_SCB_SPI_Init(WS1_SPI_HW, &WS1_SPI_config, &WS1_SPI_context);
-    Cy_SCB_SPI_Enable(WS1_SPI_HW);
-    WS1_DMAConfigure();
-
-    WS_setRange(2, 0, ws2812_NUM_PIXELS_WS2 - 1, 0, 0, 0);
-    Cy_SCB_SPI_Init(WS2_SPI_HW, &WS2_SPI_config, &WS2_SPI_context);
-    Cy_SCB_SPI_Enable(WS2_SPI_HW);
-    WS2_DMAConfigure();
-
-    WS_setRange(3, 0, ws2812_NUM_PIXELS_WS3 - 1, 0, 0, 0);
-    Cy_SCB_SPI_Init(WS3_SPI_HW, &WS3_SPI_config, &WS3_SPI_context);
-    Cy_SCB_SPI_Enable(WS3_SPI_HW);
-    WS3_DMAConfigure();
-
-    WS_setRange(4, 0, ws2812_NUM_PIXELS_WS4 - 1, 0, 0, 0);
-    Cy_SCB_SPI_Init(WS4_SPI_HW, &WS4_SPI_config, &WS4_SPI_context);
-    Cy_SCB_SPI_Enable(WS4_SPI_HW);
-    WS4_DMAConfigure();
-
-    WS_setRange(5, 0, ws2812_NUM_PIXELS_WS5 - 1, 0, 0, 0);
-    Cy_SCB_SPI_Init(WS5_SPI_HW, &WS5_SPI_config, &WS5_SPI_context);
-    Cy_SCB_SPI_Enable(WS5_SPI_HW);
-    WS5_DMAConfigure();
-
-    WS_DMATrigger(1);
-    WS_DMATrigger(2);
-    WS_DMATrigger(3);
-    WS_DMATrigger(4);
-    WS_DMATrigger(5);
+#if INCLUDE_WS1
+	WS1_frameBuffer[0] = 0x00;
+	/* Initialize all LEDs Off and update the DMA trigger to load */
+	WS_setRange(1, 0, ws2812_NUM_PIXELS_WS1 - 1, 0, 0, 0);
+	Cy_SCB_SPI_Init(WS1_SPI_HW, &WS1_SPI_config, &WS1_SPI_context);
+	Cy_SCB_SPI_Enable(WS1_SPI_HW);
+	WS1_DMAConfigure();
+	WS_DMATrigger(1);
+#endif
+#if INCLUDE_WS2
+	WS2_frameBuffer[0] = 0x00;
+	WS_setRange(2, 0, ws2812_NUM_PIXELS_WS2 - 1, 0, 0, 0);
+	Cy_SCB_SPI_Init(WS2_SPI_HW, &WS2_SPI_config, &WS2_SPI_context);
+	Cy_SCB_SPI_Enable(WS2_SPI_HW);
+	WS2_DMAConfigure();
+	WS_DMATrigger(2);
+#endif
+#if INCLUDE_WS3
+	WS3_frameBuffer[0] = 0x00;
+	WS_setRange(3, 0, ws2812_NUM_PIXELS_WS3 - 1, 0, 0, 0);
+	Cy_SCB_SPI_Init(WS3_SPI_HW, &WS3_SPI_config, &WS3_SPI_context);
+	Cy_SCB_SPI_Enable(WS3_SPI_HW);
+	WS3_DMAConfigure();
+	WS_DMATrigger(3);
+#endif
+#if INCLUDE_WS4
+	WS4_frameBuffer[0] = 0x00;
+	WS_setRange(4, 0, ws2812_NUM_PIXELS_WS4 - 1, 0, 0, 0);
+	Cy_SCB_SPI_Init(WS4_SPI_HW, &WS4_SPI_config, &WS4_SPI_context);
+	Cy_SCB_SPI_Enable(WS4_SPI_HW);
+	WS4_DMAConfigure();
+	WS_DMATrigger(4);
+#endif
+#if INCLUDE_WS5
+	WS5_frameBuffer[0] = 0x00;
+	WS_setRange(5, 0, ws2812_NUM_PIXELS_WS5 - 1, 0, 0, 0);
+	Cy_SCB_SPI_Init(WS5_SPI_HW, &WS5_SPI_config, &WS5_SPI_context);
+	Cy_SCB_SPI_Enable(WS5_SPI_HW);
+	WS5_DMAConfigure();
+	/* Delay 100ms */
+	vTaskDelay(pdMS_TO_TICKS(100));
+	WS_DMATrigger(5);
+#endif
 
     /* This queue handles messages sent to the queue to execute */
     ws2812QueueHandle = xQueueCreate(WS2812_QUEUE_SIZE, sizeof(ws2812_msg_t));
@@ -1186,11 +1158,21 @@ void ws2812Task(void *arg)
 			case ws2812_cmd_update:
 				if(!wsAutoUpdateState)
 				{
+#if INCLUDE_WS1
 					WS_DMATrigger(1);
+#endif
+#if INCLUDE_WS2
 					WS_DMATrigger(2);
+#endif
+#if INCLUDE_WS3
 					WS_DMATrigger(3);
+#endif
+#if INCLUDE_WS4
 					WS_DMATrigger(4);
+#endif
+#if INCLUDE_WS5
 					WS_DMATrigger(5);
+#endif
 				}
 				break;
 			case ws2812_cmd_autoUpdate:

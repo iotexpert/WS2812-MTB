@@ -67,6 +67,8 @@
 void ledTask(void *arg)
 {
 	(void)arg;
+	printf("Starting Blinking LED task\r\n");
+
 	while(1)
 	{
 		Cy_GPIO_Inv(red_PORT,red_PIN);
@@ -74,6 +76,16 @@ void ledTask(void *arg)
 	}
 }
 
+void ws2812LightShowTask(void *arg)
+{
+	(void)arg;
+	printf("Starting LightShow task\r\n");
+
+	while(1)
+	{
+		vTaskDelay(100);
+	}
+}
 
 
 int main(void)
@@ -82,9 +94,19 @@ int main(void)
     init_cycfg_all();
     __enable_irq();
 
-    xTaskCreate(ledTask,"LED Task",100,0,3,0);
-    xTaskCreate(uartTask,"UART Task",1024,0,3,0);
-    xTaskCreate(ws2812Task,"WS2812 Task",16*1024,0,3,0);
+    xTaskCreate(uartTask,"UART Task",2*1024,0,3,0);
+
+    if(xTaskCreate(ws2812Task,"WS2812 Task",32*1024,0,3,0) == pdFALSE)
+    {
+    	printf("ws2812 task unsuccessful");
+    }
+
+    if(xTaskCreate(ledTask,"LED Task",100,0,3,0) == pdFALSE)
+    {
+    	printf("LED blinking task unsuccessful");
+    }
+
+    xTaskCreate(ws2812LightShowTask,"WS2812 LightShow Task",1024,0,3,0);
 
     vTaskStartScheduler();
 }

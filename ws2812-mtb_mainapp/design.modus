@@ -20,7 +20,7 @@
             </Block>
         </Clocks>
         <DMAs>
-            <Block location="cpuss[0].dw0[0].chan[16]" alias="WS1_DMA" template="mxs40dma" version="1.0">
+            <Block location="cpuss[0].dw0[0].chan[16]" alias="WS0_DMA" template="mxs40dma" version="1.0">
                 <Param id="CRC_DATA_REVERSE" value="false"/>
                 <Param id="CRC_DATA_XOR" value="0"/>
                 <Param id="CRC_REMINDER_REVERSE" value="false"/>
@@ -89,7 +89,7 @@
                 <Param id="Y_DST_INCREMENT_3" value="1"/>
                 <Param id="inFlash" value="true"/>
             </Block>
-            <Block location="cpuss[0].dw0[0].chan[18]" alias="WS2_DMA" template="mxs40dma" version="1.0">
+            <Block location="cpuss[0].dw0[0].chan[18]" alias="WS1_DMA" template="mxs40dma" version="1.0">
                 <Param id="CRC_DATA_REVERSE" value="false"/>
                 <Param id="CRC_DATA_XOR" value="0"/>
                 <Param id="CRC_REMINDER_REVERSE" value="false"/>
@@ -158,7 +158,7 @@
                 <Param id="Y_DST_INCREMENT_3" value="1"/>
                 <Param id="inFlash" value="true"/>
             </Block>
-            <Block location="cpuss[0].dw0[0].chan[20]" alias="WS3_DMA" template="mxs40dma" version="1.0">
+            <Block location="cpuss[0].dw0[0].chan[20]" alias="WS2_DMA" template="mxs40dma" version="1.0">
                 <Param id="CRC_DATA_REVERSE" value="false"/>
                 <Param id="CRC_DATA_XOR" value="0"/>
                 <Param id="CRC_REMINDER_REVERSE" value="false"/>
@@ -227,7 +227,7 @@
                 <Param id="Y_DST_INCREMENT_3" value="1"/>
                 <Param id="inFlash" value="true"/>
             </Block>
-            <Block location="cpuss[0].dw0[0].chan[22]" alias="WS4_DMA" template="mxs40dma" version="1.0">
+            <Block location="cpuss[0].dw0[0].chan[22]" alias="WS3_DMA" template="mxs40dma" version="1.0">
                 <Param id="CRC_DATA_REVERSE" value="false"/>
                 <Param id="CRC_DATA_XOR" value="0"/>
                 <Param id="CRC_REMINDER_REVERSE" value="false"/>
@@ -296,7 +296,7 @@
                 <Param id="Y_DST_INCREMENT_3" value="1"/>
                 <Param id="inFlash" value="true"/>
             </Block>
-            <Block location="cpuss[0].dw0[0].chan[24]" alias="WS5_DMA" template="mxs40dma" version="1.0">
+            <Block location="cpuss[0].dw0[0].chan[24]" alias="WS4_DMA" template="mxs40dma" version="1.0">
                 <Param id="CRC_DATA_REVERSE" value="false"/>
                 <Param id="CRC_DATA_XOR" value="0"/>
                 <Param id="CRC_REMINDER_REVERSE" value="false"/>
@@ -367,7 +367,7 @@
             </Block>
         </DMAs>
         <Peripherals>
-            <Block location="scb[0]" alias="WS1_SPI" template="mxs40spi" version="1.0">
+            <Block location="scb[0]" alias="WS0_SPI" template="mxs40spi" version="1.0">
                 <Param id="ModeUser" value="CY_SCB_SPI_MASTER"/>
                 <Param id="SubModeUser" value="CY_SCB_SPI_MOTOROLA"/>
                 <Param id="SclkModeUser" value="CY_SCB_SPI_CPHA1_CPOL1"/>
@@ -403,7 +403,7 @@
                 <Param id="IntrSlaveBusError" value="false"/>
                 <Param id="inFlash" value="true"/>
             </Block>
-            <Block location="scb[1]" alias="WS2_SPI" template="mxs40spi" version="1.0">
+            <Block location="scb[1]" alias="WS1_SPI" template="mxs40spi" version="1.0">
                 <Param id="ModeUser" value="CY_SCB_SPI_MASTER"/>
                 <Param id="SubModeUser" value="CY_SCB_SPI_MOTOROLA"/>
                 <Param id="SclkModeUser" value="CY_SCB_SPI_CPHA1_CPOL1"/>
@@ -439,7 +439,7 @@
                 <Param id="IntrSlaveBusError" value="false"/>
                 <Param id="inFlash" value="true"/>
             </Block>
-            <Block location="scb[2]" alias="WS3_SPI" template="mxs40spi" version="1.0">
+            <Block location="scb[2]" alias="WS2_SPI" template="mxs40spi" version="1.0">
                 <Param id="ModeUser" value="CY_SCB_SPI_MASTER"/>
                 <Param id="SubModeUser" value="CY_SCB_SPI_MOTOROLA"/>
                 <Param id="SclkModeUser" value="CY_SCB_SPI_CPHA1_CPOL1"/>
@@ -475,7 +475,7 @@
                 <Param id="IntrSlaveBusError" value="false"/>
                 <Param id="inFlash" value="true"/>
             </Block>
-            <Block location="scb[3]" alias="WS4_SPI" template="mxs40spi" version="1.0">
+            <Block location="scb[3]" alias="WS3_SPI" template="mxs40spi" version="1.0">
                 <Param id="ModeUser" value="CY_SCB_SPI_MASTER"/>
                 <Param id="SubModeUser" value="CY_SCB_SPI_MOTOROLA"/>
                 <Param id="SclkModeUser" value="CY_SCB_SPI_CPHA1_CPOL1"/>
@@ -511,7 +511,7 @@
                 <Param id="IntrSlaveBusError" value="false"/>
                 <Param id="inFlash" value="true"/>
             </Block>
-            <Block location="scb[4]" alias="WS5_SPI" template="mxs40spi" version="1.0">
+            <Block location="scb[4]" alias="WS4_SPI" template="mxs40spi" version="1.0">
                 <Param id="ModeUser" value="CY_SCB_SPI_MASTER"/>
                 <Param id="SubModeUser" value="CY_SCB_SPI_MOTOROLA"/>
                 <Param id="SclkModeUser" value="CY_SCB_SPI_CPHA1_CPOL1"/>

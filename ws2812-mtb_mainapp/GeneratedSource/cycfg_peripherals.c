@@ -24,6 +24,30 @@
 
 #include "cycfg_peripherals.h"
 
+const cy_stc_scb_spi_config_t WS0_SPI_config = 
+{
+	.spiMode = CY_SCB_SPI_MASTER,
+	.subMode = CY_SCB_SPI_MOTOROLA,
+	.sclkMode = CY_SCB_SPI_CPHA1_CPOL1,
+	.oversample = 4,
+	.rxDataWidth = 8UL,
+	.txDataWidth = 8UL,
+	.enableMsbFirst = true,
+	.enableInputFilter = false,
+	.enableFreeRunSclk = false,
+	.enableMisoLateSample = true,
+	.enableTransferSeperation = false,
+	.ssPolarity = ((CY_SCB_SPI_ACTIVE_LOW << CY_SCB_SPI_SLAVE_SELECT0) | \
+                                         (CY_SCB_SPI_ACTIVE_LOW << CY_SCB_SPI_SLAVE_SELECT1) | \
+                                         (CY_SCB_SPI_ACTIVE_LOW << CY_SCB_SPI_SLAVE_SELECT2) | \
+                                         (CY_SCB_SPI_ACTIVE_LOW << CY_SCB_SPI_SLAVE_SELECT3)),
+	.enableWakeFromSleep = false,
+	.rxFifoTriggerLevel = 63UL,
+	.rxFifoIntEnableMask = 0UL,
+	.txFifoTriggerLevel = 63UL,
+	.txFifoIntEnableMask = 0UL,
+	.masterSlaveIntEnableMask = 0UL,
+};
 const cy_stc_scb_spi_config_t WS1_SPI_config = 
 {
 	.spiMode = CY_SCB_SPI_MASTER,
@@ -97,30 +121,6 @@ const cy_stc_scb_spi_config_t WS3_SPI_config =
 	.masterSlaveIntEnableMask = 0UL,
 };
 const cy_stc_scb_spi_config_t WS4_SPI_config = 
-{
-	.spiMode = CY_SCB_SPI_MASTER,
-	.subMode = CY_SCB_SPI_MOTOROLA,
-	.sclkMode = CY_SCB_SPI_CPHA1_CPOL1,
-	.oversample = 4,
-	.rxDataWidth = 8UL,
-	.txDataWidth = 8UL,
-	.enableMsbFirst = true,
-	.enableInputFilter = false,
-	.enableFreeRunSclk = false,
-	.enableMisoLateSample = true,
-	.enableTransferSeperation = false,
-	.ssPolarity = ((CY_SCB_SPI_ACTIVE_LOW << CY_SCB_SPI_SLAVE_SELECT0) | \
-                                         (CY_SCB_SPI_ACTIVE_LOW << CY_SCB_SPI_SLAVE_SELECT1) | \
-                                         (CY_SCB_SPI_ACTIVE_LOW << CY_SCB_SPI_SLAVE_SELECT2) | \
-                                         (CY_SCB_SPI_ACTIVE_LOW << CY_SCB_SPI_SLAVE_SELECT3)),
-	.enableWakeFromSleep = false,
-	.rxFifoTriggerLevel = 63UL,
-	.rxFifoIntEnableMask = 0UL,
-	.txFifoTriggerLevel = 63UL,
-	.txFifoIntEnableMask = 0UL,
-	.masterSlaveIntEnableMask = 0UL,
-};
-const cy_stc_scb_spi_config_t WS5_SPI_config = 
 {
 	.spiMode = CY_SCB_SPI_MASTER,
 	.subMode = CY_SCB_SPI_MOTOROLA,

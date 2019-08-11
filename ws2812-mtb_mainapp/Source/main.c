@@ -1,31 +1,19 @@
-/***************************************************************************//**
-* \file main.c
-* \version 1.0
-*
-* \brief
-* Minimal new application template for 150MHz PSoC 6 devices. Debug is enabled 
-* and platform clocks are set for high performance (144MHz CLK_FAST for CM4 
-* core and 72MHz CLK_SLOW for CM0+) but with a peripheral-friendly CLK_PERI 
-* frequency (72MHz).
-*
-********************************************************************************
-* \copyright
-* Copyright 2017-2019 Cypress Semiconductor Corporation
-* SPDX-License-Identifier: Apache-2.0
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*******************************************************************************/
+/** @source __main.c__
+**
+** __Code for the WS2812 Example Application_
+**
+** @author Copyright (C) June 15, 2019 __Alan Hawse__
+** @version __1.0__   __Gen 1__</replaceable>
+** @modified ____7/25/2019__Hassane El-Khoury__  __description of edit__</replaceable>
+** @@
+**
+********************************************************************/
 
+/* ==================================================================== */
+/* ========================== include files =========================== */
+/* ==================================================================== */
+/* Inclusion of system and local header files goes here */
+/* Header file includes */
 #include "cy_device_headers.h"
 #include "cycfg.h"
 #include <stdio.h>
@@ -33,6 +21,47 @@
 #include "task.h"
 #include "ws2812.h"
 #include "uartTask.h"
+
+/* ==================================================================== */
+/* ============================ constants ============================= */
+/* ==================================================================== */
+/* #define and enum statements go here */
+
+/* ==================================================================== */
+/* ======================== global variables ========================== */
+/* ==================================================================== */
+/* Global variables definitions go here */
+
+/* ==================================================================== */
+/* ============================== data ================================ */
+/* ==================================================================== */
+/* Definition of datatypes go here */
+
+
+/* ==================================================================== */
+/* ==================== function prototypes =========================== */
+/* ==================================================================== */
+/* Function prototypes for public (external) functions go here */
+
+
+
+/* ==================================================================== */
+/* ============================ functions ============================= */
+/* ==================================================================== */
+/*******************************************************************************
+* Function Name: void Task_Display (void *pvParameters)
+********************************************************************************
+* Summary:
+*  Task that processes the touch command received and the updates the display
+*  with the corresponding menu / text page
+*
+* Parameters:
+*  void *pvParameters : Task parameter defined during task creation (unused)
+*
+* Return:
+*  void
+*
+*******************************************************************************/
 
 
 void ledTask(void *arg)

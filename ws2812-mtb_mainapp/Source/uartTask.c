@@ -1,9 +1,19 @@
-/*
- * uartTask.c
- *
- *  Created on: Jun 16, 2019
- *      Author: arh
- */
+/** @source __uartTask.c__
+**
+** __Code for the WS2812 Example Application_
+**
+** @author Copyright (C) June 15, 2019 __Alan Hawse__
+** @version __1.0__   __Gen 1__</replaceable>
+** @modified ____7/25/2019__Hassane El-Khoury__  __description of edit__</replaceable>
+** @@
+**
+********************************************************************/
+
+/* ==================================================================== */
+/* ========================== include files =========================== */
+/* ==================================================================== */
+/* Inclusion of system and local header files goes here */
+/* Header file includes */
 
 #include <stdio.h>
 #include "ws2812.h"
@@ -13,6 +23,47 @@
 #include "cy_device_headers.h"
 #include "cycfg.h"
 #include "cy_pdl.h"
+
+/* ==================================================================== */
+/* ============================ constants ============================= */
+/* ==================================================================== */
+/* #define and enum statements go here */
+
+/* ==================================================================== */
+/* ======================== global variables ========================== */
+/* ==================================================================== */
+/* Global variables definitions go here */
+
+/* ==================================================================== */
+/* ============================== data ================================ */
+/* ==================================================================== */
+/* Definition of datatypes go here */
+
+
+/* ==================================================================== */
+/* ==================== function prototypes =========================== */
+/* ==================================================================== */
+/* Function prototypes for public (external) functions go here */
+
+
+
+/* ==================================================================== */
+/* ============================ functions ============================= */
+/* ==================================================================== */
+/*******************************************************************************
+* Function Name: void Task_Display (void *pvParameters)
+********************************************************************************
+* Summary:
+*  Task that processes the touch command received and the updates the display
+*  with the corresponding menu / text page
+*
+* Parameters:
+*  void *pvParameters : Task parameter defined during task creation (unused)
+*
+* Return:
+*  void
+*
+*******************************************************************************/
 
 cy_stc_scb_uart_context_t UART_STDIO_context;
 SemaphoreHandle_t UART_STDIO_SemaphoreHandle;
@@ -48,7 +99,7 @@ void uartTask(void *arg)
     setvbuf( stdin, NULL, _IONBF, 0 ); // Turn off Input buffering on STDIO
 	Cy_SCB_UART_Enable(UART_STDIO_HW);
 
-	printf("Starting UART Task\n");
+	printf("Starting UART Task\r\n");
 
 	for(;;)
 	{
@@ -60,68 +111,207 @@ void uartTask(void *arg)
 			switch(c)
 			{
 			case 'u':
-				printf("Enable auto DMA updating\n");
+				printf("Enable auto DMA updating\r\n");
 				ws2812_autoUpdate(true);
 				break;
 			case 'U':
-				printf("Disable auto DMA updating\n");
-
+				printf("Disable auto DMA updating\r\n");
 				ws2812_autoUpdate(false);
 				break;
 			case 't':
-				printf("Update LEDs\n");
-				ws2812_update();
+#if INCLUDE_WS1
+				ws2812_update(1);
+#endif
+#if INCLUDE_WS2
+				ws2812_update(2);
+#endif
+#if INCLUDE_WS3
+				ws2812_update(3);
+#endif
+#if INCLUDE_WS4
+				ws2812_update(4);
+#endif
+#if INCLUDE_WS5
+				ws2812_update(5);
+#endif
+				printf("Update LEDs\r\n");
 				break;
 			case 'r':
-				ws2812_setRGB(0,0xFF,0,0);
-				printf("Set LED0 Red\n");
+#if INCLUDE_WS1
+				ws2812_setRGB(1, 0,0xFF,0,0);
+#endif
+#if INCLUDE_WS2
+				ws2812_setRGB(2, 0,0xFF,0,0);
+#endif
+#if INCLUDE_WS3
+				ws2812_setRGB(3, 0,0xFF,0,0);
+#endif
+#if INCLUDE_WS4
+				ws2812_setRGB(4, 0,0xFF,0,0);
+#endif
+#if INCLUDE_WS5
+				ws2812_setRGB(5, 0,0xFF,0,0);
+#endif
+				printf("Set LED0 Red\r\n");
 				break;
 			case 'g':
-				ws2812_setRGB(0,0,0xFF,0);
-				printf("Set LED0 Green\n");
+#if INCLUDE_WS1
+				ws2812_setRGB(1, 0,0,0xFF,0);
+#endif
+#if INCLUDE_WS2
+				ws2812_setRGB(2, 0,0,0xFF,0);
+#endif
+#if INCLUDE_WS3
+				ws2812_setRGB(3, 0,0,0xFF,0);
+#endif
+#if INCLUDE_WS4
+				ws2812_setRGB(4, 0,0,0xFF,0);
+#endif
+#if INCLUDE_WS5
+				ws2812_setRGB(5, 0,0,0xFF,0);
+#endif
+				printf("Set LED0 Green\r\n");
 				break;
 			case 'O':
-				ws2812_setRange(0,ws2812_NUM_PIXELS-1,0,0,0);
-				printf("Turn off all LEDs\n");
+#if INCLUDE_WS1
+				ws2812_setRange(1, 0,ws2812_NUM_PIXELS_WS1-1,0,0,0);
+#endif
+#if INCLUDE_WS2
+				ws2812_setRange(2, 0,ws2812_NUM_PIXELS_WS2-1,0,0,0);
+#endif
+#if INCLUDE_WS3
+				ws2812_setRange(3, 0,ws2812_NUM_PIXELS_WS3-1,0,0,0);
+#endif
+#if INCLUDE_WS4
+				ws2812_setRange(4, 0,ws2812_NUM_PIXELS_WS4-1,0,0,0);
+#endif
+#if INCLUDE_WS5
+				ws2812_setRange(5, 0,ws2812_NUM_PIXELS_WS5-1,0,0,0);
+#endif
+				printf("Turn off all LEDs\r\n");
 				break;
 			case 'o':
-				ws2812_setRange(0,ws2812_NUM_PIXELS-1,0xFF,0xFF,0xFF);
-				printf("Turn on all LEDs\n");
+#if INCLUDE_WS1
+				ws2812_setRange(1, 0,ws2812_NUM_PIXELS_WS1-1,0xFF,0xFF,0xFF);
+#endif
+#if INCLUDE_WS2
+				ws2812_setRange(2, 0,ws2812_NUM_PIXELS_WS2-1,0xFF,0xFF,0xFF);
+#endif
+#if INCLUDE_WS3
+				ws2812_setRange(3, 0,ws2812_NUM_PIXELS_WS3-1,0xFF,0xFF,0xFF);
+#endif
+#if INCLUDE_WS4
+				ws2812_setRange(4, 0,ws2812_NUM_PIXELS_WS4-1,0xFF,0xFF,0xFF);
+#endif
+#if INCLUDE_WS5
+				ws2812_setRange(5, 0,ws2812_NUM_PIXELS_WS5-1,0xFF,0xFF,0xFF);
+#endif
+				printf("Turn on all LEDs\r\n");
 				break;
 			case 'b':
-				ws2812_setRGB(0,0,0,0xFF);
-				printf("Set LED0 Blue\n");
+#if INCLUDE_WS1
+				ws2812_setRGB(1, 0,0,0,0xFF);
+#endif
+#if INCLUDE_WS2
+				ws2812_setRGB(2, 0,0,0,0xFF);
+#endif
+#if INCLUDE_WS3
+				ws2812_setRGB(3, 0,0,0,0xFF);
+#endif
+#if INCLUDE_WS4
+				ws2812_setRGB(4, 0,0,0,0xFF);
+#endif
+#if INCLUDE_WS5
+				ws2812_setRGB(5, 0,0,0,0xFF);
+#endif
+				printf("Set LED0 Blue\r\n");
 				break;
 			case 'R':
-				ws2812_setRange(0,ws2812_NUM_PIXELS-1,0x80,0,0);
-				printf("Turn on all LEDs RED\n");
+#if INCLUDE_WS1
+				ws2812_setRange(1, 0,ws2812_NUM_PIXELS_WS1-1,0x80,0,0);
+#endif
+#if INCLUDE_WS2
+				ws2812_setRange(2, 0,ws2812_NUM_PIXELS_WS2-1,0x80,0,0);
+#endif
+#if INCLUDE_WS3
+				ws2812_setRange(3, 0,ws2812_NUM_PIXELS_WS3-1,0x80,0,0);
+#endif
+#if INCLUDE_WS4
+				ws2812_setRange(4, 0,ws2812_NUM_PIXELS_WS4-1,0x80,0,0);
+#endif
+#if INCLUDE_WS5
+				ws2812_setRange(5, 0,ws2812_NUM_PIXELS_WS5-1,0x80,0,0);
+#endif
+				printf("Turn on all LEDs RED\r\n");
 				break;
 			case 'G':
-				ws2812_setRange(0,ws2812_NUM_PIXELS-1,0,0x80,0);
-				printf("Turn on all LEDs Green\n");
+#if INCLUDE_WS1
+				ws2812_setRange(1, 0,ws2812_NUM_PIXELS_WS1-1,0,0x80,0);
+#endif
+#if INCLUDE_WS2
+				ws2812_setRange(2, 0,ws2812_NUM_PIXELS_WS2-1,0,0x80,0);
+#endif
+#if INCLUDE_WS3
+				ws2812_setRange(3, 0,ws2812_NUM_PIXELS_WS3-1,0,0x80,0);
+#endif
+#if INCLUDE_WS4
+				ws2812_setRange(4, 0,ws2812_NUM_PIXELS_WS4-1,0,0x80,0);
+#endif
+#if INCLUDE_WS5
+				ws2812_setRange(5, 0,ws2812_NUM_PIXELS_WS5-1,0,0x80,0);
+#endif
+				printf("Turn on all LEDs Green\r\n");
 				break;
 			case 'B':
-				ws2812_setRange(0,ws2812_NUM_PIXELS-1,0,0,0x80);
-				printf("Turn on all LEDs Blue\n");
+#if INCLUDE_WS1
+				ws2812_setRange(1, 0,ws2812_NUM_PIXELS_WS1-1,0,0,0x80);
+#endif
+#if INCLUDE_WS2
+				ws2812_setRange(2, 0,ws2812_NUM_PIXELS_WS2-1,0,0,0x80);
+#endif
+#if INCLUDE_WS3
+				ws2812_setRange(3, 0,ws2812_NUM_PIXELS_WS3-1,0,0,0x80);
+#endif
+#if INCLUDE_WS4
+				ws2812_setRange(4, 0,ws2812_NUM_PIXELS_WS4-1,0,0,0x80);
+#endif
+#if INCLUDE_WS5
+				ws2812_setRange(5, 0,ws2812_NUM_PIXELS_WS5-1,0,0,0x80);
+#endif
+				printf("Turn on all LEDs Blue\r\n");
 				break;
 			case 'a':
-				ws2812_initMixColorRGB();
-				printf("Turn on all LEDs RGB Pattern\n");
+#if INCLUDE_WS1
+				ws2812_initMixColorRGB(1);
+#endif
+#if INCLUDE_WS2
+				ws2812_initMixColorRGB(2);
+#endif
+#if INCLUDE_WS3
+				ws2812_initMixColorRGB(3);
+#endif
+#if INCLUDE_WS4
+				ws2812_initMixColorRGB(4);
+#endif
+#if INCLUDE_WS5
+				ws2812_initMixColorRGB(5);
+#endif
+				printf("Turn on all LEDs RGB Pattern\r\n");
 				break;
 			case '?':
-				printf("u\tEnable Auto Update of LEDs\n");
-				printf("U\tDisable Auto Update of LEDs\n");
-				printf("t\tTrigger the DMA\n");
-				printf("r\tSet the first pixel Red\n");
-				printf("g\tSet the first pixel Green\n");
-				printf("b\tSet the first pixel Blue\n");
-				printf("O\tTurn off all of the pixels\n");
-				printf("o\tSet the pixels to white full on\n");
-				printf("R\tSet all of the pixels to Red\n");
-				printf("G\tSet all of the pixels to Green\n");
-				printf("B\tSet all of the pixels to Blue\n");
-				printf("a\tSet pixels to repeating RGBRGB\n");
-				printf("?\tHelp\n");
+				printf("u\tEnable Auto Update of LEDs\r\n");
+				printf("U\tDisable Auto Update of LEDs\r\n");
+				printf("t\tTrigger the DMA\r\n");
+				printf("r\tSet the first pixel Red\r\n");
+				printf("g\tSet the first pixel Green\r\n");
+				printf("b\tSet the first pixel Blue\r\n");
+				printf("O\tTurn off all of the pixels\r\n");
+				printf("o\tSet the pixels to white full on\r\n");
+				printf("R\tSet all of the pixels to Red\r\n");
+				printf("G\tSet all of the pixels to Green\r\n");
+				printf("B\tSet all of the pixels to Blue\r\n");
+				printf("a\tSet pixels to repeating RGBRGB\r\n");
+				printf("?\tHelp\r\n");
 				break;
 			}
 		}

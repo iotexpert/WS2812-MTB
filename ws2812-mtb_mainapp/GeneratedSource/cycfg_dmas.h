@@ -32,20 +32,72 @@
 extern "C" {
 #endif
 
-#define WS_DMA_HW DW0
-#define WS_DMA_CHANNEL 16
-#define WS_DMA_IRQ cpuss_interrupts_dw0_16_IRQn
+#define WS1_DMA_HW DW0
+#define WS1_DMA_CHANNEL 16
+#define WS1_DMA_IRQ cpuss_interrupts_dw0_16_IRQn
+#define WS2_DMA_HW DW0
+#define WS2_DMA_CHANNEL 18
+#define WS2_DMA_IRQ cpuss_interrupts_dw0_18_IRQn
+#define WS3_DMA_HW DW0
+#define WS3_DMA_CHANNEL 20
+#define WS3_DMA_IRQ cpuss_interrupts_dw0_20_IRQn
+#define WS4_DMA_HW DW0
+#define WS4_DMA_CHANNEL 22
+#define WS4_DMA_IRQ cpuss_interrupts_dw0_22_IRQn
+#define WS5_DMA_HW DW0
+#define WS5_DMA_CHANNEL 24
+#define WS5_DMA_IRQ cpuss_interrupts_dw0_24_IRQn
 
-extern const cy_stc_dma_descriptor_config_t WS_DMA_Descriptor_0_config;
-extern const cy_stc_dma_descriptor_config_t WS_DMA_Descriptor_1_config;
-extern const cy_stc_dma_descriptor_config_t WS_DMA_Descriptor_2_config;
-extern const cy_stc_dma_descriptor_config_t WS_DMA_Descriptor_3_config;
-extern cy_stc_dma_descriptor_t WS_DMA_Descriptor_0;
-extern cy_stc_dma_descriptor_t WS_DMA_Descriptor_1;
-extern cy_stc_dma_descriptor_t WS_DMA_Descriptor_2;
-extern cy_stc_dma_descriptor_t WS_DMA_Descriptor_3;
-extern const cy_stc_dma_channel_config_t WS_DMA_channelConfig;
-extern const cy_stc_dma_crc_config_t WS_DMA_crcConfig;
+extern const cy_stc_dma_descriptor_config_t WS1_DMA_Descriptor_0_config;
+extern const cy_stc_dma_descriptor_config_t WS1_DMA_Descriptor_1_config;
+extern const cy_stc_dma_descriptor_config_t WS1_DMA_Descriptor_2_config;
+extern const cy_stc_dma_descriptor_config_t WS1_DMA_Descriptor_3_config;
+extern cy_stc_dma_descriptor_t WS1_DMA_Descriptor_0;
+extern cy_stc_dma_descriptor_t WS1_DMA_Descriptor_1;
+extern cy_stc_dma_descriptor_t WS1_DMA_Descriptor_2;
+extern cy_stc_dma_descriptor_t WS1_DMA_Descriptor_3;
+extern const cy_stc_dma_channel_config_t WS1_DMA_channelConfig;
+extern const cy_stc_dma_crc_config_t WS1_DMA_crcConfig;
+extern const cy_stc_dma_descriptor_config_t WS2_DMA_Descriptor_0_config;
+extern const cy_stc_dma_descriptor_config_t WS2_DMA_Descriptor_1_config;
+extern const cy_stc_dma_descriptor_config_t WS2_DMA_Descriptor_2_config;
+extern const cy_stc_dma_descriptor_config_t WS2_DMA_Descriptor_3_config;
+extern cy_stc_dma_descriptor_t WS2_DMA_Descriptor_0;
+extern cy_stc_dma_descriptor_t WS2_DMA_Descriptor_1;
+extern cy_stc_dma_descriptor_t WS2_DMA_Descriptor_2;
+extern cy_stc_dma_descriptor_t WS2_DMA_Descriptor_3;
+extern const cy_stc_dma_channel_config_t WS2_DMA_channelConfig;
+extern const cy_stc_dma_crc_config_t WS2_DMA_crcConfig;
+extern const cy_stc_dma_descriptor_config_t WS3_DMA_Descriptor_0_config;
+extern const cy_stc_dma_descriptor_config_t WS3_DMA_Descriptor_1_config;
+extern const cy_stc_dma_descriptor_config_t WS3_DMA_Descriptor_2_config;
+extern const cy_stc_dma_descriptor_config_t WS3_DMA_Descriptor_3_config;
+extern cy_stc_dma_descriptor_t WS3_DMA_Descriptor_0;
+extern cy_stc_dma_descriptor_t WS3_DMA_Descriptor_1;
+extern cy_stc_dma_descriptor_t WS3_DMA_Descriptor_2;
+extern cy_stc_dma_descriptor_t WS3_DMA_Descriptor_3;
+extern const cy_stc_dma_channel_config_t WS3_DMA_channelConfig;
+extern const cy_stc_dma_crc_config_t WS3_DMA_crcConfig;
+extern const cy_stc_dma_descriptor_config_t WS4_DMA_Descriptor_0_config;
+extern const cy_stc_dma_descriptor_config_t WS4_DMA_Descriptor_1_config;
+extern const cy_stc_dma_descriptor_config_t WS4_DMA_Descriptor_2_config;
+extern const cy_stc_dma_descriptor_config_t WS4_DMA_Descriptor_3_config;
+extern cy_stc_dma_descriptor_t WS4_DMA_Descriptor_0;
+extern cy_stc_dma_descriptor_t WS4_DMA_Descriptor_1;
+extern cy_stc_dma_descriptor_t WS4_DMA_Descriptor_2;
+extern cy_stc_dma_descriptor_t WS4_DMA_Descriptor_3;
+extern const cy_stc_dma_channel_config_t WS4_DMA_channelConfig;
+extern const cy_stc_dma_crc_config_t WS4_DMA_crcConfig;
+extern const cy_stc_dma_descriptor_config_t WS5_DMA_Descriptor_0_config;
+extern const cy_stc_dma_descriptor_config_t WS5_DMA_Descriptor_1_config;
+extern const cy_stc_dma_descriptor_config_t WS5_DMA_Descriptor_2_config;
+extern const cy_stc_dma_descriptor_config_t WS5_DMA_Descriptor_3_config;
+extern cy_stc_dma_descriptor_t WS5_DMA_Descriptor_0;
+extern cy_stc_dma_descriptor_t WS5_DMA_Descriptor_1;
+extern cy_stc_dma_descriptor_t WS5_DMA_Descriptor_2;
+extern cy_stc_dma_descriptor_t WS5_DMA_Descriptor_3;
+extern const cy_stc_dma_channel_config_t WS5_DMA_channelConfig;
+extern const cy_stc_dma_crc_config_t WS5_DMA_crcConfig;
 
 
 #if defined(__cplusplus)

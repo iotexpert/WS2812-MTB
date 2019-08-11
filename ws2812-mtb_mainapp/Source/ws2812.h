@@ -12,7 +12,27 @@
 #include "FreeRTOS.h"
 #include "queue.h"
 
-#define ws2812_NUM_PIXELS (144)
+#define INCLUDE_WS1				(0UL)
+#define INCLUDE_WS2				(0UL)
+#define INCLUDE_WS3				(0UL)
+#define INCLUDE_WS4				(0UL)
+#define INCLUDE_WS5				(1UL)
+
+#if INCLUDE_WS1
+#define ws2812_NUM_PIXELS_WS1 (3)
+#endif
+#if INCLUDE_WS2
+#define ws2812_NUM_PIXELS_WS2 (3)
+#endif
+#if INCLUDE_WS3
+#define ws2812_NUM_PIXELS_WS3 (3)
+#endif
+#if INCLUDE_WS4
+#define ws2812_NUM_PIXELS_WS4 (3)
+#endif
+#if INCLUDE_WS5
+#define ws2812_NUM_PIXELS_WS5 (24)
+#endif
 
 extern QueueHandle_t ws2812QueueHandle;
 
@@ -26,21 +46,21 @@ typedef enum {
 }ws2812_cmd_t;
 
 typedef struct {
-	ws2812_cmd_t cmd;
-	uint32_t data;
-	uint8_t red;
-	uint8_t green;
-	uint8_t blue;
-
+	ws2812_cmd_t cmd;				/* Command from ws2812_cmd_t enum */
+	uint8_t stringNumber;			/* String Number = 1, 2, 3, 4, or 5 */
+	uint32_t data;					/**/
+	uint8_t red;					/**/
+	uint8_t green;					/**/
+	uint8_t blue;					/**/
 } ws2812_msg_t;
 
 extern
 
-void ws2812_update(void);
+void ws2812_update(uint8_t stringNumber);
 void ws2812_autoUpdate(bool option);
-void ws2812_setRGB(int led,uint8_t red, uint8_t green, uint8_t blue);
-void ws2812_setRange(int start, int end, uint8_t red,uint8_t green ,uint8_t blue);
-void ws2812_initMixColorRGB(void);
+void ws2812_setRGB(uint8_t stringNumber, uint32_t led, uint8_t red, uint8_t green, uint8_t blue);
+void ws2812_setRange(uint8_t stringNumber, uint32_t start, uint32_t end, uint8_t red, uint8_t green, uint8_t blue);
+void ws2812_initMixColorRGB(uint8_t stringNumber);
 
 void ws2812Task(void *arg);
 

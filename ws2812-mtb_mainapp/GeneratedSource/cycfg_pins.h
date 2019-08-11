@@ -42,62 +42,63 @@ extern "C" {
 	#define ioss_0_port_0_pin_2_HSIOM HSIOM_SEL_GPIO
 #endif
 #define ioss_0_port_0_pin_2_IRQ ioss_interrupts_gpio_0_IRQn
-#define ioss_0_port_0_pin_3_PORT GPIO_PRT0
-#define ioss_0_port_0_pin_3_PIN 3U
-#define ioss_0_port_0_pin_3_NUM 3U
-#define ioss_0_port_0_pin_3_DRIVEMODE CY_GPIO_DM_OD_DRIVESLOW
-#define ioss_0_port_0_pin_3_INIT_DRIVESTATE 1
-#ifndef ioss_0_port_0_pin_3_HSIOM
-	#define ioss_0_port_0_pin_3_HSIOM HSIOM_SEL_GPIO
+#define ioss_0_port_10_pin_0_PORT GPIO_PRT10
+#define ioss_0_port_10_pin_0_PIN 0U
+#define ioss_0_port_10_pin_0_NUM 0U
+#define ioss_0_port_10_pin_0_DRIVEMODE CY_GPIO_DM_STRONG_IN_OFF
+#define ioss_0_port_10_pin_0_INIT_DRIVESTATE 1
+#ifndef ioss_0_port_10_pin_0_HSIOM
+	#define ioss_0_port_10_pin_0_HSIOM HSIOM_SEL_GPIO
 #endif
-#define ioss_0_port_0_pin_3_IRQ ioss_interrupts_gpio_0_IRQn
-#define ioss_0_port_0_pin_4_PORT GPIO_PRT0
-#define ioss_0_port_0_pin_4_PIN 4U
-#define ioss_0_port_0_pin_4_NUM 4U
-#define ioss_0_port_0_pin_4_DRIVEMODE CY_GPIO_DM_HIGHZ
-#define ioss_0_port_0_pin_4_INIT_DRIVESTATE 1
-#ifndef ioss_0_port_0_pin_4_HSIOM
-	#define ioss_0_port_0_pin_4_HSIOM HSIOM_SEL_GPIO
+#define ioss_0_port_10_pin_0_IRQ ioss_interrupts_gpio_10_IRQn
+#define ioss_0_port_12_pin_0_PORT GPIO_PRT12
+#define ioss_0_port_12_pin_0_PIN 0U
+#define ioss_0_port_12_pin_0_NUM 0U
+#define ioss_0_port_12_pin_0_DRIVEMODE CY_GPIO_DM_STRONG_IN_OFF
+#define ioss_0_port_12_pin_0_INIT_DRIVESTATE 1
+#ifndef ioss_0_port_12_pin_0_HSIOM
+	#define ioss_0_port_12_pin_0_HSIOM HSIOM_SEL_GPIO
 #endif
-#define ioss_0_port_0_pin_4_IRQ ioss_interrupts_gpio_0_IRQn
-#define green_PORT GPIO_PRT0
-#define green_PIN 5U
-#define green_NUM 5U
-#define green_DRIVEMODE CY_GPIO_DM_STRONG_IN_OFF
-#define green_INIT_DRIVESTATE 1
-#ifndef ioss_0_port_0_pin_5_HSIOM
-	#define ioss_0_port_0_pin_5_HSIOM HSIOM_SEL_GPIO
-#endif
-#define green_HSIOM ioss_0_port_0_pin_5_HSIOM
-#define green_IRQ ioss_interrupts_gpio_0_IRQn
-#define red_PORT GPIO_PRT1
-#define red_PIN 1U
-#define red_NUM 1U
+#define ioss_0_port_12_pin_0_IRQ ioss_interrupts_gpio_12_IRQn
+#define red_PORT GPIO_PRT13
+#define red_PIN 7U
+#define red_NUM 7U
 #define red_DRIVEMODE CY_GPIO_DM_STRONG
 #define red_INIT_DRIVESTATE 1
-#ifndef ioss_0_port_1_pin_1_HSIOM
-	#define ioss_0_port_1_pin_1_HSIOM HSIOM_SEL_GPIO
+#ifndef ioss_0_port_13_pin_7_HSIOM
+	#define ioss_0_port_13_pin_7_HSIOM HSIOM_SEL_GPIO
 #endif
-#define red_HSIOM ioss_0_port_1_pin_1_HSIOM
-#define red_IRQ ioss_interrupts_gpio_1_IRQn
-#define ioss_0_port_5_pin_0_PORT GPIO_PRT5
-#define ioss_0_port_5_pin_0_PIN 0U
-#define ioss_0_port_5_pin_0_NUM 0U
-#define ioss_0_port_5_pin_0_DRIVEMODE CY_GPIO_DM_HIGHZ
-#define ioss_0_port_5_pin_0_INIT_DRIVESTATE 1
+#define red_HSIOM ioss_0_port_13_pin_7_HSIOM
+#define red_IRQ ioss_interrupts_gpio_13_IRQn
+#define UART_RX_PORT GPIO_PRT5
+#define UART_RX_PIN 0U
+#define UART_RX_NUM 0U
+#define UART_RX_DRIVEMODE CY_GPIO_DM_HIGHZ
+#define UART_RX_INIT_DRIVESTATE 1
 #ifndef ioss_0_port_5_pin_0_HSIOM
 	#define ioss_0_port_5_pin_0_HSIOM HSIOM_SEL_GPIO
 #endif
-#define ioss_0_port_5_pin_0_IRQ ioss_interrupts_gpio_5_IRQn
-#define ioss_0_port_5_pin_1_PORT GPIO_PRT5
-#define ioss_0_port_5_pin_1_PIN 1U
-#define ioss_0_port_5_pin_1_NUM 1U
-#define ioss_0_port_5_pin_1_DRIVEMODE CY_GPIO_DM_STRONG_IN_OFF
-#define ioss_0_port_5_pin_1_INIT_DRIVESTATE 1
+#define UART_RX_HSIOM ioss_0_port_5_pin_0_HSIOM
+#define UART_RX_IRQ ioss_interrupts_gpio_5_IRQn
+#define UART_TX_PORT GPIO_PRT5
+#define UART_TX_PIN 1U
+#define UART_TX_NUM 1U
+#define UART_TX_DRIVEMODE CY_GPIO_DM_STRONG_IN_OFF
+#define UART_TX_INIT_DRIVESTATE 1
 #ifndef ioss_0_port_5_pin_1_HSIOM
 	#define ioss_0_port_5_pin_1_HSIOM HSIOM_SEL_GPIO
 #endif
-#define ioss_0_port_5_pin_1_IRQ ioss_interrupts_gpio_5_IRQn
+#define UART_TX_HSIOM ioss_0_port_5_pin_1_HSIOM
+#define UART_TX_IRQ ioss_interrupts_gpio_5_IRQn
+#define ioss_0_port_6_pin_0_PORT GPIO_PRT6
+#define ioss_0_port_6_pin_0_PIN 0U
+#define ioss_0_port_6_pin_0_NUM 0U
+#define ioss_0_port_6_pin_0_DRIVEMODE CY_GPIO_DM_STRONG_IN_OFF
+#define ioss_0_port_6_pin_0_INIT_DRIVESTATE 1
+#ifndef ioss_0_port_6_pin_0_HSIOM
+	#define ioss_0_port_6_pin_0_HSIOM HSIOM_SEL_GPIO
+#endif
+#define ioss_0_port_6_pin_0_IRQ ioss_interrupts_gpio_6_IRQn
 #define SWO_PORT GPIO_PRT6
 #define SWO_PIN 4U
 #define SWO_NUM 4U
@@ -128,17 +129,37 @@ extern "C" {
 #endif
 #define SWCLK_HSIOM ioss_0_port_6_pin_7_HSIOM
 #define SWCLK_IRQ ioss_interrupts_gpio_6_IRQn
+#define ioss_0_port_8_pin_0_PORT GPIO_PRT8
+#define ioss_0_port_8_pin_0_PIN 0U
+#define ioss_0_port_8_pin_0_NUM 0U
+#define ioss_0_port_8_pin_0_DRIVEMODE CY_GPIO_DM_STRONG_IN_OFF
+#define ioss_0_port_8_pin_0_INIT_DRIVESTATE 0
+#ifndef ioss_0_port_8_pin_0_HSIOM
+	#define ioss_0_port_8_pin_0_HSIOM HSIOM_SEL_GPIO
+#endif
+#define ioss_0_port_8_pin_0_IRQ ioss_interrupts_gpio_8_IRQn
+#define ioss_0_port_9_pin_0_PORT GPIO_PRT9
+#define ioss_0_port_9_pin_0_PIN 0U
+#define ioss_0_port_9_pin_0_NUM 0U
+#define ioss_0_port_9_pin_0_DRIVEMODE CY_GPIO_DM_STRONG_IN_OFF
+#define ioss_0_port_9_pin_0_INIT_DRIVESTATE 1
+#ifndef ioss_0_port_9_pin_0_HSIOM
+	#define ioss_0_port_9_pin_0_HSIOM HSIOM_SEL_GPIO
+#endif
+#define ioss_0_port_9_pin_0_IRQ ioss_interrupts_gpio_9_IRQn
 
 extern const cy_stc_gpio_pin_config_t ioss_0_port_0_pin_2_config;
-extern const cy_stc_gpio_pin_config_t ioss_0_port_0_pin_3_config;
-extern const cy_stc_gpio_pin_config_t ioss_0_port_0_pin_4_config;
-extern const cy_stc_gpio_pin_config_t green_config;
+extern const cy_stc_gpio_pin_config_t ioss_0_port_10_pin_0_config;
+extern const cy_stc_gpio_pin_config_t ioss_0_port_12_pin_0_config;
 extern const cy_stc_gpio_pin_config_t red_config;
-extern const cy_stc_gpio_pin_config_t ioss_0_port_5_pin_0_config;
-extern const cy_stc_gpio_pin_config_t ioss_0_port_5_pin_1_config;
+extern const cy_stc_gpio_pin_config_t UART_RX_config;
+extern const cy_stc_gpio_pin_config_t UART_TX_config;
+extern const cy_stc_gpio_pin_config_t ioss_0_port_6_pin_0_config;
 extern const cy_stc_gpio_pin_config_t SWO_config;
 extern const cy_stc_gpio_pin_config_t SWDIO_config;
 extern const cy_stc_gpio_pin_config_t SWCLK_config;
+extern const cy_stc_gpio_pin_config_t ioss_0_port_8_pin_0_config;
+extern const cy_stc_gpio_pin_config_t ioss_0_port_9_pin_0_config;
 
 void init_cycfg_pins(void);
 

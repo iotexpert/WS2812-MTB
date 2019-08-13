@@ -670,38 +670,6 @@ void WS_setRange(uint8_t stringNumber, uint32_t start, uint32_t end, uint8_t red
 }
 
 /*******************************************************************************
-* Function Name: WS_initMixColorRGB
-********************************************************************************
-* Summary:
-*  Function This function  Initializes the RGB frame buffer to RGBRGBRGB...RGB
-*
-* Parameters:
-*  stringNumbner: The string number to address
-*
-* Return:
-*  void
-*
-*******************************************************************************/
-void WS_initMixColorRGB(uint8_t stringNumber)
-{
-    for(uint32_t i = 0; i < channelConfig[stringNumber].totalLeds; i++)
-    {
-        switch(i%3)
-        {
-            case 0:
-                WS_setRGB(stringNumber, i, 0x80, 0x00, 0x00); // red
-                break;
-            case 1:
-                WS_setRGB(stringNumber, i, 0x00, 0x80, 0x00); // green
-                break;
-            case 2:
-                WS_setRGB(stringNumber, i, 0x00, 0x00, 0x80); // blue
-                break;
-        }
-    }
-}
-
-/*******************************************************************************
 * Function Name: ws2812Task
 ********************************************************************************
 * Summary:
@@ -1038,6 +1006,38 @@ void ws2812_initMixColorRGB(uint8_t stringNumber)
 	{
 		printf("ws2812QueueHandle does not exist\r\n");
 	}
+}
+
+/*******************************************************************************
+* Function Name: WS_initMixColorRGB
+********************************************************************************
+* Summary:
+*  Function This function  Initializes the RGB frame buffer to RGBRGBRGB...RGB
+*
+* Parameters:
+*  stringNumbner: The string number to address
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+void WS_initMixColorRGB(uint8_t stringNumber)
+{
+    for(uint32_t i = 0; i < channelConfig[stringNumber].totalLeds; i++)
+    {
+        switch(i%3)
+        {
+            case 0:
+                WS_setRGB(stringNumber, i, 0x80, 0x00, 0x00); // red
+                break;
+            case 1:
+                WS_setRGB(stringNumber, i, 0x00, 0x80, 0x00); // green
+                break;
+            case 2:
+                WS_setRGB(stringNumber, i, 0x00, 0x00, 0x80); // blue
+                break;
+        }
+    }
 }
 
 /*******************************************************************************

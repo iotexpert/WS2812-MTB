@@ -161,6 +161,40 @@ typedef struct {
 	CySCB_Type *scbHW;
 }channelConfig_t;
 
+/* Define the enum for the theme and LED light show control */
+typedef enum {
+	themeChristmas,
+	themeFourthJuly,
+	themeNewYear,
+	themeHalloween,
+}themeLight_t;
+
+/* Define the enum for what type of animation to use */
+typedef enum {
+	animationChaseSingle,
+	animationChaseTail,
+	animationOnOff,
+	animationRainbow,
+	animationAlternate,
+	animationBlend,
+	animationRoundRobin,
+}animation_t;
+
+/* Color Union for better access to color elements */
+typedef union {
+    uint8_t byteColor[4];
+    uint32_t RGB;
+} colorUnion_t;
+
+/* Define the struct for the Theme being loaded */
+typedef struct {
+	themeLight_t themeLight;
+	uint32_t themeColor[4];
+	animation_t themeAnimation;
+	uint8_t themeChannelOrder[ws2812_NUMBER_OF_CHANNELS];
+	uint32_t themeDelay;
+}themeParameters_t;
+
 /* Declare the channel configuration array */
 extern channelConfig_t channelConfig[ws2812_NUMBER_OF_CHANNELS];
 

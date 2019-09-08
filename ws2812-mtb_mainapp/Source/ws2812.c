@@ -481,12 +481,17 @@ void configure_LedChannels(void)
 				channelConfig[i].minY = 0;
 				channelConfig[i].maxY = channelConfig[i].rows - 1;
 			}
+			/* Define the buffer length to hold the data for the string of LEDs */
 			channelConfig[i].frameBufferLength = (channelConfig[i].totalLeds * WS_BYTES_PER_PIXEL + WS_ZOFFSET);
+			/* Allocate the data to the frame buffer then set the values to 0 */
 			channelConfig[i].frameBuffer = malloc(channelConfig[i].frameBufferLength * sizeof(uint8_t));
 			if (!channelConfig[i].frameBuffer) printf("Error creating frame buffer %d\r\n", i);
 			memset(channelConfig[i].frameBuffer, 0, (channelConfig[i].frameBufferLength * sizeof(uint8_t)));
+			/* Calculate how many descriptors we need based on the number of LEDs per string */
 			channelConfig[i].numberDmaDescriptors = (sizeof(channelConfig[i].frameBuffer) / 256 + 1);
+			/* Allocate the size to the DMA descriptor array */
 			channelConfig[i].dmaDescriptors = malloc((channelConfig[i].numberDmaDescriptors) * sizeof(cy_stc_dma_descriptor_t));
+			/* Allocte the size of x, y array for the rows and columns of the string used */
 			#if(ws2812_MEMORY_TYPE == ws2812_MEMORY_RGB)
 			channelConfig[i].ledArray = malloc(channelConfig[i].rows * sizeof(uint32_t));
 			memset(channelConfig[i].ledArray, 0, (channelConfig[i].rows * sizeof(uint32_t)));
@@ -1353,15 +1358,11 @@ uint32_t ws2812_RgbBlend(uint32_t fromColor, uint32_t toColor, uint32_t pct)
 *******************************************************************************/
 void ws2812CallbackFunction( TimerHandle_t xTimer )
 {
-//	for(uint8_t i = 0; i < ws2812_NUMBER_OF_CHANNELS; i++)
-//	{
-//		if((Cy_DMA_Channel_GetStatus(channelConfig[i].dmaHW, channelConfig[i].dmaChannel) & CY_DMA_INTR_CAUSE_COMPLETION))
-//		{
-//			WS_DMATrigger(i);
-//		}
-//	}
-	if((Cy_DMA_Channel_GetStatus(WS4_DMA_HW,WS4_DMA_CHANNEL) & CY_DMA_INTR_CAUSE_COMPLETION))
-	    {
-	        WS_DMATrigger(0);
-	    }
+	for(uint8_t i = 0; i < ws2812_NUMBER_OF_CHANNELS; i++)
+	{
+		if((Cy_DMA_Channel_GetStatus(channelConfig[i].dmaHW, channelConfig[i].dmaChannel) & CY_DMA_INTR_CAUSE_COMPLETION))
+		{
+			WS_DMATrigger(i);
+		}
+	}
 }

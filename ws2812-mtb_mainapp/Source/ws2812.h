@@ -16,7 +16,7 @@
 #define ws2812_NUM_PIXELS_WS2 (3)
 #define ws2812_NUM_PIXELS_WS3 (3)
 #define ws2812_NUM_PIXELS_WS4 (3)
-#define ws2812_NUM_PIXELS_WS5 (3)
+#define ws2812_NUM_PIXELS_WS5 (24)
 
 extern QueueHandle_t ws2812QueueHandle;
 

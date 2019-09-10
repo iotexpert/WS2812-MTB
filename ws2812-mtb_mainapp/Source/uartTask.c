@@ -120,10 +120,10 @@ void uartTask(void *arg)
 				break;
 			case 't':
 				printf("Update LEDs\r\n");
-				ws2812_update(1);
-				ws2812_update(2);
-				ws2812_update(3);
-				ws2812_update(4);
+				//ws2812_update(1);
+				//ws2812_update(2);
+				//ws2812_update(3);
+				//ws2812_update(4);
 				ws2812_update(5);
 				break;
 			case 'r':
@@ -144,18 +144,18 @@ void uartTask(void *arg)
 				break;
 			case 'O':
 				ws2812_setRange(1, 0,ws2812_NUM_PIXELS_WS1-1,0,0,0);
-				ws2812_setRange(2, 0,ws2812_NUM_PIXELS_WS1-1,0,0,0);
-				ws2812_setRange(3, 0,ws2812_NUM_PIXELS_WS1-1,0,0,0);
-				ws2812_setRange(4, 0,ws2812_NUM_PIXELS_WS1-1,0,0,0);
-				ws2812_setRange(5, 0,ws2812_NUM_PIXELS_WS1-1,0,0,0);
+				ws2812_setRange(2, 0,ws2812_NUM_PIXELS_WS2-1,0,0,0);
+				ws2812_setRange(3, 0,ws2812_NUM_PIXELS_WS3-1,0,0,0);
+				ws2812_setRange(4, 0,ws2812_NUM_PIXELS_WS4-1,0,0,0);
+				ws2812_setRange(5, 0,ws2812_NUM_PIXELS_WS5-1,0,0,0);
 				printf("Turn off all LEDs\r\n");
 				break;
 			case 'o':
 				ws2812_setRange(1, 0,ws2812_NUM_PIXELS_WS1-1,0xFF,0xFF,0xFF);
-				ws2812_setRange(2, 0,ws2812_NUM_PIXELS_WS1-1,0xFF,0xFF,0xFF);
-				ws2812_setRange(3, 0,ws2812_NUM_PIXELS_WS1-1,0xFF,0xFF,0xFF);
-				ws2812_setRange(4, 0,ws2812_NUM_PIXELS_WS1-1,0xFF,0xFF,0xFF);
-				ws2812_setRange(5, 0,ws2812_NUM_PIXELS_WS1-1,0xFF,0xFF,0xFF);
+				ws2812_setRange(2, 0,ws2812_NUM_PIXELS_WS2-1,0xFF,0xFF,0xFF);
+				ws2812_setRange(3, 0,ws2812_NUM_PIXELS_WS3-1,0xFF,0xFF,0xFF);
+				ws2812_setRange(4, 0,ws2812_NUM_PIXELS_WS4-1,0xFF,0xFF,0xFF);
+				ws2812_setRange(5, 0,ws2812_NUM_PIXELS_WS5-1,0xFF,0xFF,0xFF);
 				printf("Turn on all LEDs\r\n");
 				break;
 			case 'b':
@@ -168,26 +168,26 @@ void uartTask(void *arg)
 				break;
 			case 'R':
 				ws2812_setRange(1, 0,ws2812_NUM_PIXELS_WS1-1,0x80,0,0);
-				ws2812_setRange(2, 0,ws2812_NUM_PIXELS_WS1-1,0x80,0,0);
-				ws2812_setRange(3, 0,ws2812_NUM_PIXELS_WS1-1,0x80,0,0);
-				ws2812_setRange(4, 0,ws2812_NUM_PIXELS_WS1-1,0x80,0,0);
-				ws2812_setRange(5, 0,ws2812_NUM_PIXELS_WS1-1,0x80,0,0);
+				ws2812_setRange(2, 0,ws2812_NUM_PIXELS_WS2-1,0x80,0,0);
+				ws2812_setRange(3, 0,ws2812_NUM_PIXELS_WS3-1,0x80,0,0);
+				ws2812_setRange(4, 0,ws2812_NUM_PIXELS_WS4-1,0x80,0,0);
+				ws2812_setRange(5, 0,ws2812_NUM_PIXELS_WS5-1,0x80,0,0);
 				printf("Turn on all LEDs RED\r\n");
 				break;
 			case 'G':
 				ws2812_setRange(1, 0,ws2812_NUM_PIXELS_WS1-1,0,0x80,0);
-				ws2812_setRange(2, 0,ws2812_NUM_PIXELS_WS1-1,0,0x80,0);
-				ws2812_setRange(3, 0,ws2812_NUM_PIXELS_WS1-1,0,0x80,0);
-				ws2812_setRange(4, 0,ws2812_NUM_PIXELS_WS1-1,0,0x80,0);
-				ws2812_setRange(5, 0,ws2812_NUM_PIXELS_WS1-1,0,0x80,0);
+				ws2812_setRange(2, 0,ws2812_NUM_PIXELS_WS2-1,0,0x80,0);
+				ws2812_setRange(3, 0,ws2812_NUM_PIXELS_WS3-1,0,0x80,0);
+				ws2812_setRange(4, 0,ws2812_NUM_PIXELS_WS4-1,0,0x80,0);
+				ws2812_setRange(5, 0,ws2812_NUM_PIXELS_WS5-1,0,0x80,0);
 				printf("Turn on all LEDs Green\r\n");
 				break;
 			case 'B':
 				ws2812_setRange(1, 0,ws2812_NUM_PIXELS_WS1-1,0,0,0x80);
-				ws2812_setRange(2, 0,ws2812_NUM_PIXELS_WS1-1,0,0,0x80);
-				ws2812_setRange(3, 0,ws2812_NUM_PIXELS_WS1-1,0,0,0x80);
-				ws2812_setRange(4, 0,ws2812_NUM_PIXELS_WS1-1,0,0,0x80);
-				ws2812_setRange(5, 0,ws2812_NUM_PIXELS_WS1-1,0,0,0x80);
+				ws2812_setRange(2, 0,ws2812_NUM_PIXELS_WS2-1,0,0,0x80);
+				ws2812_setRange(3, 0,ws2812_NUM_PIXELS_WS3-1,0,0,0x80);
+				ws2812_setRange(4, 0,ws2812_NUM_PIXELS_WS4-1,0,0,0x80);
+				ws2812_setRange(5, 0,ws2812_NUM_PIXELS_WS5-1,0,0,0x80);
 				printf("Turn on all LEDs Blue\r\n");
 				break;
 			case 'a':

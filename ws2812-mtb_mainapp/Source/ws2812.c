@@ -376,28 +376,29 @@ void configure_LedChannels(void)
 {
 	/* I copies this structure from the PSoC Creator Component configuration
 		    	in generated source */
-	    const cy_stc_dma_descriptor_config_t DMA_Descriptors_config =
-	    {
-	    .retrigger       = CY_DMA_RETRIG_IM,
-	    .interruptType   = CY_DMA_DESCR_CHAIN,
-	    .triggerOutType  = CY_DMA_1ELEMENT,
-	    .channelState    = CY_DMA_CHANNEL_ENABLED,
-	    .triggerInType   = CY_DMA_1ELEMENT,
-	    .dataSize        = CY_DMA_BYTE,
-	    .srcTransferSize = CY_DMA_TRANSFER_SIZE_DATA,
-	    .dstTransferSize = CY_DMA_TRANSFER_SIZE_WORD,
-	    .descriptorType  = CY_DMA_1D_TRANSFER,
-	    .srcAddress      = NULL,
-	    .dstAddress      = NULL,
-	    .srcXincrement   = 1L,
-	    .dstXincrement   = 0L,
-	    .xCount          = 256UL,
-	    .srcYincrement   = 0L,
-	    .dstYincrement   = 0L,
-	    .yCount          = 1UL,
-	    .nextDescriptor  = 0
-	    };
+	cy_stc_dma_descriptor_config_t DMA_Descriptors_config[ws2812_NUMBER_OF_CHANNELS];
 
+	for(uint8_t dummyCnt = 0; dummyCnt < ws2812_NUMBER_OF_CHANNELS; dummyCnt++)
+	{
+		DMA_Descriptors_config[dummyCnt].retrigger       = CY_DMA_RETRIG_IM;
+		DMA_Descriptors_config[dummyCnt].interruptType   = CY_DMA_DESCR_CHAIN;
+		DMA_Descriptors_config[dummyCnt].triggerOutType  = CY_DMA_1ELEMENT;
+		DMA_Descriptors_config[dummyCnt].channelState    = CY_DMA_CHANNEL_ENABLED;
+		DMA_Descriptors_config[dummyCnt].triggerInType   = CY_DMA_1ELEMENT;
+		DMA_Descriptors_config[dummyCnt].dataSize        = CY_DMA_BYTE;
+		DMA_Descriptors_config[dummyCnt].srcTransferSize = CY_DMA_TRANSFER_SIZE_DATA;
+		DMA_Descriptors_config[dummyCnt].dstTransferSize = CY_DMA_TRANSFER_SIZE_WORD;
+		DMA_Descriptors_config[dummyCnt].descriptorType  = CY_DMA_1D_TRANSFER;
+		DMA_Descriptors_config[dummyCnt].srcAddress      = NULL;
+		DMA_Descriptors_config[dummyCnt].dstAddress      = NULL;
+		DMA_Descriptors_config[dummyCnt].srcXincrement   = 1L;
+		DMA_Descriptors_config[dummyCnt].dstXincrement   = 0L;
+		DMA_Descriptors_config[dummyCnt].xCount          = 256UL;
+		DMA_Descriptors_config[dummyCnt].srcYincrement   = 0L;
+		DMA_Descriptors_config[dummyCnt].dstYincrement   = 0L;
+		DMA_Descriptors_config[dummyCnt].yCount          = 1UL;
+		DMA_Descriptors_config[dummyCnt].nextDescriptor  = 0;
+	}
 
 	/* User: Configure basic element of Channel 0 */
 	channelConfig[0].enable = 0;
@@ -491,7 +492,7 @@ void configure_LedChannels(void)
 			channelConfig[i].numberDmaDescriptors = (sizeof(channelConfig[i].frameBuffer) / 256 + 1);
 			/* Allocate the size to the DMA descriptor array */
 			channelConfig[i].dmaDescriptors = malloc((channelConfig[i].numberDmaDescriptors) * sizeof(cy_stc_dma_descriptor_t));
-			/* Allocte the size of x, y array for the rows and columns of the string used */
+			/* Allocate the size of x, y array for the rows and columns of the string used */
 			#if(ws2812_MEMORY_TYPE == ws2812_MEMORY_RGB)
 			channelConfig[i].ledArray = malloc(channelConfig[i].rows * sizeof(uint32_t));
 			memset(channelConfig[i].ledArray, 0, (channelConfig[i].rows * sizeof(uint32_t)));
@@ -513,7 +514,7 @@ void configure_LedChannels(void)
 			/* Configure the DMA for each channel */
 			for(uint32_t j = 0; j < channelConfig[i].numberDmaDescriptors; j++)
 			{
-				Cy_DMA_Descriptor_Init(&channelConfig[i].dmaDescriptors[j], &DMA_Descriptors_config);
+				Cy_DMA_Descriptor_Init(&channelConfig[i].dmaDescriptors[j], &DMA_Descriptors_config[i]);
 				Cy_DMA_Descriptor_SetSrcAddress(&channelConfig[i].dmaDescriptors[j], (uint8_t *)&channelConfig[i].frameBuffer[j * 256]);
 				Cy_DMA_Descriptor_SetDstAddress(&channelConfig[i].dmaDescriptors[j], (void *)&channelConfig[i].scbHW->TX_FIFO_WR);
 				Cy_DMA_Descriptor_SetXloopDataCount(&channelConfig[i].dmaDescriptors[j], 256); // the last
@@ -545,16 +546,17 @@ void configure_LedChannels(void)
 *******************************************************************************/
 void WS_DMATrigger(uint8_t stringNumber)
 {
+	/* Declare the DMA channelConfig */
+	cy_stc_dma_channel_config_t dmaChannelConfig[ws2812_NUMBER_OF_CHANNELS];
+
 	if(channelConfig[stringNumber].enable == 1)
 	{
-		/* Declare the DMA channelConfig*/
-		cy_stc_dma_channel_config_t dmaChannelConfig;
 		/* Configure the DM channel settings for the passed stringNumber*/
-		dmaChannelConfig.descriptor  = &channelConfig[stringNumber].dmaDescriptors[0];
-		dmaChannelConfig.preemptable = false;
-		dmaChannelConfig.priority    = 3;
-		dmaChannelConfig.enable      = false;
-		Cy_DMA_Channel_Init(channelConfig[stringNumber].dmaHW, channelConfig[stringNumber].dmaChannel, &dmaChannelConfig);
+		dmaChannelConfig[stringNumber].descriptor  = &channelConfig[stringNumber].dmaDescriptors[0];
+		dmaChannelConfig[stringNumber].preemptable = false;
+		dmaChannelConfig[stringNumber].priority    = 3;
+		dmaChannelConfig[stringNumber].enable      = false;
+		Cy_DMA_Channel_Init(channelConfig[stringNumber].dmaHW, channelConfig[stringNumber].dmaChannel, &dmaChannelConfig[stringNumber]);
 		Cy_DMA_Channel_Enable(channelConfig[stringNumber].dmaHW, channelConfig[stringNumber].dmaChannel);
 	}
 }
@@ -736,6 +738,7 @@ void ws2812Task(void *arg)
 			Cy_SCB_SPI_Init(channelConfig[i].scbHW, &SPI_config, &SPI_context);
 			Cy_SCB_SPI_Enable(channelConfig[i].scbHW);
 			printf("Channel %d: SPI block enabled\r\n", i);
+			WS_DMATrigger(i);
 		}
 	}
 

@@ -697,35 +697,32 @@ void ws2812Task(void *arg)
 	ws2812_msg_t msg;
 
 	/* Declare the SPI channel context */
-	cy_stc_scb_spi_context_t SPI_context[ws2812_NUMBER_OF_CHANNELS];
-	cy_stc_scb_spi_config_t SPI_config[ws2812_NUMBER_OF_CHANNELS];
+	cy_stc_scb_spi_context_t SPI_context;
 
-	for(uint8_t dummyCnt = 0; dummyCnt < ws2812_NUMBER_OF_CHANNELS; dummyCnt++)
+	const cy_stc_scb_spi_config_t SPI_config =
 	{
-		SPI_config[dummyCnt].spiMode = CY_SCB_SPI_MASTER;
-		SPI_config[dummyCnt].subMode = CY_SCB_SPI_MOTOROLA;
-		SPI_config[dummyCnt].sclkMode = CY_SCB_SPI_CPHA1_CPOL1;
-		SPI_config[dummyCnt].oversample = 10;
-		SPI_config[dummyCnt].rxDataWidth = 8UL;
-		SPI_config[dummyCnt].txDataWidth = 8UL;
-		SPI_config[dummyCnt].enableMsbFirst = true;
-		SPI_config[dummyCnt].enableInputFilter = false;
-		SPI_config[dummyCnt].enableFreeRunSclk = false;
-		SPI_config[dummyCnt].enableMisoLateSample = true;
-		SPI_config[dummyCnt].enableTransferSeperation = false;
-		SPI_config[dummyCnt].ssPolarity = ((CY_SCB_SPI_ACTIVE_LOW
-				<< CY_SCB_SPI_SLAVE_SELECT0)
-				| (CY_SCB_SPI_ACTIVE_LOW << CY_SCB_SPI_SLAVE_SELECT1)
-				| (CY_SCB_SPI_ACTIVE_LOW << CY_SCB_SPI_SLAVE_SELECT2)
-				| (CY_SCB_SPI_ACTIVE_LOW << CY_SCB_SPI_SLAVE_SELECT3));
-		SPI_config[dummyCnt].enableWakeFromSleep = false;
-		SPI_config[dummyCnt].rxFifoTriggerLevel = 63UL;
-		SPI_config[dummyCnt].rxFifoIntEnableMask = 0UL;
-		SPI_config[dummyCnt].txFifoTriggerLevel = 63UL;
-		SPI_config[dummyCnt].txFifoIntEnableMask = 0UL;
-		SPI_config[dummyCnt].masterSlaveIntEnableMask = 0UL;
-	}
-
+		.spiMode = CY_SCB_SPI_MASTER,
+		.subMode = CY_SCB_SPI_MOTOROLA,
+		.sclkMode = CY_SCB_SPI_CPHA1_CPOL1,
+		.oversample = 10,
+		.rxDataWidth = 8UL,
+		.txDataWidth = 8UL,
+		.enableMsbFirst = true,
+		.enableInputFilter = false,
+		.enableFreeRunSclk = false,
+		.enableMisoLateSample = true,
+		.enableTransferSeperation = false,
+		.ssPolarity = ((CY_SCB_SPI_ACTIVE_LOW << CY_SCB_SPI_SLAVE_SELECT0) | \
+				(CY_SCB_SPI_ACTIVE_LOW << CY_SCB_SPI_SLAVE_SELECT1) | \
+				(CY_SCB_SPI_ACTIVE_LOW << CY_SCB_SPI_SLAVE_SELECT2) | \
+				(CY_SCB_SPI_ACTIVE_LOW << CY_SCB_SPI_SLAVE_SELECT3)),
+				.enableWakeFromSleep = false,
+				.rxFifoTriggerLevel = 63UL,
+				.rxFifoIntEnableMask = 0UL,
+				.txFifoTriggerLevel = 63UL,
+				.txFifoIntEnableMask = 0UL,
+				.masterSlaveIntEnableMask = 0UL,
+	};
 
 	printf("Starting WS2812 task\r\n");
 	/* Run the LED channel configuration */
@@ -738,7 +735,7 @@ void ws2812Task(void *arg)
 		{
 			channelConfig[i].frameBuffer[0] = 0x00;
 			/* Initialize all LEDs Off and update the DMA trigger to load */
-			Cy_SCB_SPI_Init(channelConfig[i].scbHW, &SPI_config[i], &SPI_context[i]);
+			Cy_SCB_SPI_Init(channelConfig[i].scbHW, &SPI_config, &SPI_context);
 			Cy_SCB_SPI_Enable(channelConfig[i].scbHW);
 			printf("Channel %d: SPI block enabled\r\n", i);
 			WS_DMATrigger(i);

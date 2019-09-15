@@ -6,7 +6,7 @@
  */
 
 #include <stdio.h>
-#include "ws2812.h"
+#include <ws2812Task.h>
 #include "FreeRTOS.h"
 #include "task.h"
 #include "semphr.h"
@@ -81,11 +81,11 @@ void uartTask(void *arg)
 				printf("Set LED0 Green\n");
 				break;
 			case 'O':
-				ws2812_setRange(0,ws2812_NUM_PIXELS-1,0,0,0);
+				ws2812_setRange(0,WS_getNumLeds(0)-1,0,0,0);
 				printf("Turn off all LEDs\n");
 				break;
 			case 'o':
-				ws2812_setRange(0,ws2812_NUM_PIXELS-1,0xFF,0xFF,0xFF);
+				ws2812_setRange(0,WS_getNumLeds(0)-1,0xFF,0xFF,0xFF);
 				printf("Turn on all LEDs\n");
 				break;
 			case 'b':
@@ -93,15 +93,15 @@ void uartTask(void *arg)
 				printf("Set LED0 Blue\n");
 				break;
 			case 'R':
-				ws2812_setRange(0,ws2812_NUM_PIXELS-1,0x80,0,0);
+				ws2812_setRange(0,WS_getNumLeds(0)-1,0x80,0,0);
 				printf("Turn on all LEDs RED\n");
 				break;
 			case 'G':
-				ws2812_setRange(0,ws2812_NUM_PIXELS-1,0,0x80,0);
+				ws2812_setRange(0,WS_getNumLeds(0)-1,0,0x80,0);
 				printf("Turn on all LEDs Green\n");
 				break;
 			case 'B':
-				ws2812_setRange(0,ws2812_NUM_PIXELS-1,0,0,0x80);
+				ws2812_setRange(0,WS_getNumLeds(0)-1,0,0,0x80);
 				printf("Turn on all LEDs Blue\n");
 				break;
 			case 'a':

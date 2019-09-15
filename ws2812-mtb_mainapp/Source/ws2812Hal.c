@@ -1,91 +1,105 @@
-/*
- * ws2812.c
- *
- *  Created on: Jun 15, 2019
- *      Author: arh
- */
-
 #include "cy_pdl.h"
 #include "cycfg.h"
-
 #include <stdio.h>
+#include <stdint.h>
+#include "ws2812Hal.h"
 #include <stdlib.h>
-#include <string.h>
-#include "ws2812.h"
-#include "FreeRTOS.h"
-#include "queue.h"
-#include "timers.h"
-
-QueueHandle_t ws2812QueueHandle;
-TimerHandle_t ws2812TimerHandle;
-
-bool wsAutoUpdateState = false;
-
 
 #define WS_ZOFFSET (1)
 #define WS_ONE3  (0b110<<24)
 #define WS_ZERO3 (0b100<<24)
-#define WS_SPI_BIT_PER_BIT (3)
-#define WS_COLOR_PER_PIXEL (3)
-#define WS_BYTES_PER_PIXEL (WS_SPI_BIT_PER_BIT * WS_COLOR_PER_PIXEL)
+#define WS_SPI_BIT_PER_BIT  (3)
+#define WS_COLOR_PER_PIXEL  (3)
+const int WS_BYTES_PER_PIXEL = (WS_SPI_BIT_PER_BIT * WS_COLOR_PER_PIXEL);
 
-static uint8_t WS_frameBuffer[ws2812_NUM_PIXELS*WS_BYTES_PER_PIXEL+WS_ZOFFSET];
+typedef struct {
+	GPIO_PRT_Type *spiPort;
+	uint32_t spiPin;
+	CySCB_Type*spiHw;
+	DW_Type *dwHW;
+	uint32_t channel;
+
+} ledMapElement_t;
+
+const ledMapElement_t ledStringTable[]= {
+		{GPIO_PRT0,2,SCB0,DW0,16},
+};
+
+const uint32_t numPossibleElements = sizeof(ledStringTable)/sizeof(ledMapElement_t);
+
+typedef struct {
+	uint32_t numLeds;
+	ledMapElement_t *map;
+	cy_stc_scb_spi_context_t *spiContext;
+	uint8_t *frameBuffer;
+	uint32_t frameBufferSize;
+	uint32_t numDescriptors;
+	cy_stc_dma_descriptor_t *dmaDescr;
+} ledString_t;
+
+#define MAX_LED_STRINGS 5
+ledString_t ledStrings[MAX_LED_STRINGS];
+
+uint32_t numLedStrings=0;
+
+// Static Function Prototypes
+static void WS_DMAConfigure(uint32_t string);
+static uint32_t WS_convert3Code(uint8_t input);
 
 
-// These functions are helpers to create the message to send to the ws2812 task.
-
-void ws2812_update(void)
+uint32_t WS_getNumLeds(uint32_t string)
 {
-	ws2812_msg_t msg;
-	msg.cmd = ws2812_cmd_update;
-	xQueueSend(ws2812QueueHandle,&msg,0);
-}
 
-void ws2812_autoUpdate(bool option)
-{
-	ws2812_msg_t msg;
-	msg.cmd = ws2812_cmd_autoUpdate;
-	msg.data = option;
-	xQueueSend(ws2812QueueHandle,&msg,0);
-}
-void ws2812_setRGB(int led,uint8_t red, uint8_t green, uint8_t blue)
-{
-	ws2812_msg_t msg;
-	msg.cmd = ws2812_cmd_setRGB;
-	msg.red = red;
-	msg.blue = blue;
-	msg.green = green;
-	msg.data = led;
-	xQueueSend(ws2812QueueHandle,&msg,0);
-
-}
-void ws2812_setRange(int start, int end, uint8_t red,uint8_t green ,uint8_t blue)
-{
-
-	ws2812_msg_t msg;
-	msg.cmd = ws2812_cmd_setRange;
-	msg.red = red;
-	msg.blue = blue;
-	msg.green = green;
-	msg.data = start << 16 | end;
-	xQueueSend(ws2812QueueHandle,&msg,0);
-
-}
-void ws2812_initMixColorRGB(void)
-{
-	ws2812_msg_t msg;
-	msg.cmd = ws2812_cmd_initMixColorRGB;
-	xQueueSend(ws2812QueueHandle,&msg,0);
+	return ledStrings[string].numLeds;
 }
 
 
+void WS_Start()
+{
+
+}
+
+int WS_CreateString(GPIO_PRT_Type *spiPrt, uint32_t spiPin,int numLeds)
+{
+
+	int rval=-1;
+
+	for(int i=0;i<numPossibleElements;i++)
+	{
+		if(ledStringTable[i].spiPort == spiPrt && ledStringTable[i].spiPin == spiPin)
+		{
+			rval = i;
+			ledStrings[numLedStrings].map = &ledStringTable[i];
+			break;
+		}
+	}
+	if(rval == -1)
+		return rval;
+
+
+	ledStrings[numLedStrings].numLeds = numLeds;
+	ledStrings[numLedStrings].spiContext = malloc(sizeof(cy_stc_scb_spi_context_t));
+	ledStrings[numLedStrings].frameBufferSize =  numLeds*WS_BYTES_PER_PIXEL+WS_ZOFFSET;
+	ledStrings[numLedStrings].frameBuffer = malloc(ledStrings[numLedStrings].frameBufferSize);
+	ledStrings[numLedStrings].numDescriptors = ((numLeds*WS_BYTES_PER_PIXEL+WS_ZOFFSET)) / 256 + 1;
+	ledStrings[numLedStrings].dmaDescr = malloc(sizeof(cy_stc_dma_descriptor_t) * ledStrings[numLedStrings].numDescriptors);
+
+	ledStrings[numLedStrings].frameBuffer[0] = 0x00;
+    WS_setRange(0,0,numLeds-1,0,0,0); // Initialize everything OFF
+    Cy_SCB_SPI_Init(WS_SPI_HW, &WS_SPI_config, ledStrings[numLedStrings].spiContext);
+    Cy_SCB_SPI_Enable(WS_SPI_HW);
+    WS_DMAConfigure(numLedStrings);
+    Cy_DMA_Enable(DW0); // enable the datawire 0 hardware block
+
+    numLedStrings += 1;
+
+    return numLedStrings - 1; // return the string #
+}
 
 // Function WS_DMAConfiguration
 // This function sets up the DMA and the descriptors
 
-#define WS_NUM_DESCRIPTORS (sizeof(WS_frameBuffer) / 256 + 1)
-static cy_stc_dma_descriptor_t WSDescriptors[WS_NUM_DESCRIPTORS];
-static void WS_DMAConfigure(void)
+static void WS_DMAConfigure(uint32_t string)
 {
     // I copies this structure from the PSoC Creator Component configuration
     // in generated source
@@ -111,46 +125,42 @@ static void WS_DMAConfigure(void)
     .nextDescriptor  = 0
     };
 
-    for(unsigned int i=0;i<WS_NUM_DESCRIPTORS;i++)
+    for(unsigned int i=0;i<ledStrings[string].numDescriptors;i++)
     {
-        Cy_DMA_Descriptor_Init(&WSDescriptors[i], &WS_DMA_Descriptors_config);
-        Cy_DMA_Descriptor_SetSrcAddress(&WSDescriptors[i], (uint8_t *)&WS_frameBuffer[i*256]);
-        Cy_DMA_Descriptor_SetDstAddress(&WSDescriptors[i], (void *)&WS_SPI_HW->TX_FIFO_WR);
-        Cy_DMA_Descriptor_SetXloopDataCount(&WSDescriptors[i],256); // the last
-        Cy_DMA_Descriptor_SetNextDescriptor(&WSDescriptors[i],&WSDescriptors[i+1]);
+        Cy_DMA_Descriptor_Init(&ledStrings[string].dmaDescr[i], &WS_DMA_Descriptors_config);
+        Cy_DMA_Descriptor_SetSrcAddress(&ledStrings[string].dmaDescr[i], (uint8_t *)&ledStrings[string].frameBuffer[i*256]);
+        Cy_DMA_Descriptor_SetDstAddress(&ledStrings[string].dmaDescr[i], (void *)&WS_SPI_HW->TX_FIFO_WR);
+        Cy_DMA_Descriptor_SetXloopDataCount(&ledStrings[string].dmaDescr[i],256); // the last
+        Cy_DMA_Descriptor_SetNextDescriptor(&ledStrings[string].dmaDescr[i],&ledStrings[string].dmaDescr[i+1]);
     }
 
-    // The last one needs a bit of change
-    Cy_DMA_Descriptor_SetXloopDataCount(&WSDescriptors[WS_NUM_DESCRIPTORS-1],sizeof(WS_frameBuffer)-256*(WS_NUM_DESCRIPTORS-1)); // the last
-    Cy_DMA_Descriptor_SetNextDescriptor(&WSDescriptors[WS_NUM_DESCRIPTORS-1],0);
-    Cy_DMA_Descriptor_SetChannelState(&WSDescriptors[WS_NUM_DESCRIPTORS-1],CY_DMA_CHANNEL_DISABLED);
 
-    Cy_DMA_Enable(WS_DMA_HW);
+    // The last one needs a bit of change
+    Cy_DMA_Descriptor_SetXloopDataCount(&ledStrings[string].dmaDescr[ledStrings[string].numDescriptors-1],ledStrings[string].frameBufferSize-256*(ledStrings[string].numDescriptors-1)); // the last
+    Cy_DMA_Descriptor_SetNextDescriptor(&ledStrings[string].dmaDescr[ledStrings[string].numDescriptors-1],0);
+    Cy_DMA_Descriptor_SetChannelState(&ledStrings[string].dmaDescr[ledStrings[string].numDescriptors-1],CY_DMA_CHANNEL_DISABLED);
+
 }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 // Function: WS_DMATrigger
 // This function sets up the channel... then enables it to dump the frameBuffer to pixels
-void WS_DMATrigger()
+void WS_updateString(uint32_t string)
 {
-
-    cy_stc_dma_channel_config_t channelConfig;
-    channelConfig.descriptor  = &WSDescriptors[0];
-    channelConfig.preemptable = false;
-    channelConfig.priority    = 3;
-    channelConfig.enable      = false;
-    Cy_DMA_Channel_Init(WS_DMA_HW, WS_DMA_CHANNEL, &channelConfig);
-    Cy_DMA_Channel_Enable(WS_DMA_HW,WS_DMA_CHANNEL);
-}
-
-
-// This function is called by the software timer which is used to autoupdate the LEDs
-// It checks to make sure that the DMA is done... if not it doesnt do anything
-void ws2812CallbackFunction( TimerHandle_t xTimer )
-{
-    if((Cy_DMA_Channel_GetStatus(WS_DMA_HW,WS_DMA_CHANNEL) & CY_DMA_INTR_CAUSE_COMPLETION))
-    {
-        WS_DMATrigger();
-    }
+	//if((Cy_DMA_Channel_GetStatus(WS_DMA_HW,WS_DMA_CHANNEL) & CY_DMA_INTR_CAUSE_COMPLETION))
+	if((Cy_DMA_Channel_GetStatus(ledStrings[string].map->dwHW,ledStrings[string].map->channel) & CY_DMA_INTR_CAUSE_COMPLETION))
+	{
+		cy_stc_dma_channel_config_t channelConfig;
+		channelConfig.descriptor  = &ledStrings[string].dmaDescr[0];
+		channelConfig.preemptable = false;
+		channelConfig.priority    = 3;
+		channelConfig.enable      = false;
+		Cy_DMA_Channel_Init(ledStrings[string].map->dwHW,ledStrings[string].map->channel, &channelConfig);
+		Cy_DMA_Channel_Enable(ledStrings[string].map->dwHW,ledStrings[string].map->channel);
+	}
 }
 
 // Function: convert3Code
@@ -179,7 +189,7 @@ static uint32_t WS_convert3Code(uint8_t input)
 
 // Function: WS_setRGB
 // Takes a position and a three byte rgb value and updates the WS_frameBuffer with the correct 9-bytes
-static void WS_setRGB(int led,uint8_t red, uint8_t green, uint8_t blue)
+void WS_setRGB(int string,int led,uint8_t red, uint8_t green, uint8_t blue)
 {
 
     typedef union {
@@ -189,39 +199,42 @@ static void WS_setRGB(int led,uint8_t red, uint8_t green, uint8_t blue)
 
     WS_colorUnion color;
     color.word = WS_convert3Code(green);
-    WS_frameBuffer[led*WS_BYTES_PER_PIXEL+WS_ZOFFSET] = color.bytes[2];
-    WS_frameBuffer[led*WS_BYTES_PER_PIXEL+1+WS_ZOFFSET] = color.bytes[1];
-    WS_frameBuffer[led*WS_BYTES_PER_PIXEL+2+WS_ZOFFSET] = color.bytes[0];
+    ledStrings[string].frameBuffer[led*WS_BYTES_PER_PIXEL+WS_ZOFFSET] = color.bytes[2];
+    ledStrings[string].frameBuffer[led*WS_BYTES_PER_PIXEL+1+WS_ZOFFSET] = color.bytes[1];
+    ledStrings[string].frameBuffer[led*WS_BYTES_PER_PIXEL+2+WS_ZOFFSET] = color.bytes[0];
 
     color.word = WS_convert3Code(red);
-    WS_frameBuffer[led*WS_BYTES_PER_PIXEL+3+WS_ZOFFSET] = color.bytes[2];
-    WS_frameBuffer[led*WS_BYTES_PER_PIXEL+4+WS_ZOFFSET] = color.bytes[1];
-    WS_frameBuffer[led*WS_BYTES_PER_PIXEL+5+WS_ZOFFSET] = color.bytes[0];
+    ledStrings[string].frameBuffer[led*WS_BYTES_PER_PIXEL+3+WS_ZOFFSET] = color.bytes[2];
+    ledStrings[string].frameBuffer[led*WS_BYTES_PER_PIXEL+4+WS_ZOFFSET] = color.bytes[1];
+    ledStrings[string].frameBuffer[led*WS_BYTES_PER_PIXEL+5+WS_ZOFFSET] = color.bytes[0];
 
     color.word = WS_convert3Code(blue);
-    WS_frameBuffer[led*WS_BYTES_PER_PIXEL+6+WS_ZOFFSET] = color.bytes[2];
-    WS_frameBuffer[led*WS_BYTES_PER_PIXEL+7+WS_ZOFFSET] = color.bytes[1];
-    WS_frameBuffer[led*WS_BYTES_PER_PIXEL+8+WS_ZOFFSET] = color.bytes[0];
+    ledStrings[string].frameBuffer[led*WS_BYTES_PER_PIXEL+6+WS_ZOFFSET] = color.bytes[2];
+    ledStrings[string].frameBuffer[led*WS_BYTES_PER_PIXEL+7+WS_ZOFFSET] = color.bytes[1];
+    ledStrings[string].frameBuffer[led*WS_BYTES_PER_PIXEL+8+WS_ZOFFSET] = color.bytes[0];
 }
 
 // Function WS_setRange
 // Sets all of the pixels from start to end with the red,green,blue value
-static void WS_setRange(int start, int end, uint8_t red,uint8_t green ,uint8_t blue)
+void WS_setRange(int string,int start, int end, uint8_t red,uint8_t green ,uint8_t blue)
 {
     CY_ASSERT(start >= 0);
     CY_ASSERT(start < end);
-    CY_ASSERT(end <= ws2812_NUM_PIXELS-1);
+    CY_ASSERT(end <= ledStrings[string].numLeds-1);
 
-    WS_setRGB(start,red,green,blue);
+    WS_setRGB(0,start,red,green,blue);
     for(int i=1;i<=end-start;i++)
     {
-        memcpy(&WS_frameBuffer[start*WS_BYTES_PER_PIXEL+i*WS_BYTES_PER_PIXEL+WS_ZOFFSET],
-        &WS_frameBuffer[start*WS_BYTES_PER_PIXEL+WS_ZOFFSET],WS_BYTES_PER_PIXEL);
+        memcpy(&ledStrings[string].frameBuffer[start*WS_BYTES_PER_PIXEL+i*WS_BYTES_PER_PIXEL+WS_ZOFFSET],
+        &ledStrings[string].frameBuffer[start*WS_BYTES_PER_PIXEL+WS_ZOFFSET],WS_BYTES_PER_PIXEL);
     }
 }
+
+#if 0
+
 // Function: WS_runTest
 // This function just runs test-asserts against the pixel calculation functions
-static void WS_runTest()
+void WS_runTest()
 {
     printf("Size of WS_frameBuffer = %d\n",sizeof(WS_frameBuffer));
 
@@ -351,81 +364,4 @@ static void WS_runTest()
     printf("\n");
 
 }
-
-// Initializes the RGB frame buffer to RGBRGBRGB...RGB
-static void WS_initMixColorRGB()
-{
-    for(int i=0;i<ws2812_NUM_PIXELS;i++)
-    {
-        switch(i%3)
-        {
-            case 0:
-                WS_setRGB(i,0x80,0x00,0x00); // red
-                break;
-            case 1:
-                WS_setRGB(i,0x00,0x80,0x00); // green
-                break;
-            case 2:
-                WS_setRGB(i,0x00,0x00,0x80); // blue
-                break;
-        }
-    }
-}
-
-
-
-void ws2812Task(void *arg)
-{
-	ws2812_msg_t msg;
-	cy_stc_scb_spi_context_t WS_SPI_context;
-
-	vTaskDelay(100);
-
-	printf("Starting ws2812 task\n");
-	WS_runTest();
-    WS_frameBuffer[0] = 0x00;
-    WS_setRange(0,ws2812_NUM_PIXELS-1,0,0,0); // Initialize everything OFF
-    Cy_SCB_SPI_Init(WS_SPI_HW, &WS_SPI_config, &WS_SPI_context);
-    Cy_SCB_SPI_Enable(WS_SPI_HW);
-    WS_DMAConfigure();
-
-    // This queue handles messages from the keyboard
-    ws2812QueueHandle = xQueueCreate( 10,sizeof(ws2812_msg_t));
-    // This timer calls the update function every 30ms if it is turned on.
-    ws2812TimerHandle = xTimerCreate("ws2812 timer",pdMS_TO_TICKS(30),pdTRUE,0,ws2812CallbackFunction );
-
-    while(1)
-    {
-    		xQueueReceive(ws2812QueueHandle,&msg,0xFFFFFFFF);
-    		switch(msg.cmd)
-    		{
-    		case ws2812_cmd_update:
-    			if(!wsAutoUpdateState)
-    			{
-    				WS_DMATrigger();
-    			}
-    			break;
-    		case ws2812_cmd_autoUpdate:
-    			if(wsAutoUpdateState && msg.data == false)
-    			{
-    				xTimerStop(ws2812TimerHandle,0);
-    			}
-    			else if(!wsAutoUpdateState && msg.data == true)
-    			{
-    				xTimerStart(ws2812TimerHandle,0);
-    			}
-    			wsAutoUpdateState = msg.data;
-
-    			break;
-    		case ws2812_cmd_setRGB:
-    			WS_setRGB( msg.data,msg.red,msg.green ,msg.blue);
-    			break;
-    		case ws2812_cmd_setRange:
-    			WS_setRange(msg.data>>16 & 0xFFFF, msg.data&0xFFFF, msg.red,msg.green ,msg.blue);
-    			break;
-    		case ws2812_cmd_initMixColorRGB:
-    			WS_initMixColorRGB();
-    			break;
-    		}
-    }
-}
+#endif

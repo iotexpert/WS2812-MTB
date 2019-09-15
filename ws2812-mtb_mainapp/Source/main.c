@@ -29,9 +29,9 @@
 #include "cy_device_headers.h"
 #include "cycfg.h"
 #include <stdio.h>
+#include <ws2812Task.h>
 #include "FreeRTOS.h"
 #include "task.h"
-#include "ws2812.h"
 #include "uartTask.h"
 
 

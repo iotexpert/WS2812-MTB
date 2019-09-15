@@ -12,7 +12,6 @@
 #include "FreeRTOS.h"
 #include "queue.h"
 
-#define ws2812_NUM_PIXELS (144)
 
 extern QueueHandle_t ws2812QueueHandle;
 
@@ -34,8 +33,8 @@ typedef struct {
 
 } ws2812_msg_t;
 
-extern
 
+// These function create a correct message and send it to the queue
 void ws2812_update(void);
 void ws2812_autoUpdate(bool option);
 void ws2812_setRGB(int led,uint8_t red, uint8_t green, uint8_t blue);

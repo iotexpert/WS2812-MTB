@@ -88,11 +88,75 @@ const cy_stc_gpio_pin_config_t green_config =
 	.vrefSel = 0UL,
 	.vohSel = 0UL,
 };
+const cy_stc_gpio_pin_config_t ioss_0_port_13_pin_4_config = 
+{
+	.outVal = 1,
+	.driveMode = CY_GPIO_DM_OD_DRIVESLOW,
+	.hsiom = ioss_0_port_13_pin_4_HSIOM,
+	.intEdge = CY_GPIO_INTR_DISABLE,
+	.intMask = 0UL,
+	.vtrip = CY_GPIO_VTRIP_CMOS,
+	.slewRate = CY_GPIO_SLEW_FAST,
+	.driveSel = CY_GPIO_DRIVE_FULL,
+	.vregEn = 0UL,
+	.ibufMode = 0UL,
+	.vtripSel = 0UL,
+	.vrefSel = 0UL,
+	.vohSel = 0UL,
+};
+const cy_stc_gpio_pin_config_t ioss_0_port_13_pin_5_config = 
+{
+	.outVal = 1,
+	.driveMode = CY_GPIO_DM_OD_DRIVESLOW,
+	.hsiom = ioss_0_port_13_pin_5_HSIOM,
+	.intEdge = CY_GPIO_INTR_DISABLE,
+	.intMask = 0UL,
+	.vtrip = CY_GPIO_VTRIP_CMOS,
+	.slewRate = CY_GPIO_SLEW_FAST,
+	.driveSel = CY_GPIO_DRIVE_FULL,
+	.vregEn = 0UL,
+	.ibufMode = 0UL,
+	.vtripSel = 0UL,
+	.vrefSel = 0UL,
+	.vohSel = 0UL,
+};
 const cy_stc_gpio_pin_config_t red_config = 
 {
 	.outVal = 1,
 	.driveMode = CY_GPIO_DM_STRONG,
 	.hsiom = red_HSIOM,
+	.intEdge = CY_GPIO_INTR_DISABLE,
+	.intMask = 0UL,
+	.vtrip = CY_GPIO_VTRIP_CMOS,
+	.slewRate = CY_GPIO_SLEW_FAST,
+	.driveSel = CY_GPIO_DRIVE_FULL,
+	.vregEn = 0UL,
+	.ibufMode = 0UL,
+	.vtripSel = 0UL,
+	.vrefSel = 0UL,
+	.vohSel = 0UL,
+};
+const cy_stc_gpio_pin_config_t ioss_0_port_2_pin_4_config = 
+{
+	.outVal = 1,
+	.driveMode = CY_GPIO_DM_OD_DRIVESLOW,
+	.hsiom = ioss_0_port_2_pin_4_HSIOM,
+	.intEdge = CY_GPIO_INTR_DISABLE,
+	.intMask = 0UL,
+	.vtrip = CY_GPIO_VTRIP_CMOS,
+	.slewRate = CY_GPIO_SLEW_FAST,
+	.driveSel = CY_GPIO_DRIVE_FULL,
+	.vregEn = 0UL,
+	.ibufMode = 0UL,
+	.vtripSel = 0UL,
+	.vrefSel = 0UL,
+	.vohSel = 0UL,
+};
+const cy_stc_gpio_pin_config_t ioss_0_port_2_pin_5_config = 
+{
+	.outVal = 1,
+	.driveMode = CY_GPIO_DM_OD_DRIVESLOW,
+	.hsiom = ioss_0_port_2_pin_5_HSIOM,
 	.intEdge = CY_GPIO_INTR_DISABLE,
 	.intMask = 0UL,
 	.vtrip = CY_GPIO_VTRIP_CMOS,
@@ -125,6 +189,38 @@ const cy_stc_gpio_pin_config_t ioss_0_port_5_pin_1_config =
 	.outVal = 1,
 	.driveMode = CY_GPIO_DM_STRONG_IN_OFF,
 	.hsiom = ioss_0_port_5_pin_1_HSIOM,
+	.intEdge = CY_GPIO_INTR_DISABLE,
+	.intMask = 0UL,
+	.vtrip = CY_GPIO_VTRIP_CMOS,
+	.slewRate = CY_GPIO_SLEW_FAST,
+	.driveSel = CY_GPIO_DRIVE_FULL,
+	.vregEn = 0UL,
+	.ibufMode = 0UL,
+	.vtripSel = 0UL,
+	.vrefSel = 0UL,
+	.vohSel = 0UL,
+};
+const cy_stc_gpio_pin_config_t ioss_0_port_5_pin_4_config = 
+{
+	.outVal = 1,
+	.driveMode = CY_GPIO_DM_OD_DRIVESLOW,
+	.hsiom = ioss_0_port_5_pin_4_HSIOM,
+	.intEdge = CY_GPIO_INTR_DISABLE,
+	.intMask = 0UL,
+	.vtrip = CY_GPIO_VTRIP_CMOS,
+	.slewRate = CY_GPIO_SLEW_FAST,
+	.driveSel = CY_GPIO_DRIVE_FULL,
+	.vregEn = 0UL,
+	.ibufMode = 0UL,
+	.vtripSel = 0UL,
+	.vrefSel = 0UL,
+	.vohSel = 0UL,
+};
+const cy_stc_gpio_pin_config_t ioss_0_port_5_pin_5_config = 
+{
+	.outVal = 1,
+	.driveMode = CY_GPIO_DM_OD_DRIVESLOW,
+	.hsiom = ioss_0_port_5_pin_5_HSIOM,
 	.intEdge = CY_GPIO_INTR_DISABLE,
 	.intMask = 0UL,
 	.vtrip = CY_GPIO_VTRIP_CMOS,
@@ -196,11 +292,23 @@ void init_cycfg_pins(void)
 
 	Cy_GPIO_Pin_Init(green_PORT, green_PIN, &green_config);
 
+	Cy_GPIO_Pin_Init(ioss_0_port_13_pin_4_PORT, ioss_0_port_13_pin_4_PIN, &ioss_0_port_13_pin_4_config);
+
+	Cy_GPIO_Pin_Init(ioss_0_port_13_pin_5_PORT, ioss_0_port_13_pin_5_PIN, &ioss_0_port_13_pin_5_config);
+
 	Cy_GPIO_Pin_Init(red_PORT, red_PIN, &red_config);
+
+	Cy_GPIO_Pin_Init(ioss_0_port_2_pin_4_PORT, ioss_0_port_2_pin_4_PIN, &ioss_0_port_2_pin_4_config);
+
+	Cy_GPIO_Pin_Init(ioss_0_port_2_pin_5_PORT, ioss_0_port_2_pin_5_PIN, &ioss_0_port_2_pin_5_config);
 
 	Cy_GPIO_Pin_Init(ioss_0_port_5_pin_0_PORT, ioss_0_port_5_pin_0_PIN, &ioss_0_port_5_pin_0_config);
 
 	Cy_GPIO_Pin_Init(ioss_0_port_5_pin_1_PORT, ioss_0_port_5_pin_1_PIN, &ioss_0_port_5_pin_1_config);
+
+	Cy_GPIO_Pin_Init(ioss_0_port_5_pin_4_PORT, ioss_0_port_5_pin_4_PIN, &ioss_0_port_5_pin_4_config);
+
+	Cy_GPIO_Pin_Init(ioss_0_port_5_pin_5_PORT, ioss_0_port_5_pin_5_PIN, &ioss_0_port_5_pin_5_config);
 
 	Cy_GPIO_Pin_Init(SWO_PORT, SWO_PIN, &SWO_config);
 

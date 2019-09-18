@@ -49,6 +49,7 @@ void ledTask(void *arg)
 
 int main(void)
 {
+	//return 0;
     /* Set up the device based on configurator selections */
     init_cycfg_all();
     __enable_irq();

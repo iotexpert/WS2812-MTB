@@ -26,20 +26,16 @@
 #define CYCFG_PERIPHERALS_H
 
 #include "cycfg_notices.h"
-#include "cy_scb_spi.h"
-#include "cy_sysclk.h"
 #include "cy_scb_uart.h"
+#include "cy_sysclk.h"
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
-#define WS_SPI_HW SCB0
-#define WS_SPI_IRQ scb_0_interrupt_IRQn
 #define UART_STDIO_HW SCB5
 #define UART_STDIO_IRQ scb_5_interrupt_IRQn
 
-extern const cy_stc_scb_spi_config_t WS_SPI_config;
 extern const cy_stc_scb_uart_config_t UART_STDIO_config;
 
 void init_cycfg_peripherals(void);

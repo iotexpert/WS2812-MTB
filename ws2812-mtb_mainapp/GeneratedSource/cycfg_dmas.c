@@ -24,7 +24,7 @@
 
 #include "cycfg_dmas.h"
 
-const cy_stc_dma_descriptor_config_t WS_DMA_Descriptor_0_config = 
+const cy_stc_dma_descriptor_config_t cpuss_0_dw1_0_chan_12_Descriptor_0_config = 
 {
 	.retrigger = CY_DMA_RETRIG_IM,
 	.interruptType = CY_DMA_1ELEMENT,
@@ -45,7 +45,7 @@ const cy_stc_dma_descriptor_config_t WS_DMA_Descriptor_0_config =
 	.yCount = 1,
 	.nextDescriptor = NULL,
 };
-const cy_stc_dma_descriptor_config_t WS_DMA_Descriptor_1_config = 
+const cy_stc_dma_descriptor_config_t cpuss_0_dw1_0_chan_12_Descriptor_1_config = 
 {
 	.retrigger = CY_DMA_RETRIG_IM,
 	.interruptType = CY_DMA_1ELEMENT,
@@ -66,7 +66,7 @@ const cy_stc_dma_descriptor_config_t WS_DMA_Descriptor_1_config =
 	.yCount = 1,
 	.nextDescriptor = NULL,
 };
-const cy_stc_dma_descriptor_config_t WS_DMA_Descriptor_2_config = 
+const cy_stc_dma_descriptor_config_t cpuss_0_dw1_0_chan_12_Descriptor_2_config = 
 {
 	.retrigger = CY_DMA_RETRIG_IM,
 	.interruptType = CY_DMA_1ELEMENT,
@@ -87,7 +87,7 @@ const cy_stc_dma_descriptor_config_t WS_DMA_Descriptor_2_config =
 	.yCount = 1,
 	.nextDescriptor = NULL,
 };
-const cy_stc_dma_descriptor_config_t WS_DMA_Descriptor_3_config = 
+const cy_stc_dma_descriptor_config_t cpuss_0_dw1_0_chan_12_Descriptor_3_config = 
 {
 	.retrigger = CY_DMA_RETRIG_IM,
 	.interruptType = CY_DMA_1ELEMENT,
@@ -108,7 +108,7 @@ const cy_stc_dma_descriptor_config_t WS_DMA_Descriptor_3_config =
 	.yCount = 1,
 	.nextDescriptor = NULL,
 };
-cy_stc_dma_descriptor_t WS_DMA_Descriptor_0 = 
+cy_stc_dma_descriptor_t cpuss_0_dw1_0_chan_12_Descriptor_0 = 
 {
 	.ctl = 0UL,
 	.src = 0UL,
@@ -117,7 +117,7 @@ cy_stc_dma_descriptor_t WS_DMA_Descriptor_0 =
 	.yCtl = 0UL,
 	.nextPtr = 0UL,
 };
-cy_stc_dma_descriptor_t WS_DMA_Descriptor_1 = 
+cy_stc_dma_descriptor_t cpuss_0_dw1_0_chan_12_Descriptor_1 = 
 {
 	.ctl = 0UL,
 	.src = 0UL,
@@ -126,7 +126,7 @@ cy_stc_dma_descriptor_t WS_DMA_Descriptor_1 =
 	.yCtl = 0UL,
 	.nextPtr = 0UL,
 };
-cy_stc_dma_descriptor_t WS_DMA_Descriptor_2 = 
+cy_stc_dma_descriptor_t cpuss_0_dw1_0_chan_12_Descriptor_2 = 
 {
 	.ctl = 0UL,
 	.src = 0UL,
@@ -135,7 +135,7 @@ cy_stc_dma_descriptor_t WS_DMA_Descriptor_2 =
 	.yCtl = 0UL,
 	.nextPtr = 0UL,
 };
-cy_stc_dma_descriptor_t WS_DMA_Descriptor_3 = 
+cy_stc_dma_descriptor_t cpuss_0_dw1_0_chan_12_Descriptor_3 = 
 {
 	.ctl = 0UL,
 	.src = 0UL,
@@ -144,15 +144,151 @@ cy_stc_dma_descriptor_t WS_DMA_Descriptor_3 =
 	.yCtl = 0UL,
 	.nextPtr = 0UL,
 };
-const cy_stc_dma_channel_config_t WS_DMA_channelConfig = 
+const cy_stc_dma_channel_config_t cpuss_0_dw1_0_chan_12_channelConfig = 
 {
-	.descriptor = &WS_DMA_Descriptor_0,
+	.descriptor = &cpuss_0_dw1_0_chan_12_Descriptor_0,
 	.preemptable = false,
 	.priority = 3,
 	.enable = false,
 	.bufferable = false,
 };
-const cy_stc_dma_crc_config_t WS_DMA_crcConfig = 
+const cy_stc_dma_crc_config_t cpuss_0_dw1_0_chan_12_crcConfig = 
+{
+	.dataReverse = false,
+	.dataXor = 0,
+	.reminderReverse = false,
+	.reminderXor = 0,
+	.polynomial = 79764919,
+};
+const cy_stc_dma_descriptor_config_t cpuss_0_dw1_0_chan_8_Descriptor_0_config = 
+{
+	.retrigger = CY_DMA_RETRIG_IM,
+	.interruptType = CY_DMA_1ELEMENT,
+	.triggerOutType = CY_DMA_1ELEMENT,
+	.channelState = CY_DMA_CHANNEL_ENABLED,
+	.triggerInType = CY_DMA_1ELEMENT,
+	.dataSize = CY_DMA_WORD,
+	.srcTransferSize = CY_DMA_TRANSFER_SIZE_WORD,
+	.dstTransferSize = CY_DMA_TRANSFER_SIZE_WORD,
+	.descriptorType = CY_DMA_SINGLE_TRANSFER,
+	.srcAddress = NULL,
+	.dstAddress = NULL,
+	.srcXincrement = 1,
+	.dstXincrement = 1,
+	.xCount = 1,
+	.srcYincrement = 1,
+	.dstYincrement = 1,
+	.yCount = 1,
+	.nextDescriptor = NULL,
+};
+const cy_stc_dma_descriptor_config_t cpuss_0_dw1_0_chan_8_Descriptor_1_config = 
+{
+	.retrigger = CY_DMA_RETRIG_IM,
+	.interruptType = CY_DMA_1ELEMENT,
+	.triggerOutType = CY_DMA_1ELEMENT,
+	.channelState = CY_DMA_CHANNEL_ENABLED,
+	.triggerInType = CY_DMA_1ELEMENT,
+	.dataSize = CY_DMA_WORD,
+	.srcTransferSize = CY_DMA_TRANSFER_SIZE_WORD,
+	.dstTransferSize = CY_DMA_TRANSFER_SIZE_WORD,
+	.descriptorType = CY_DMA_SINGLE_TRANSFER,
+	.srcAddress = NULL,
+	.dstAddress = NULL,
+	.srcXincrement = 1,
+	.dstXincrement = 1,
+	.xCount = 1,
+	.srcYincrement = 1,
+	.dstYincrement = 1,
+	.yCount = 1,
+	.nextDescriptor = NULL,
+};
+const cy_stc_dma_descriptor_config_t cpuss_0_dw1_0_chan_8_Descriptor_2_config = 
+{
+	.retrigger = CY_DMA_RETRIG_IM,
+	.interruptType = CY_DMA_1ELEMENT,
+	.triggerOutType = CY_DMA_1ELEMENT,
+	.channelState = CY_DMA_CHANNEL_ENABLED,
+	.triggerInType = CY_DMA_1ELEMENT,
+	.dataSize = CY_DMA_WORD,
+	.srcTransferSize = CY_DMA_TRANSFER_SIZE_WORD,
+	.dstTransferSize = CY_DMA_TRANSFER_SIZE_WORD,
+	.descriptorType = CY_DMA_SINGLE_TRANSFER,
+	.srcAddress = NULL,
+	.dstAddress = NULL,
+	.srcXincrement = 1,
+	.dstXincrement = 1,
+	.xCount = 1,
+	.srcYincrement = 1,
+	.dstYincrement = 1,
+	.yCount = 1,
+	.nextDescriptor = NULL,
+};
+const cy_stc_dma_descriptor_config_t cpuss_0_dw1_0_chan_8_Descriptor_3_config = 
+{
+	.retrigger = CY_DMA_RETRIG_IM,
+	.interruptType = CY_DMA_1ELEMENT,
+	.triggerOutType = CY_DMA_1ELEMENT,
+	.channelState = CY_DMA_CHANNEL_ENABLED,
+	.triggerInType = CY_DMA_1ELEMENT,
+	.dataSize = CY_DMA_WORD,
+	.srcTransferSize = CY_DMA_TRANSFER_SIZE_WORD,
+	.dstTransferSize = CY_DMA_TRANSFER_SIZE_WORD,
+	.descriptorType = CY_DMA_SINGLE_TRANSFER,
+	.srcAddress = NULL,
+	.dstAddress = NULL,
+	.srcXincrement = 1,
+	.dstXincrement = 1,
+	.xCount = 1,
+	.srcYincrement = 1,
+	.dstYincrement = 1,
+	.yCount = 1,
+	.nextDescriptor = NULL,
+};
+cy_stc_dma_descriptor_t cpuss_0_dw1_0_chan_8_Descriptor_0 = 
+{
+	.ctl = 0UL,
+	.src = 0UL,
+	.dst = 0UL,
+	.xCtl = 0UL,
+	.yCtl = 0UL,
+	.nextPtr = 0UL,
+};
+cy_stc_dma_descriptor_t cpuss_0_dw1_0_chan_8_Descriptor_1 = 
+{
+	.ctl = 0UL,
+	.src = 0UL,
+	.dst = 0UL,
+	.xCtl = 0UL,
+	.yCtl = 0UL,
+	.nextPtr = 0UL,
+};
+cy_stc_dma_descriptor_t cpuss_0_dw1_0_chan_8_Descriptor_2 = 
+{
+	.ctl = 0UL,
+	.src = 0UL,
+	.dst = 0UL,
+	.xCtl = 0UL,
+	.yCtl = 0UL,
+	.nextPtr = 0UL,
+};
+cy_stc_dma_descriptor_t cpuss_0_dw1_0_chan_8_Descriptor_3 = 
+{
+	.ctl = 0UL,
+	.src = 0UL,
+	.dst = 0UL,
+	.xCtl = 0UL,
+	.yCtl = 0UL,
+	.nextPtr = 0UL,
+};
+const cy_stc_dma_channel_config_t cpuss_0_dw1_0_chan_8_channelConfig = 
+{
+	.descriptor = &cpuss_0_dw1_0_chan_8_Descriptor_0,
+	.preemptable = false,
+	.priority = 3,
+	.enable = false,
+	.bufferable = false,
+};
+const cy_stc_dma_crc_config_t cpuss_0_dw1_0_chan_8_crcConfig = 
 {
 	.dataReverse = false,
 	.dataXor = 0,

@@ -24,11 +24,6 @@
 
 #include "cycfg_routing.h"
 
-#include "cy_trigmux.h"
-
-#include "stdbool.h"
-
 void init_cycfg_routing(void)
 {
-	Cy_TrigMux_Select(TRIG_OUT_1TO1_0_SCB0_TX_TO_PDMA0_TR_IN16, false, TRIGGER_TYPE_LEVEL);
 }

@@ -15,21 +15,50 @@ const int WS_BYTES_PER_PIXEL = (WS_SPI_BIT_PER_BIT * WS_COLOR_PER_PIXEL);
 typedef struct {
 	GPIO_PRT_Type *spiPort;
 	uint32_t spiPin;
+	en_hsiom_sel_t hsiom;
 	CySCB_Type*spiHw;
+	en_clk_dst_t spiClk;
 	DW_Type *dwHW;
 	uint32_t channel;
+	uint32_t outTrig;
 
 } ledMapElement_t;
 
 const ledMapElement_t ledStringTable[]= {
-		{GPIO_PRT0,2,SCB0,DW0,16},
+		{GPIO_PRT0,2,P0_2_SCB0_SPI_MOSI,SCB0,PCLK_SCB0_CLOCK,DW0,16,TRIG_OUT_1TO1_0_SCB0_TX_TO_PDMA0_TR_IN16},
+
+		{GPIO_PRT2,0,P2_0_SCB1_SPI_MOSI,SCB1,PCLK_SCB1_CLOCK,DW0,18,TRIG_OUT_1TO1_0_SCB1_TX_TO_PDMA0_TR_IN18},
+		{GPIO_PRT10,0,P10_0_SCB1_SPI_MOSI,SCB1,PCLK_SCB1_CLOCK,DW0,18,TRIG_OUT_1TO1_0_SCB1_TX_TO_PDMA0_TR_IN18},
+
+		{GPIO_PRT3,0,P3_0_SCB2_SPI_MOSI,SCB2,PCLK_SCB2_CLOCK,DW0,20,TRIG_OUT_1TO1_0_SCB2_TX_TO_PDMA0_TR_IN20},
+		{GPIO_PRT9,0,P9_0_SCB2_SPI_MOSI,SCB2,PCLK_SCB2_CLOCK,DW0,20,TRIG_OUT_1TO1_0_SCB2_TX_TO_PDMA0_TR_IN20},
+
+		{GPIO_PRT6,0,P6_0_SCB3_SPI_MOSI,SCB3,PCLK_SCB3_CLOCK,DW0,22,TRIG_OUT_1TO1_0_SCB3_TX_TO_PDMA0_TR_IN22},
+
+		{GPIO_PRT7,0,P7_0_SCB4_SPI_MOSI,SCB4,PCLK_SCB4_CLOCK,DW0,24,TRIG_OUT_1TO1_0_SCB4_TX_TO_PDMA0_TR_IN24},
+		{GPIO_PRT8,0,P8_0_SCB4_SPI_MOSI,SCB4,PCLK_SCB4_CLOCK,DW0,24,TRIG_OUT_1TO1_0_SCB4_TX_TO_PDMA0_TR_IN24},
+
+
+		{GPIO_PRT11,0,P11_0_SCB5_SPI_MOSI,SCB5,PCLK_SCB5_CLOCK,DW0,26,TRIG_OUT_1TO1_0_SCB5_TX_TO_PDMA0_TR_IN26},
+		{GPIO_PRT5,0,P5_0_SCB5_SPI_MOSI,SCB5,PCLK_SCB5_CLOCK,DW0,26,TRIG_OUT_1TO1_0_SCB5_TX_TO_PDMA0_TR_IN26},
+
+		{GPIO_PRT12,0,P12_0_SCB6_SPI_MOSI,SCB6,PCLK_SCB6_CLOCK,DW1,8,TRIG_OUT_1TO1_1_SCB6_TX_TO_PDMA1_TR_IN8},
+		{GPIO_PRT13,0,P13_0_SCB6_SPI_MOSI,SCB6,PCLK_SCB6_CLOCK,DW1,8,TRIG_OUT_1TO1_1_SCB6_TX_TO_PDMA1_TR_IN8},
+		{GPIO_PRT6,4,P6_4_SCB6_SPI_MOSI,SCB6,PCLK_SCB6_CLOCK,DW1,8,TRIG_OUT_1TO1_1_SCB6_TX_TO_PDMA1_TR_IN8},
+
+		{GPIO_PRT1,0,P1_0_SCB7_SPI_MOSI,SCB7,PCLK_SCB7_CLOCK,DW1,10,TRIG_OUT_1TO1_1_SCB7_TX_TO_PDMA1_TR_IN10},
+		{GPIO_PRT4,0,P4_0_SCB7_SPI_MOSI,SCB7,PCLK_SCB7_CLOCK,DW1,10,TRIG_OUT_1TO1_1_SCB7_TX_TO_PDMA1_TR_IN10},
+
+		{GPIO_PRT6,0,P6_0_SCB8_SPI_MOSI,SCB8,PCLK_SCB8_CLOCK,DW1,12,TRIG_OUT_1TO1_1_SCB8_TX_TO_PDMA1_TR_IN12},
+		{GPIO_PRT6,4,P6_4_SCB8_SPI_MOSI,SCB8,PCLK_SCB8_CLOCK,DW1,12,TRIG_OUT_1TO1_1_SCB8_TX_TO_PDMA1_TR_IN12},
+
 };
 
 const uint32_t numPossibleElements = sizeof(ledStringTable)/sizeof(ledMapElement_t);
 
 typedef struct {
 	uint32_t numLeds;
-	ledMapElement_t *map;
+	const ledMapElement_t *map;
 	cy_stc_scb_spi_context_t *spiContext;
 	uint8_t *frameBuffer;
 	uint32_t frameBufferSize;
@@ -86,8 +115,63 @@ int WS_CreateString(GPIO_PRT_Type *spiPrt, uint32_t spiPin,int numLeds)
 
 	ledStrings[numLedStrings].frameBuffer[0] = 0x00;
     WS_setRange(0,0,numLeds-1,0,0,0); // Initialize everything OFF
-    Cy_SCB_SPI_Init(WS_SPI_HW, &WS_SPI_config, ledStrings[numLedStrings].spiContext);
-    Cy_SCB_SPI_Enable(WS_SPI_HW);
+
+    // setup SPI
+    const cy_stc_scb_spi_config_t spiConfig =
+    {
+    	.spiMode = CY_SCB_SPI_MASTER,
+    	.subMode = CY_SCB_SPI_MOTOROLA,
+    	.sclkMode = CY_SCB_SPI_CPHA1_CPOL1,
+    	.oversample = 4,
+    	.rxDataWidth = 8UL,
+    	.txDataWidth = 8UL,
+    	.enableMsbFirst = true,
+    	.enableInputFilter = false,
+    	.enableFreeRunSclk = false,
+    	.enableMisoLateSample = true,
+    	.enableTransferSeperation = false,
+    	.ssPolarity = ((CY_SCB_SPI_ACTIVE_LOW << CY_SCB_SPI_SLAVE_SELECT0) | \
+                                             (CY_SCB_SPI_ACTIVE_LOW << CY_SCB_SPI_SLAVE_SELECT1) | \
+                                             (CY_SCB_SPI_ACTIVE_LOW << CY_SCB_SPI_SLAVE_SELECT2) | \
+                                             (CY_SCB_SPI_ACTIVE_LOW << CY_SCB_SPI_SLAVE_SELECT3)),
+    	.enableWakeFromSleep = false,
+    	.rxFifoTriggerLevel = 63UL,
+    	.rxFifoIntEnableMask = 0UL,
+    	.txFifoTriggerLevel = 63UL,
+    	.txFifoIntEnableMask = 0UL,
+    	.masterSlaveIntEnableMask = 0UL,
+    };
+
+    Cy_SCB_SPI_Init(ledStrings[numLedStrings].map->spiHw, &spiConfig, ledStrings[numLedStrings].spiContext);
+    // setup the SPI Clock
+	Cy_SysClk_PeriphAssignDivider(ledStrings[numLedStrings].map->spiClk, CY_SYSCLK_DIV_8_BIT, 1U); // ARH this needs a better clock assignment than a hard code
+    Cy_SCB_SPI_Enable(ledStrings[numLedStrings].map->spiHw);
+
+	// Trigger Mux
+	Cy_TrigMux_Select(ledStrings[numLedStrings].map->outTrig, false, TRIGGER_TYPE_LEVEL);
+
+    // Pin
+	cy_stc_gpio_pin_config_t pinConfig =
+		{
+			.outVal = 1,
+			.driveMode = CY_GPIO_DM_STRONG_IN_OFF,
+			.hsiom = ioss_0_port_0_pin_2_HSIOM,
+			.intEdge = CY_GPIO_INTR_DISABLE,
+			.intMask = 0UL,
+			.vtrip = CY_GPIO_VTRIP_CMOS,
+			.slewRate = CY_GPIO_SLEW_FAST,
+			.driveSel = CY_GPIO_DRIVE_FULL,
+			.vregEn = 0UL,
+			.ibufMode = 0UL,
+			.vtripSel = 0UL,
+			.vrefSel = 0UL,
+			.vohSel = 0UL,
+		};
+	pinConfig.hsiom = ledStrings[numLedStrings].map->hsiom;
+	Cy_GPIO_Pin_Init(ledStrings[numLedStrings].map->spiPort, ledStrings[numLedStrings].map->spiPin, &pinConfig);
+
+
+	// setup the DMA
     WS_DMAConfigure(numLedStrings);
     Cy_DMA_Enable(DW0); // enable the datawire 0 hardware block
 
@@ -95,6 +179,7 @@ int WS_CreateString(GPIO_PRT_Type *spiPrt, uint32_t spiPin,int numLeds)
 
     return numLedStrings - 1; // return the string #
 }
+
 
 // Function WS_DMAConfiguration
 // This function sets up the DMA and the descriptors
@@ -129,11 +214,10 @@ static void WS_DMAConfigure(uint32_t string)
     {
         Cy_DMA_Descriptor_Init(&ledStrings[string].dmaDescr[i], &WS_DMA_Descriptors_config);
         Cy_DMA_Descriptor_SetSrcAddress(&ledStrings[string].dmaDescr[i], (uint8_t *)&ledStrings[string].frameBuffer[i*256]);
-        Cy_DMA_Descriptor_SetDstAddress(&ledStrings[string].dmaDescr[i], (void *)&WS_SPI_HW->TX_FIFO_WR);
+        Cy_DMA_Descriptor_SetDstAddress(&ledStrings[string].dmaDescr[i], (void *)&ledStrings[string].map->spiHw->TX_FIFO_WR);
         Cy_DMA_Descriptor_SetXloopDataCount(&ledStrings[string].dmaDescr[i],256); // the last
         Cy_DMA_Descriptor_SetNextDescriptor(&ledStrings[string].dmaDescr[i],&ledStrings[string].dmaDescr[i+1]);
     }
-
 
     // The last one needs a bit of change
     Cy_DMA_Descriptor_SetXloopDataCount(&ledStrings[string].dmaDescr[ledStrings[string].numDescriptors-1],ledStrings[string].frameBufferSize-256*(ledStrings[string].numDescriptors-1)); // the last

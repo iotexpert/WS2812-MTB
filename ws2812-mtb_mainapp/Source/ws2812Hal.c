@@ -155,7 +155,7 @@ int WS_CreateString(GPIO_PRT_Type *spiPrt, uint32_t spiPin,int numLeds)
 		{
 			.outVal = 1,
 			.driveMode = CY_GPIO_DM_STRONG_IN_OFF,
-			.hsiom = ioss_0_port_0_pin_2_HSIOM,
+			.hsiom = 0,
 			.intEdge = CY_GPIO_INTR_DISABLE,
 			.intMask = 0UL,
 			.vtrip = CY_GPIO_VTRIP_CMOS,

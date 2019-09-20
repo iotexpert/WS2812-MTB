@@ -65,7 +65,6 @@ const ledMapElement_t ledStringTable[]= {
 		{GPIO_PRT7,0,P7_0_SCB4_SPI_MOSI,SCB4,PCLK_SCB4_CLOCK,DW0,24,TRIG_OUT_1TO1_0_SCB4_TX_TO_PDMA0_TR_IN24},
 		{GPIO_PRT8,0,P8_0_SCB4_SPI_MOSI,SCB4,PCLK_SCB4_CLOCK,DW0,24,TRIG_OUT_1TO1_0_SCB4_TX_TO_PDMA0_TR_IN24},
 
-
 		{GPIO_PRT11,0,P11_0_SCB5_SPI_MOSI,SCB5,PCLK_SCB5_CLOCK,DW0,26,TRIG_OUT_1TO1_0_SCB5_TX_TO_PDMA0_TR_IN26},
 		{GPIO_PRT5,0,P5_0_SCB5_SPI_MOSI,SCB5,PCLK_SCB5_CLOCK,DW0,26,TRIG_OUT_1TO1_0_SCB5_TX_TO_PDMA0_TR_IN26},
 
@@ -117,7 +116,7 @@ static uint32_t WS_convert3Code(uint8_t input);
 
 uint32_t WS_getNumLeds(uint8_t string);
 void WS_Start(void);
-uint8_t WS_CreateString(GPIO_PRT_Type *spiPrt, uint32_t spiPin, uint32_t numLeds);
+int8_t WS_CreateString(GPIO_PRT_Type *spiPrt, uint32_t spiPin, uint32_t numLeds);
 void WS_updateString(uint8_t string);
 void WS_setRGB(uint8_t string, uint32_t led, uint8_t red, uint8_t green, uint8_t blue);
 void WS_setRange(uint8_t string, uint32_t start, uint32_t end, uint8_t red, uint8_t green, uint8_t blue);
@@ -175,7 +174,7 @@ void WS_Start(void)
 *  Index for the created string
 *
 *******************************************************************************/
-uint8_t WS_CreateString(GPIO_PRT_Type *spiPrt, uint32_t spiPin, uint32_t numLeds)
+int8_t WS_CreateString(GPIO_PRT_Type *spiPrt, uint32_t spiPin, uint32_t numLeds)
 {
 	/* Declare the return value nd set to -1; Error*/
 	uint8_t rval =- 1;

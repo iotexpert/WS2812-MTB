@@ -145,38 +145,38 @@ void ws2812Task(void *arg)
 
 	printf("Starting WS2812 task\r\n");
 
-	uint8_t retChannelStatus = 0;
+	int8_t retChannelStatus = -1;
 	/* Create and check if channel was properly created */
-	retChannelStatus = WS_CreateString(GPIO_PRT8, 0, 3);
-	if(retChannelStatus == -1)
-	{
-		printf("First channel Not Created\r\n");
-	}
-	else
-	{
-		channelStatus[retChannelStatus] = 1;
-		printf("Channel %d Created\r\n", retChannelStatus);
-	}
-	retChannelStatus = WS_CreateString(GPIO_PRT10, 0, 3);
-	if(retChannelStatus == -1)
-	{
-		printf("Second channel Not Created\r\n");
-	}
-	else
-	{
-		channelStatus[retChannelStatus] = 1;
-		printf("Channel %d Created\r\n", retChannelStatus);
-	}
-	retChannelStatus = WS_CreateString(GPIO_PRT9, 0, 3);
-	if(retChannelStatus == -1)
-	{
-		printf("Third channel Not Created\r\n");
-	}
-	else
-	{
-		channelStatus[retChannelStatus] = 1;
-		printf("Channel %d Created\r\n", retChannelStatus);
-	}
+//	retChannelStatus = WS_CreateString(GPIO_PRT8, 0, 3);
+//	if(retChannelStatus == -1)
+//	{
+//		printf("First channel Not Created\r\n");
+//	}
+//	else
+//	{
+//		channelStatus[retChannelStatus] = 1;
+//		printf("Channel %d Created\r\n", retChannelStatus);
+//	}
+//	retChannelStatus = WS_CreateString(GPIO_PRT10, 0, 3);
+//	if(retChannelStatus == -1)
+//	{
+//		printf("Second channel Not Created\r\n");
+//	}
+//	else
+//	{
+//		channelStatus[retChannelStatus] = 1;
+//		printf("Channel %d Created\r\n", retChannelStatus);
+//	}
+//	retChannelStatus = WS_CreateString(GPIO_PRT9, 0, 3);
+//	if(retChannelStatus == -1)
+//	{
+//		printf("Third channel Not Created\r\n");
+//	}
+//	else
+//	{
+//		channelStatus[retChannelStatus] = 1;
+//		printf("Channel %d Created\r\n", retChannelStatus);
+//	}
 	retChannelStatus = WS_CreateString(GPIO_PRT6, 0, 3);
 	if(retChannelStatus == -1)
 	{

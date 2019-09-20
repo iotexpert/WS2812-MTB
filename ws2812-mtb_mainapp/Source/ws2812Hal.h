@@ -31,7 +31,7 @@
 /* Function prototypes for public (external) functions go here */
 extern uint32_t WS_getNumLeds(uint8_t string);
 extern void WS_Start(void);
-extern uint8_t WS_CreateString(GPIO_PRT_Type *spiPrt, uint32_t spiPin, uint32_t numLeds);
+extern int8_t WS_CreateString(GPIO_PRT_Type *spiPrt, uint32_t spiPin, uint32_t numLeds);
 extern void WS_updateString(uint8_t string);
 extern void WS_setRGB(uint8_t string, uint32_t led, uint8_t red, uint8_t green, uint8_t blue);
 extern void WS_setRange(uint8_t string, uint32_t start, uint32_t end, uint8_t red, uint8_t green, uint8_t blue);

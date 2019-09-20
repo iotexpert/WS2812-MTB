@@ -147,7 +147,7 @@ void ws2812Task(void *arg)
 
 	uint8_t retChannelStatus = 0;
 	/* Create and check if channel was properly created */
-	retChannelStatus = WS_CreateString(GPIO_PRT9, 0, 24);
+	retChannelStatus = WS_CreateString(GPIO_PRT8, 0, 3);
 	if(retChannelStatus == -1)
 	{
 		printf("First channel Not Created\r\n");
@@ -157,36 +157,36 @@ void ws2812Task(void *arg)
 		channelStatus[retChannelStatus] = 1;
 		printf("Channel %d Created\r\n", retChannelStatus);
 	}
-//	retChannelStatus = WS_CreateString(GPIO_PRT10, 0, 3);
-//	if(retChannelStatus == -1)
-//	{
-//		printf("Second channel Not Created\r\n");
-//	}
-//	else
-//	{
-//		channelStatus[retChannelStatus] = 1;
-//		printf("Channel %d Created\r\n", retChannelStatus);
-//	}
-//	retChannelStatus = WS_CreateString(GPIO_PRT8, 0, 3);
-//	if(retChannelStatus == -1)
-//	{
-//		printf("Third channel Not Created\r\n");
-//	}
-//	else
-//	{
-//		channelStatus[retChannelStatus] = 1;
-//		printf("Channel %d Created\r\n", retChannelStatus);
-//	}
-//	retChannelStatus = WS_CreateString(GPIO_PRT6, 0, 3);
-//	if(retChannelStatus == -1)
-//	{
-//		printf("Fourth channel Not Created\r\n");
-//	}
-//	else
-//	{
-//		channelStatus[retChannelStatus] = 1;
-//		printf("Channel %d Created\r\n", retChannelStatus);
-//	}
+	retChannelStatus = WS_CreateString(GPIO_PRT10, 0, 3);
+	if(retChannelStatus == -1)
+	{
+		printf("Second channel Not Created\r\n");
+	}
+	else
+	{
+		channelStatus[retChannelStatus] = 1;
+		printf("Channel %d Created\r\n", retChannelStatus);
+	}
+	retChannelStatus = WS_CreateString(GPIO_PRT9, 0, 3);
+	if(retChannelStatus == -1)
+	{
+		printf("Third channel Not Created\r\n");
+	}
+	else
+	{
+		channelStatus[retChannelStatus] = 1;
+		printf("Channel %d Created\r\n", retChannelStatus);
+	}
+	retChannelStatus = WS_CreateString(GPIO_PRT6, 0, 3);
+	if(retChannelStatus == -1)
+	{
+		printf("Fourth channel Not Created\r\n");
+	}
+	else
+	{
+		channelStatus[retChannelStatus] = 1;
+		printf("Channel %d Created\r\n", retChannelStatus);
+	}
 	printf("All channels configured\r\n");
 
 	/* This queue handles messages sent to the queue to execute */

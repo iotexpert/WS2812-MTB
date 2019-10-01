@@ -140,7 +140,7 @@ void uartTask(void *arg)
 					/* If channel is enabled, trigger the DMA */
 					if(channelStatus[i] == 1)
 					{
-						ws2812_setRGB(i, 0, 0xFF, 0, 0);
+						//ws2812_setRGB(i, 0, 0xFF, 0, 0);
 					}
 				}
 				printf("Set LED0 Red\r\n");
@@ -151,7 +151,7 @@ void uartTask(void *arg)
 					/* If channel is enabled, trigger the DMA */
 					if(channelStatus[i] == 1)
 					{
-						ws2812_setRGB(i, 0, 0, 0xFF, 0);
+						//ws2812_setRGB(i, 0, 0, 0xFF, 0);
 					}
 				}
 				printf("Set LED0 Green\r\n");
@@ -162,7 +162,7 @@ void uartTask(void *arg)
 					/* If channel is enabled, trigger the DMA */
 					if(channelStatus[i] == 1)
 					{
-						ws2812_setRange(i, 0, WS_getNumLeds(i) - 1, 0, 0, 0);
+						//ws2812_setRange(i, 0, WS_getNumLeds(i) - 1, 0, 0, 0);
 					}
 				}
 				printf("Turn off all LEDs\r\n");
@@ -173,7 +173,7 @@ void uartTask(void *arg)
 					/* If channel is enabled, trigger the DMA */
 					if(channelStatus[i] == 1)
 					{
-						ws2812_setRange(i, 0,WS_getNumLeds(i) - 1, 0xFF, 0xFF, 0xFF);
+						//ws2812_setRange(i, 0,WS_getNumLeds(i) - 1, 0xFF, 0xFF, 0xFF);
 					}
 				}
 				printf("Turn on all LEDs\r\n");
@@ -184,7 +184,7 @@ void uartTask(void *arg)
 					/* If channel is enabled, trigger the DMA */
 					if(channelStatus[i] == 1)
 					{
-						ws2812_setRGB(i, 0, 0, 0, 0xFF);
+						//ws2812_setRGB(i, 0, 0, 0, 0xFF);
 					}
 				}
 				printf("Set LED0 Blue\r\n");
@@ -195,7 +195,7 @@ void uartTask(void *arg)
 					/* If channel is enabled, trigger the DMA */
 					if(channelStatus[i] == 1)
 					{
-						ws2812_setRange(i, 0, WS_getNumLeds(i) - 1, 0x80, 0, 0);
+						//ws2812_setRange(i, 0, WS_getNumLeds(i) - 1, 0x80, 0, 0);
 					}
 				}
 				printf("Turn on all LEDs RED\r\n");
@@ -206,7 +206,7 @@ void uartTask(void *arg)
 					/* If channel is enabled, trigger the DMA */
 					if(channelStatus[i] == 1)
 					{
-						ws2812_setRange(i, 0, WS_getNumLeds(i) - 1, 0, 0x80, 0);
+						//ws2812_setRange(i, 0, WS_getNumLeds(i) - 1, 0, 0x80, 0);
 					}
 				}
 				printf("Turn on all LEDs Green\r\n");
@@ -217,7 +217,7 @@ void uartTask(void *arg)
 					/* If channel is enabled, trigger the DMA */
 					if(channelStatus[i] == 1)
 					{
-						ws2812_setRange(i, 0, WS_getNumLeds(i) - 1, 0, 0, 0x80);
+						//ws2812_setRange(i, 0, WS_getNumLeds(i) - 1, 0, 0, 0x80);
 					}
 				}
 				printf("Turn on all LEDs Blue\r\n");
@@ -228,30 +228,37 @@ void uartTask(void *arg)
 					/* If channel is enabled, trigger the DMA */
 					if(channelStatus[i] == 1)
 					{
-						ws2812_initMixColorRGB(i);
+						//ws2812_initMixColorRGB(i);
 					}
 				}
 				printf("Turn on all LEDs RGB Pattern\r\n");
 				break;
 			case '!':
-//				for(uint32_t j = 0; j < channelConfig[4].frameBufferLength; j++)
-//				{
-//					printf("%#02x ", channelConfig[4].frameBuffer[j]);
-//					if(j%9 == 0)
-//					{
-//						printf("\r\n LED %lu: ", j/9);
-//					}
-//				}
-//				printf("\r\n");
-//				for(uint32_t r = 0; r < channelConfig[4].rows; r++)
-//				{
-//					printf("Row %lu:", r);
-//					for(uint32_t c = 0; c < channelConfig[4].columns; c++)
-//					{
-//						printf("%#04x ", (unsigned int)channelConfig[4].ledArray[r][c]);
-//					}
-//					printf("\r\n");
-//				}
+				for(uint8_t i = 0; i < MAX_LED_STRINGS; i++)
+				{
+					/* If channel is enabled, trigger the DMA */
+					if(channelStatus[i] == 1)
+					{
+//						for(uint32_t j = 0; j < ledStrings[i].frameBufferSize; j++)
+//						{
+//							printf("%#02x ", ledStrings[i].frameBuffer[j]);
+//							if(j%9 == 0)
+//							{
+//								printf("\r\n LED %lu: ", j/9);
+//							}
+//						}
+//						printf("\r\n");
+//						for(uint32_t r = 0; r < ledStrings[i].rows; r++)
+//						{
+//							printf("Row %lu:", r);
+//							for(uint32_t c = 0; c < ledStrings[i].columns; c++)
+//							{
+//								printf("%#04x ", (unsigned int)ledStrings[i].ledArray[r][c]);
+//							}
+//							printf("\r\n");
+//						}
+					}
+				}
 				break;
 			case '?':
 				printf("u\tEnable Auto Update of LEDs\r\n");

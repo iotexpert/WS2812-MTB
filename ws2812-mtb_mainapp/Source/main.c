@@ -20,6 +20,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "ws2812.h"
+#include "ws2812Graphics.h"
 #include "uartTask.h"
 
 /* ==================================================================== */
@@ -63,7 +64,6 @@
 *
 *******************************************************************************/
 
-
 void ledTask(void *arg)
 {
 	(void)arg;
@@ -73,17 +73,6 @@ void ledTask(void *arg)
 	{
 		Cy_GPIO_Inv(red_PORT,red_PIN);
 		vTaskDelay(500);
-	}
-}
-
-void ws2812LightShowTask(void *arg)
-{
-	(void)arg;
-	printf("Starting LightShow task\r\n");
-
-	while(1)
-	{
-		vTaskDelay(100);
 	}
 }
 
@@ -106,7 +95,10 @@ int main(void)
     	printf("LED blinking task unsuccessful");
     }
 
-    xTaskCreate(ws2812LightShowTask,"WS2812 LightShow Task",1024,0,3,0);
+    if(xTaskCreate(ws2812LightShowTask,"WS2812 LightShow Task",1024,0,3,0) == pdFALSE)
+    {
+    	printf("LED LightShow task unsuccessful");
+    }
 
     vTaskStartScheduler();
 }

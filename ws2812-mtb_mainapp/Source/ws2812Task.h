@@ -8,41 +8,48 @@
 ** @@
 **
 ********************************************************************/
+#ifndef WS2812GRAPHICS_H
+#define WS2812GRAPHICS_H
 
-#ifndef WS2812_H_
-#define WS2812_H_
 /* ==================================================================== */
 /* ========================== include files =========================== */
 /* ==================================================================== */
 /* Inclusion of system and local header files goes here */
-/* Header file includes */
-#include "cy_pdl.h"
-#include "cycfg.h"
-#include "stdbool.h"
-#include "ws2812Hal.h"
-
-#include "FreeRTOS.h"
-#include "queue.h"
+#include "ws2812HAL.h"
 
 /* ==================================================================== */
 /* ============================ constants ============================= */
 /* ==================================================================== */
 /* #define and enum statements go here */
-typedef enum {
-	ws2812_cmd_update,            /* no arguments */
-	ws2812_cmd_autoUpdate,        /* data is a binary true for autoupdate false for no update  */
-	ws2812_cmd_setPixelRGB,       /* data is pixel number + rgb                                */
-	ws2812_cmd_setAllRGB,            /* data is pixel number + rgb                                */
-}ws2812_cmd_t;
 
+
+/* Define the enum for the theme and LED light show control */
+typedef enum {
+	themeChristmas,
+	themeFourthJuly,
+	themeNewYear,
+	themeHalloween,
+}themeLight_t;
+
+/* Define the enum for what type of animation to use */
+typedef enum {
+	animationChaseSingle,
+	animationChaseTail,
+	animationOnOff,
+	animationRainbow,
+	animationAlternate,
+	animationBlend,
+	animationRoundRobin,
+}animation_t;
+
+/* Define the struct for the Theme being loaded */
 typedef struct {
-	ws2812_cmd_t cmd;				/* Command from ws2812_cmd_t enum */
-	uint8_t stringNumber;			/* String Number = 1, 2, 3, 4, or 5 */
-	uint32_t data;					/**/
-	uint8_t red;					/**/
-	uint8_t green;					/**/
-	uint8_t blue;					/**/
-} ws2812_msg_t;
+	themeLight_t themeLight;
+	uint32_t themeColor[4];
+	animation_t themeAnimation;
+	uint8_t themeChannelOrder[MAX_LED_STRINGS];
+	uint32_t themeDelay;
+}themeParameters_t;
 
 /* ==================================================================== */
 /* ======================== global variables ========================== */
@@ -53,21 +60,11 @@ typedef struct {
 /* ============================== data ================================ */
 /* ==================================================================== */
 /* Definition of datatypes go here */
-extern uint8_t channelStatus[MAX_LED_STRINGS];
-
-extern QueueHandle_t ws2812QueueHandle;
 
 /* ==================================================================== */
 /* ==================== function prototypes =========================== */
 /* ==================================================================== */
 /* Function prototypes for public (external) functions go here */
-extern void ws2812_update(uint8_t stringNumber);
-extern void ws2812_autoUpdate(bool option);
-extern void ws2812_setPixelRGB(uint8_t stringNumber, uint32_t led, uint8_t red, uint8_t green, uint8_t blue);
-extern void ws2812_setPixelColor(uint8_t stringNumber, uint32_t led, uint32_t colorRequested);
-extern void ws2812_setAllRGB(uint8_t stringNumber, uint8_t red, uint8_t green, uint8_t blue);
-extern void ws2812_setAllColor(uint8_t stringNumber, uint32_t colorRequested);
+extern void ws2812LightShowTask(void *arg);
 
-extern void ws2812Task(void *arg);
-
-#endif /* WS2812_H_ */
+#endif

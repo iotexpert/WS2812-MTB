@@ -19,8 +19,7 @@
 #include <stdio.h>
 #include "FreeRTOS.h"
 #include "task.h"
-#include "ws2812.h"
-#include "ws2812Graphics.h"
+#include "ws2812Task.h"
 #include "uartTask.h"
 
 /* ==================================================================== */
@@ -84,11 +83,6 @@ int main(void)
     __enable_irq();
 
     xTaskCreate(uartTask,"UART Task",2*1024,0,3,0);
-
-    if(xTaskCreate(ws2812Task,"WS2812 Task",32*1024,0,3,0) == pdFALSE)
-    {
-    	printf("ws2812 task unsuccessful");
-    }
 
     if(xTaskCreate(ledTask,"LED Task",100,0,3,0) == pdFALSE)
     {

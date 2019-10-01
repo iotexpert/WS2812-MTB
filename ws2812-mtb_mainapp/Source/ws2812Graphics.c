@@ -15,7 +15,6 @@
 #include "cycfg.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "ws2812.h"
 #include "ws2812Graphics.h"
 
 /* Kernel includes. */
@@ -28,65 +27,6 @@
 /* ============================ constants ============================= */
 /* ==================================================================== */
 /* #define and enum statements go here */
-#define ws2812_RED_MASK   0x0000FF00
-#define ws2812_GREEN_MASK 0x000000FF
-#define ws2812_BLUE_MASK  0x00FF0000
-
-#define ws2812_YELLOW      ws2812_getColor(1)
-#define ws2812_GREEN       ws2812_getColor((70 + ws2812_CWHEEL_SIZE))
-#define ws2812_ORANGE      ws2812_getColor(20)
-#define ws2812_BLACK       ws2812_getColor((0 + ws2812_CWHEEL_SIZE))
-#define ws2812_OFF         ws2812_getColor((0 + ws2812_CWHEEL_SIZE))
-#define ws2812_LTBLUE      ws2812_getColor((1 + ws2812_CWHEEL_SIZE))
-#define ws2812_MBLUE       ws2812_getColor((2 + ws2812_CWHEEL_SIZE))
-#define ws2812_BLUE        ws2812_getColor((3 + ws2812_CWHEEL_SIZE))
-#define ws2812_LTGREEN     ws2812_getColor((4 + ws2812_CWHEEL_SIZE))
-#define ws2812_MGREEN      ws2812_getColor((8 + ws2812_CWHEEL_SIZE))
-//#define ws2812_GREEN       (12 + ws2812_CWHEEL_SIZE)
-#define ws2812_LTRED       ws2812_getColor((16 + ws2812_CWHEEL_SIZE))
-#define ws2812_LTYELLOW    ws2812_getColor((20 + ws2812_CWHEEL_SIZE))
-#define ws2812_MGRED       ws2812_getColor((32 + ws2812_CWHEEL_SIZE))
-#define ws2812_RED         ws2812_getColor((48 + ws2812_CWHEEL_SIZE))
-#define ws2812_MAGENTA     ws2812_getColor((51 + ws2812_CWHEEL_SIZE))
-#define ws2812_RGB_WHITE   ws2812_getColor((63 + ws2812_CWHEEL_SIZE))
-
-#define ws2812_SPRING_GREEN ws2812_getColor((64 + ws2812_CWHEEL_SIZE))
-#define ws2812_TURQUOSE    ws2812_getColor((65 + ws2812_CWHEEL_SIZE))
-#define ws2812_CYAN        ws2812_getColor((66 + ws2812_CWHEEL_SIZE))
-#define ws2812_OCEAN       ws2812_getColor((67 + ws2812_CWHEEL_SIZE))
-#define ws2812_VIOLET      ws2812_getColor((68 + ws2812_CWHEEL_SIZE))
-#define ws2812_RASPBERRY   ws2812_getColor((69 + ws2812_CWHEEL_SIZE))
-#define ws2812_DIM_WHITE   ws2812_getColor((71 + ws2812_CWHEEL_SIZE))
-#define ws2812_DIM_BLUE    ws2812_getColor((72 + ws2812_CWHEEL_SIZE))
-#define ws2812_INVISIBLE   ws2812_getColor((73 + ws2812_CWHEEL_SIZE))
-
-#define ws2812_COLD_TEMP   ws2812_getColor((80 + ws2812_CWHEEL_SIZE))
-#define ws2812_HOT_TEMP    ws2812_getColor((95 + ws2812_CWHEEL_SIZE))
-
-#define ws2812_FIRE_DARK   ws2812_getColor((74 + ws2812_CWHEEL_SIZE))
-#define ws2812_FIRE_LIGHT  ws2812_getColor((75 + ws2812_CWHEEL_SIZE))
-
-#define ws2812_FULL_WHITE  ws2812_getColor((76 + ws2812_CWHEEL_SIZE))
-#define ws2812_WHITE_LED   ws2812_getColor((77 + ws2812_CWHEEL_SIZE))
-#define ws2812_WHITE_RGB50 ws2812_getColor((78 + ws2812_CWHEEL_SIZE))
-#define ws2812_WHITE_RGB25 ws2812_getColor((79 + ws2812_CWHEEL_SIZE))
-
-#define ws2812_CLUT_SIZE  (96 + ws2812_CWHEEL_SIZE)
-
-//#define ws2812_WHITE   ws2812_getColor((63 + ws2812_CWHEEL_SIZE))
-
-
-/* ==================================================================== */
-/* ======================== global variables ========================== */
-/* ==================================================================== */
-/* Global variables definitions go here */
-uint32_t  ws2812_ledIndex = 0;
-uint32_t  ws2812_row = 0;
-uint32_t  ws2812_refreshComplete;
-
-uint32_t  ws2812_DimMask;
-uint32_t  ws2812_DimShift;
-
 #if( ws2812_GAMMA_CORRECTION == ws2812_GAMMA_ON )
 const uint8_t ws2812_gamma[] = {
     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -202,8 +142,10 @@ const uint32 ws2812_CLUT[ ] = {
 };
 
 
-/* Declare the array to hold the number of LEDs per string */
-uint8_t numOfLeds[MAX_LED_STRINGS] = {0};
+/* ==================================================================== */
+/* ======================== global variables ========================== */
+/* ==================================================================== */
+/* Global variables definitions go here */
 
 /* ==================================================================== */
 /* ============================== data ================================ */
@@ -218,17 +160,17 @@ uint8_t numOfLeds[MAX_LED_STRINGS] = {0};
 uint32_t ws2812_ColorInc(uint32_t incValue);
 void ws2812_FadeInFadeOutColor(uint8_t stringNumber, uint32_t color, bool fadeIn, bool fadeOut);
 void ws2812_FadeInFadeOutRGB(uint8_t stringNumber, uint8_t red, uint8_t blue, uint8_t green, bool fadeIn, bool fadeOut);
-void ws2812_MixColorRGB(uint32_t stringNumber);
+void ws2812_MixColorRGB(uint32_t stringNumber, uint32_t numLEDs);
 void ws2812_StrobeRGB(uint8_t stringNumber, uint8_t red, uint8_t green, uint8_t blue, uint32_t StrobeCount, uint32_t FlashDelay, uint32_t EndPause);
 void ws2812_StrobeColor(uint8_t stringNumber, uint32_t colorRequested, uint32_t StrobeCount, uint32_t FlashDelay, uint32_t EndPause);
-void ws2812_NewKITT(uint8_t stringNumber, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
-void ws2812_CenterToOutside(uint8_t stringNumber, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
-void ws2812_OutsideToCenter(uint8_t stringNumber, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
-void ws2812_LeftToRight(uint8_t stringNumber, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
-void ws2812_RightToLeft(uint8_t stringNumber, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
-void ws2812_HalloweenEyesRGB(uint8_t stringNumber, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeWidth, uint32_t EyeSpace,
+void ws2812_NewKITT(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
+void ws2812_CenterToOutside(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
+void ws2812_OutsideToCenter(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
+void ws2812_LeftToRight(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
+void ws2812_RightToLeft(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
+void ws2812_HalloweenEyesRGB(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeWidth, uint32_t EyeSpace,
 		bool Fade, uint32_t Steps, uint32_t FadeDelay, uint32_t EndPause);
-void ws2812_TwinkleRGB(uint8_t stringNumber, uint8_t red, uint8_t green, uint8_t blue, uint32_t Count, uint32_t SpeedDelay, bool OnlyOne);
+void ws2812_TwinkleRGB(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t Count, uint32_t SpeedDelay, bool OnlyOne);
 
 void ws2812_DisplayClear(uint8_t stringNumber, uint32_t color);
 uint32_t ws2812_getColor( uint32_t color);
@@ -239,67 +181,6 @@ uint32_t ws2812_RgbBlend(uint32_t fromColor, uint32_t toColor, uint32_t pct);
 /* ==================================================================== */
 /* ============================ functions ============================= */
 /* ==================================================================== */
-/*******************************************************************************
-* Function Name: void ws2812LightShowTask (void *pvParameters)
-********************************************************************************
-* Summary:
-*  Task that processes the main application for the light show
-*
-* Parameters:
-*  void *pvParameters : Task parameter defined during task creation (unused)
-*
-* Return:
-*  void
-*
-*******************************************************************************/
-void ws2812LightShowTask(void *arg)
-{
-	(void)arg;
-	printf("Starting LightShow task\r\n");
-	vTaskDelay(pdMS_TO_TICKS(1000));
-
-	/* If channel is enabled, get the number of LEDs for the channel */
-	for(uint8_t i = 0; i < MAX_LED_STRINGS; i++)
-	{
-		if(channelStatus[i] == 1)
-		{
-			numOfLeds[i] = ws2812HAL_getNumLeds(i);
-		}
-	}
-	/* Test the Display Clear */
-	ws2812_DisplayClear(0, ws2812_BLUE);
-	vTaskDelay(pdMS_TO_TICKS(500));
-	/* Test the RGB Mix */
-//	ws2812_MixColorRGB(0);
-//	vTaskDelay(pdMS_TO_TICKS(500));
-	/* Test the FadeInFadeOutRGB */
-	ws2812_FadeInFadeOutRGB(0, 0xFF, 0xF0, 0xF0, 1, 1);
-	vTaskDelay(pdMS_TO_TICKS(1000));
-//	/* Test the FadeInFadeOutColor */
-//	ws2812_FadeInFadeOutColor(0, ws2812_GREEN, 1, 1);
-//	vTaskDelay(pdMS_TO_TICKS(1000));
-//	/* Test the ws2812_StrobeRGB */
-//	ws2812_StrobeRGB(0, 0xFF, 0xFF, 0xFF, 20, 50, 100);
-//	vTaskDelay(pdMS_TO_TICKS(1000));
-//	/* Test the ws2812_StrobeColor */
-//	ws2812_StrobeColor(0, ws2812_FIRE_LIGHT, 20, 50, 100);
-//	vTaskDelay(pdMS_TO_TICKS(1000));
-//	/* Test the ws2812_NewKITT */
-//	ws2812_NewKITT(0, 0xFF, 0x00, 0x00, 4, 100, 100);
-//	vTaskDelay(pdMS_TO_TICKS(1000));
-//	/* Test the ws2812_HalloweenEyesRGB */
-//	ws2812_HalloweenEyesRGB(0, 0xFF, 0x00, 0x00, 1, 3, true, 50, 60, 1000);
-//	vTaskDelay(pdMS_TO_TICKS(1000));
-//	/* Test the ws2812_TwinkleRGB */
-//	ws2812_TwinkleRGB(0, 0xFF, 0xFF, 0xFF, 10, 100, true);
-//	vTaskDelay(pdMS_TO_TICKS(1000));
-
-	while(1)
-	{
-		vTaskDelay(pdMS_TO_TICKS(100));
-	}
-}
-
 
 /*******************************************************************************
 * Function Name: ws2812_MixColorRGB
@@ -314,25 +195,25 @@ void ws2812LightShowTask(void *arg)
 *  void
 *
 *******************************************************************************/
-void ws2812_MixColorRGB(uint32_t stringNumber)
+void ws2812_MixColorRGB(uint32_t stringNumber, uint32_t numLEDs)
 {
 	/* Cycle through all LEDs and set the RGB pattern to all LEDs in the string passed */
-    for(uint32_t i = 0; i < numOfLeds[stringNumber]; i++)
+    for(uint32_t i = 0; i < numLEDs; i++)
     {
         switch(i%3)
         {
             case 0:
-            	ws2812_setPixelColor(stringNumber, i, ws2812_RED); // red
+            	ws2812HAL_setPixelColor(stringNumber, i, ws2812_RED); // red
                 break;
             case 1:
-            	ws2812_setPixelColor(stringNumber, i, ws2812_GREEN); // green
+            	ws2812HAL_setPixelColor(stringNumber, i, ws2812_GREEN); // green
                 break;
             case 2:
-            	ws2812_setPixelColor(stringNumber, i, ws2812_BLUE); // blue
+            	ws2812HAL_setPixelColor(stringNumber, i, ws2812_BLUE); // blue
                 break;
         }
     }
-    ws2812_update(stringNumber);
+    while(ws2812HAL_updateString(stringNumber) == false);
 }
 
 /*******************************************************************************
@@ -382,9 +263,9 @@ uint32_t ws2812_ColorInc(uint32_t incValue)
 void ws2812_DisplayClear(uint8_t stringNumber, uint32_t color)
 {
 	/* Clear the LEDs by setting the color selected. Black is for off */
-	ws2812_setAllColor(stringNumber, color);
+	ws2812HAL_setAllColor(stringNumber, color);
 	/* Update the LEDs in the string */
-    ws2812_update(stringNumber);
+    while(ws2812HAL_updateString(stringNumber) == false);
 }
 
 /*******************************************************************************
@@ -452,9 +333,9 @@ void ws2812_FadeInFadeOutRGB(uint8_t stringNumber, uint8_t red, uint8_t blue, ui
 			g = (k/256.0)*green;
 			b = (k/256.0)*blue;
 			/* Update the LEDs in the string to the new value */
-			ws2812_setAllRGB(stringNumber, r, g, b);
+			ws2812HAL_setAllRGB(stringNumber, r, g, b);
 			/* Update the LEDs in the string */
-			ws2812_update(stringNumber);
+			while(ws2812HAL_updateString(stringNumber) == false);
 			vTaskDelay(pdMS_TO_TICKS(10));
 		}
 	}
@@ -467,9 +348,9 @@ void ws2812_FadeInFadeOutRGB(uint8_t stringNumber, uint8_t red, uint8_t blue, ui
 			g = (k/256.0)*green;
 			b = (k/256.0)*blue;
 			/* Update the LEDs in the string to the new value */
-			ws2812_setAllRGB(stringNumber, r, g, b);
+			ws2812HAL_setAllRGB(stringNumber, r, g, b);
 			/* Update the LEDs in the string */
-			ws2812_update(stringNumber);
+			while(ws2812HAL_updateString(stringNumber) == false);
 			vTaskDelay(pdMS_TO_TICKS(10));
 		}
 	}
@@ -499,13 +380,13 @@ void ws2812_StrobeRGB(uint8_t stringNumber, uint8_t red, uint8_t green, uint8_t 
   for(uint32_t j = 0; j < StrobeCount; j++)
   {
 	  /* Set the RGB color and update the string */
-	  ws2812_setAllRGB(stringNumber, red, green, blue);
-	  ws2812_update(stringNumber);
+	  ws2812HAL_setAllRGB(stringNumber, red, green, blue);
+	  while(ws2812HAL_updateString(stringNumber) == false);
 	  /* Delay for a flash before turning off */
 	  vTaskDelay(pdMS_TO_TICKS(FlashDelay));
 	  /* Turn off the string and update */
-	  ws2812_setAllColor(stringNumber, ws2812_BLACK);
-	  ws2812_update(stringNumber);
+	  ws2812HAL_setAllColor(stringNumber, ws2812_BLACK);
+	  while(ws2812HAL_updateString(stringNumber) == false);
 	  /* Delay for a flash before turning back on */
 	  vTaskDelay(pdMS_TO_TICKS(FlashDelay));
   }
@@ -550,106 +431,106 @@ void ws2812_StrobeColor(uint8_t stringNumber, uint32_t colorRequested, uint32_t 
 }
 
 
-void ws2812_NewKITT(uint8_t stringNumber, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay)
+void ws2812_NewKITT(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay)
 {
-	ws2812_RightToLeft(stringNumber, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
-	ws2812_LeftToRight(stringNumber, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
-	ws2812_OutsideToCenter(stringNumber, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
-	ws2812_CenterToOutside(stringNumber, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
-	ws2812_LeftToRight(stringNumber, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
-	ws2812_RightToLeft(stringNumber, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
-	ws2812_OutsideToCenter(stringNumber, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
-	ws2812_CenterToOutside(stringNumber, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
+	ws2812_RightToLeft(stringNumber, numLEDs, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
+	ws2812_LeftToRight(stringNumber, numLEDs, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
+	ws2812_OutsideToCenter(stringNumber, numLEDs, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
+	ws2812_CenterToOutside(stringNumber, numLEDs, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
+	ws2812_LeftToRight(stringNumber, numLEDs, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
+	ws2812_RightToLeft(stringNumber, numLEDs, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
+	ws2812_OutsideToCenter(stringNumber, numLEDs, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
+	ws2812_CenterToOutside(stringNumber, numLEDs, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
 }
 
-void ws2812_CenterToOutside(uint8_t stringNumber, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay)
+void ws2812_CenterToOutside(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay)
 {
-	for(uint32_t i =((numOfLeds[stringNumber] - EyeSize)/2); i >= 0; i--)
+	for(uint32_t i =((numLEDs - EyeSize)/2); i >= 0; i--)
 	{
 		/* Turn off the string and update */
-		ws2812_setAllColor(stringNumber, ws2812_BLACK);
-		ws2812_update(stringNumber);
+		ws2812HAL_setAllColor(stringNumber, ws2812_BLACK);
+		while(ws2812HAL_updateString(stringNumber) == false);
 
-		ws2812_setPixelRGB(stringNumber, i, red/10, green/10, blue/10);
+		ws2812HAL_setPixelRGB(stringNumber, i, red/10, green/10, blue/10);
 		for(uint32_t j = 1; j <= EyeSize; j++)
 		{
-			ws2812_setPixelRGB(stringNumber, i+j, red, green, blue);
+			ws2812HAL_setPixelRGB(stringNumber, i+j, red, green, blue);
 		}
-		ws2812_setPixelRGB(stringNumber, i+EyeSize+1, red/10, green/10, blue/10);
+		ws2812HAL_setPixelRGB(stringNumber, i+EyeSize+1, red/10, green/10, blue/10);
 
-		ws2812_setPixelRGB(stringNumber, numOfLeds[stringNumber]-i, red/10, green/10, blue/10);
+		ws2812HAL_setPixelRGB(stringNumber, numLEDs-i, red/10, green/10, blue/10);
 		for(uint32_t j = 1; j <= EyeSize; j++)
 		{
-			ws2812_setPixelRGB(stringNumber, numOfLeds[stringNumber]-i-j, red, green, blue);
+			ws2812HAL_setPixelRGB(stringNumber, numLEDs-i-j, red, green, blue);
 		}
-		ws2812_setPixelRGB(stringNumber, numOfLeds[stringNumber]-i-EyeSize-1, red/10, green/10, blue/10);
+		ws2812HAL_setPixelRGB(stringNumber, numLEDs-i-EyeSize-1, red/10, green/10, blue/10);
 
-		ws2812_update(stringNumber);
+		while(ws2812HAL_updateString(stringNumber) == false);
 		vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
 	}
 	vTaskDelay(pdMS_TO_TICKS(ReturnDelay));
 }
 
-void ws2812_OutsideToCenter(uint8_t stringNumber, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay)
+void ws2812_OutsideToCenter(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay)
 {
-	for(uint32_t i = 0; i<=((numOfLeds[stringNumber]-EyeSize)/2); i++)
+	for(uint32_t i = 0; i<=((numLEDs-EyeSize)/2); i++)
 	{
 		/* Turn off the string and update */
-		ws2812_setAllColor(stringNumber, ws2812_BLACK);
-		ws2812_update(stringNumber);
+		ws2812HAL_setAllColor(stringNumber, ws2812_BLACK);
+		while(ws2812HAL_updateString(stringNumber) == false);
 
-		ws2812_setPixelRGB(stringNumber, i, red/10, green/10, blue/10);
+		ws2812HAL_setPixelRGB(stringNumber, i, red/10, green/10, blue/10);
 		for(uint32_t j = 1; j <= EyeSize; j++)
 		{
-			ws2812_setPixelRGB(stringNumber, i+j, red, green, blue);
+			ws2812HAL_setPixelRGB(stringNumber, i+j, red, green, blue);
 		}
-		ws2812_setPixelRGB(stringNumber, i+EyeSize+1, red/10, green/10, blue/10);
+		ws2812HAL_setPixelRGB(stringNumber, i+EyeSize+1, red/10, green/10, blue/10);
 
-		ws2812_setPixelRGB(stringNumber, numOfLeds[stringNumber]-i, red/10, green/10, blue/10);
+		ws2812HAL_setPixelRGB(stringNumber, numLEDs-i, red/10, green/10, blue/10);
 		for(uint32_t j = 1; j <= EyeSize; j++)
 		{
-			ws2812_setPixelRGB(stringNumber, numOfLeds[stringNumber]-i-j, red, green, blue);
+			ws2812HAL_setPixelRGB(stringNumber, numLEDs-i-j, red, green, blue);
 		}
-		ws2812_setPixelRGB(stringNumber, numOfLeds[stringNumber]-i-EyeSize-1, red/10, green/10, blue/10);
+		ws2812HAL_setPixelRGB(stringNumber, numLEDs-i-EyeSize-1, red/10, green/10, blue/10);
 
-		ws2812_update(stringNumber);
+		while(ws2812HAL_updateString(stringNumber) == false);
 		vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
 	}
 	vTaskDelay(pdMS_TO_TICKS(ReturnDelay));
 }
 
-void ws2812_LeftToRight(uint8_t stringNumber, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay)
+void ws2812_LeftToRight(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay)
 {
-	for(uint32_t i = 0; i < numOfLeds[stringNumber]-EyeSize-2; i++) {
+	for(uint32_t i = 0; i < numLEDs-EyeSize-2; i++) {
 		/* Turn off the string and update */
-		ws2812_setAllColor(stringNumber, ws2812_BLACK);
-		ws2812_update(stringNumber);
-		ws2812_setPixelRGB(stringNumber, i, red/10, green/10, blue/10);
+		ws2812HAL_setAllColor(stringNumber, ws2812_BLACK);
+		while(ws2812HAL_updateString(stringNumber) == false);
+		ws2812HAL_setPixelRGB(stringNumber, i, red/10, green/10, blue/10);
 		for(uint32_t j = 1; j <= EyeSize; j++)
 		{
-			ws2812_setPixelRGB(stringNumber, i+j, red, green, blue);
+			ws2812HAL_setPixelRGB(stringNumber, i+j, red, green, blue);
 		}
-		ws2812_setPixelRGB(stringNumber, i+EyeSize+1, red/10, green/10, blue/10);
-		ws2812_update(stringNumber);
+		ws2812HAL_setPixelRGB(stringNumber, i+EyeSize+1, red/10, green/10, blue/10);
+		while(ws2812HAL_updateString(stringNumber) == false);
 		vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
 	}
 	vTaskDelay(pdMS_TO_TICKS(ReturnDelay));
 }
 
-void ws2812_RightToLeft(uint8_t stringNumber, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay)
+void ws2812_RightToLeft(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay)
 {
-	for(uint32_t i = numOfLeds[stringNumber]-EyeSize-2; i > 0; i--)
+	for(uint32_t i = numLEDs-EyeSize-2; i > 0; i--)
 	{
 		/* Turn off the string and update */
-		ws2812_setAllColor(stringNumber, ws2812_BLACK);
-		ws2812_update(stringNumber);
-		ws2812_setPixelRGB(stringNumber, i, red/10, green/10, blue/10);
+		ws2812HAL_setAllColor(stringNumber, ws2812_BLACK);
+		while(ws2812HAL_updateString(stringNumber) == false);
+		ws2812HAL_setPixelRGB(stringNumber, i, red/10, green/10, blue/10);
 		for(uint32_t j = 1; j <= EyeSize; j++)
 		{
-			ws2812_setPixelRGB(stringNumber, i+j, red, green, blue);
+			ws2812HAL_setPixelRGB(stringNumber, i+j, red, green, blue);
 		}
-		ws2812_setPixelRGB(stringNumber, i+EyeSize+1, red/10, green/10, blue/10);
-		ws2812_update(stringNumber);
+		ws2812HAL_setPixelRGB(stringNumber, i+EyeSize+1, red/10, green/10, blue/10);
+		while(ws2812HAL_updateString(stringNumber) == false);
 		vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
 	}
 	vTaskDelay(pdMS_TO_TICKS(ReturnDelay));
@@ -725,18 +606,18 @@ uint32_t ws2812_RgbBlend(uint32_t fromColor, uint32_t toColor, uint32_t pct)
 *  void
 *
 *******************************************************************************/
-void ws2812_HalloweenEyesRGB(uint8_t stringNumber, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeWidth, uint32_t EyeSpace,
-		bool Fade, uint32_t Steps, uint32_t FadeDelay, uint32_t EndPause)
+void ws2812_HalloweenEyesRGB(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeWidth,
+		uint32_t EyeSpace, bool Fade, uint32_t Steps, uint32_t FadeDelay, uint32_t EndPause)
 {
 
 	uint32_t i;
 	//int num = (rand() % (upper - lower + 1)) + lower;
-	uint32_t StartPoint  = random() % (numOfLeds[stringNumber] - (2 * EyeWidth) - EyeSpace);
+	uint32_t StartPoint  = random() % (numLEDs - (2 * EyeWidth) - EyeSpace);
 	uint32_t Start2ndEye = StartPoint + EyeWidth + EyeSpace;
 
 	/* Turn off the string and update */
-	ws2812_setAllColor(stringNumber, ws2812_BLACK);
-	ws2812_update(stringNumber);
+	ws2812HAL_setAllColor(stringNumber, ws2812_BLACK);
+	while(ws2812HAL_updateString(stringNumber) == false);
 
 	for(i = 0; i < EyeWidth; i++)
 	{
@@ -744,7 +625,7 @@ void ws2812_HalloweenEyesRGB(uint8_t stringNumber, uint8_t red, uint8_t green, u
 		ws2812HAL_setPixelRGB(stringNumber, Start2ndEye + i, red, green, blue);
 	}
 	/* Update the LEDs in the string */
-	ws2812_update(stringNumber);
+	while(ws2812HAL_updateString(stringNumber) == false);
 
 	if(Fade == true)
 	{
@@ -763,14 +644,14 @@ void ws2812_HalloweenEyesRGB(uint8_t stringNumber, uint8_t red, uint8_t green, u
 			}
 
 			/* Update the LEDs in the string */
-			ws2812_update(stringNumber);
+			while(ws2812HAL_updateString(stringNumber) == false);
 			vTaskDelay(pdMS_TO_TICKS(FadeDelay));
 		}
 	}
 
 	/* Turn off the string and update */
-	ws2812_setAllColor(stringNumber, ws2812_BLACK);
-	ws2812_update(stringNumber);
+	ws2812HAL_setAllColor(stringNumber, ws2812_BLACK);
+	while(ws2812HAL_updateString(stringNumber) == false);
 
 	vTaskDelay(pdMS_TO_TICKS(EndPause));
 }
@@ -795,24 +676,24 @@ void ws2812_HalloweenEyesRGB(uint8_t stringNumber, uint8_t red, uint8_t green, u
 *  void
 *
 *******************************************************************************/
-void ws2812_TwinkleRGB(uint8_t stringNumber, uint8_t red, uint8_t green, uint8_t blue, uint32_t Count, uint32_t SpeedDelay, bool OnlyOne)
+void ws2812_TwinkleRGB(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t Count, uint32_t SpeedDelay, bool OnlyOne)
 {
 	/* Turn off the string and update */
-	ws2812_setAllColor(stringNumber, ws2812_BLACK);
-	ws2812_update(stringNumber);
+	ws2812HAL_setAllColor(stringNumber, ws2812_BLACK);
+	while(ws2812HAL_updateString(stringNumber) == false);
 	vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
 
 	for (uint32_t i = 0; i < Count; i++)
 	{
-		uint32_t randLedIndex = (random() % (numOfLeds[stringNumber] - 1));
+		uint32_t randLedIndex = (random() % (numLEDs - 1));
 		ws2812HAL_setPixelRGB(stringNumber, randLedIndex, red, green, blue);
-		ws2812_update(stringNumber);
+		while(ws2812HAL_updateString(stringNumber) == false);
 		vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
 		if(OnlyOne)
 		{
 			/* Turn off the string and update */
-			ws2812_setAllColor(stringNumber, ws2812_BLACK);
-			ws2812_update(stringNumber);
+			ws2812HAL_setAllColor(stringNumber, ws2812_BLACK);
+			while(ws2812HAL_updateString(stringNumber) == false);
 			vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
 		}
 	}

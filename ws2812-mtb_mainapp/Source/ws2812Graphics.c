@@ -15,6 +15,7 @@
 #include "cycfg.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "ws2812Graphics.h"
 
 /* Kernel includes. */
@@ -171,51 +172,49 @@ void ws2812_RightToLeft(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uin
 void ws2812_HalloweenEyesRGB(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeWidth, uint32_t EyeSpace,
 		bool Fade, uint32_t Steps, uint32_t FadeDelay, uint32_t EndPause);
 void ws2812_TwinkleRGB(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t Count, uint32_t SpeedDelay, bool OnlyOne);
+void ws2812_TwinkleRandom(uint8_t stringNumber, uint32_t numLEDs, uint32_t Count, uint32_t SpeedDelay, bool OnlyOne) ;
+void ws2812_SparkleRGB(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t SpeedDelay);
+void ws2812_SnowSparkle(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t SparkleDelay, uint32_t SpeedDelay);
+void ws2812_RunningLights(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t WaveDelay);
+void ws2812_ColorWipe(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t SpeedDelay);
+void ws2812_Rainbow(uint8_t stringNumber, uint32_t numLEDs, uint32_t startColor, uint32_t SpeedDelay);
+void ws2812_RainbowCycle(uint8_t stringNumber, uint32_t numLEDs, uint32_t SpeedDelay);
+void ws2812_TheaterChase(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t SpeedDelay);
+void ws2812_TheaterChaseRainbow(uint8_t stringNumber, uint32_t numLEDs, uint32_t SpeedDelay);
+void ws2812_Fire(uint8_t stringNumber, uint32_t numLEDs, uint32_t Cooling, uint32_t Sparking, uint32_t SpeedDelay);
+void setPixelHeatColor (uint8_t stringNumber, uint32_t Pixel, uint8_t temperature);
+void ws2812_BouncingBalls(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t BallCount);
 
 void ws2812_DisplayClear(uint8_t stringNumber, uint32_t color);
 uint32_t ws2812_getColor( uint32_t color);
 uint32_t ws2812_RgbBlend(uint32_t fromColor, uint32_t toColor, uint32_t pct);
 
-
+static uint32_t ws2812_GetRandom(uint32_t min, uint32_t max);
 
 /* ==================================================================== */
 /* ============================ functions ============================= */
 /* ==================================================================== */
-
 /*******************************************************************************
-* Function Name: ws2812_MixColorRGB
+* Function Name: ws2812_DisplayClear
 ********************************************************************************
 * Summary:
-*  This function changes the LEDs to RGBRGBRGB....RGB
+*   returns a random number between min and max
 *
 * Parameters:
-*  ledString: The number of the string to be changed
-*
-* Return:
 *  void
 *
+* Return:
+*  random number
+*
 *******************************************************************************/
-void ws2812_MixColorRGB(uint32_t stringNumber, uint32_t numLEDs)
+static uint32_t ws2812_GetRandom(uint32_t max, uint32_t min)
 {
-	/* Cycle through all LEDs and set the RGB pattern to all LEDs in the string passed */
-    for(uint32_t i = 0; i < numLEDs; i++)
-    {
-        switch(i%3)
-        {
-            case 0:
-            	ws2812HAL_setPixelColor(stringNumber, i, ws2812_RED); // red
-                break;
-            case 1:
-            	ws2812HAL_setPixelColor(stringNumber, i, ws2812_GREEN); // green
-                break;
-            case 2:
-            	ws2812HAL_setPixelColor(stringNumber, i, ws2812_BLUE); // blue
-                break;
-        }
-    }
-    while(ws2812HAL_updateString(stringNumber) == false);
-}
+	uint32_t randomNumber = 0;
 
+	randomNumber = (random() % (max - min + 1)) + min;
+
+	return randomNumber;
+}
 /*******************************************************************************
 * Function Name: ws2812_ColorInc
 ********************************************************************************
@@ -265,6 +264,40 @@ void ws2812_DisplayClear(uint8_t stringNumber, uint32_t color)
 	/* Clear the LEDs by setting the color selected. Black is for off */
 	ws2812HAL_setAllColor(stringNumber, color);
 	/* Update the LEDs in the string */
+    while(ws2812HAL_updateString(stringNumber) == false);
+}
+
+/*******************************************************************************
+* Function Name: ws2812_MixColorRGB
+********************************************************************************
+* Summary:
+*  This function changes the LEDs to RGBRGBRGB....RGB
+*
+* Parameters:
+*  ledString: The number of the string to be changed
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+void ws2812_MixColorRGB(uint32_t stringNumber, uint32_t numLEDs)
+{
+	/* Cycle through all LEDs and set the RGB pattern to all LEDs in the string passed */
+    for(uint32_t i = 0; i < numLEDs; i++)
+    {
+        switch(i%3)
+        {
+            case 0:
+            	ws2812HAL_setPixelColor(stringNumber, i, ws2812_RED); // red
+                break;
+            case 1:
+            	ws2812HAL_setPixelColor(stringNumber, i, ws2812_GREEN); // green
+                break;
+            case 2:
+            	ws2812HAL_setPixelColor(stringNumber, i, ws2812_BLUE); // blue
+                break;
+        }
+    }
     while(ws2812HAL_updateString(stringNumber) == false);
 }
 
@@ -592,6 +625,7 @@ uint32_t ws2812_RgbBlend(uint32_t fromColor, uint32_t toColor, uint32_t pct)
 *
 * Parameters:
 * 	stringNumber the string to address
+* 	numLEDs		the total number of LEDs in the string
 *   red	 		Red Color
 *   green	 	Green Color
 *   blue	 	Blue Color
@@ -611,8 +645,7 @@ void ws2812_HalloweenEyesRGB(uint8_t stringNumber, uint32_t numLEDs, uint8_t red
 {
 
 	uint32_t i;
-	//int num = (rand() % (upper - lower + 1)) + lower;
-	uint32_t StartPoint  = random() % (numLEDs - (2 * EyeWidth) - EyeSpace);
+	uint32_t StartPoint  = ws2812_GetRandom(0, (numLEDs - (2 * EyeWidth) - EyeSpace)); //random() % (numLEDs - (2 * EyeWidth) - EyeSpace);
 	uint32_t Start2ndEye = StartPoint + EyeWidth + EyeSpace;
 
 	/* Turn off the string and update */
@@ -659,12 +692,13 @@ void ws2812_HalloweenEyesRGB(uint8_t stringNumber, uint32_t numLEDs, uint8_t red
 /*******************************************************************************
 * Function Name: ws2812_TwinkleRGB()
 ********************************************************************************
-* Summary: This function will blink one or more LEDs in a given color
+* Summary: This function will twinkle one or more LEDs in a given color
 * that fade away
 *
 *
 * Parameters:
 * 	stringNumber the string to address
+* 	numLEDs		the total number of LEDs in the string
 *   red	 		Red Color
 *   green	 	Green Color
 *   blue	 	Blue Color
@@ -685,7 +719,7 @@ void ws2812_TwinkleRGB(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint
 
 	for (uint32_t i = 0; i < Count; i++)
 	{
-		uint32_t randLedIndex = (random() % (numLEDs - 1));
+		uint32_t randLedIndex = ws2812_GetRandom((numLEDs - 1), 0); //(random() % (numLEDs - 1));
 		ws2812HAL_setPixelRGB(stringNumber, randLedIndex, red, green, blue);
 		while(ws2812HAL_updateString(stringNumber) == false);
 		vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
@@ -699,4 +733,502 @@ void ws2812_TwinkleRGB(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint
 	}
 
 	vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
+}
+
+/*******************************************************************************
+* Function Name: ws2812_TwinkleRandom()
+********************************************************************************
+* Summary: This function will twinkle one or more LEDs in a random color
+* that fade away
+*
+*
+* Parameters:
+* 	stringNumber the string to address
+* 	numLEDs		the total number of LEDs in the string
+*   Count		How many LEDs
+*   SpeedDelay	Delay between each LED
+*   OnlyOne		True to show only one LED at a time
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+void ws2812_TwinkleRandom(uint8_t stringNumber, uint32_t numLEDs, uint32_t Count, uint32_t SpeedDelay, bool OnlyOne)
+{
+	/* Turn off the string and update */
+	ws2812HAL_setAllColor(stringNumber, ws2812_BLACK);
+	while(ws2812HAL_updateString(stringNumber) == false);
+	vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
+
+	for (uint32_t i = 0; i < Count; i++)
+	{
+		ws2812HAL_setPixelRGB(stringNumber, ws2812_GetRandom(numLEDs, 0), ws2812_GetRandom(255, 0), ws2812_GetRandom(255, 0), ws2812_GetRandom(255, 0));
+		while(ws2812HAL_updateString(stringNumber) == false);
+		vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
+		if(OnlyOne)
+		{
+			/* Turn off the string and update */
+			ws2812HAL_setAllColor(stringNumber, ws2812_BLACK);
+			while(ws2812HAL_updateString(stringNumber) == false);
+			vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
+		}
+	}
+
+	vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
+}
+
+/*******************************************************************************
+* Function Name: ws2812_SparkleRGB()
+********************************************************************************
+* Summary: This function will twinkle one or more LEDs in a random color
+* that fade away
+*
+*
+* Parameters:
+* 	stringNumber the string to address
+* 	numLEDs		the total number of LEDs in the string
+*   red	 		Red Color
+*   green	 	Green Color
+*   blue	 	Blue Color
+*   SpeedDelay	Delay between each LED
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+void ws2812_SparkleRGB(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t SpeedDelay)
+{
+	/* Turn off the string and update */
+	ws2812HAL_setAllColor(stringNumber, ws2812_BLACK);
+	while(ws2812HAL_updateString(stringNumber) == false);
+	vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
+
+	uint32_t Pixel = ws2812_GetRandom(numLEDs, 0);
+	ws2812HAL_setPixelRGB(stringNumber, Pixel, red, green, blue);
+	while(ws2812HAL_updateString(stringNumber) == false);
+	vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
+
+	/* Turn off the string and update */
+	ws2812HAL_setAllColor(stringNumber, ws2812_BLACK);
+	while(ws2812HAL_updateString(stringNumber) == false);
+	vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
+}
+
+/*******************************************************************************
+* Function Name: ws2812_SnowSparkle()
+********************************************************************************
+* Summary: This function will twinkle one or more LEDs in a random color
+* that fade away
+*
+*
+* Parameters:
+* 	stringNumber the string to address
+* 	numLEDs		the total number of LEDs in the string
+*   red	 		Red Color
+*   green	 	Green Color
+*   blue	 	Blue Color
+*   SparkleDelay Delay for the sparkle to remain
+*   SpeedDelay	Delay between each LED
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+void ws2812_SnowSparkle(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t SparkleDelay, uint32_t SpeedDelay)
+{
+	/* Turn the string to the specified color and update */
+	ws2812HAL_setAllRGB(stringNumber, red, green, blue);
+	while(ws2812HAL_updateString(stringNumber) == false);
+	vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
+
+	uint32_t Pixel = ws2812_GetRandom(numLEDs, 0);
+	ws2812HAL_setPixelRGB(stringNumber, Pixel, 0xFF, 0xFF, 0xFF);
+	while(ws2812HAL_updateString(stringNumber) == false);
+	vTaskDelay(pdMS_TO_TICKS(SparkleDelay));
+
+	/* Turn the string to the specified color and update */
+	ws2812HAL_setAllRGB(stringNumber, red, green, blue);
+	while(ws2812HAL_updateString(stringNumber) == false);
+	vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
+}
+
+/*******************************************************************************
+* Function Name: ws2812_RunningLights()
+********************************************************************************
+* Summary: This function will makes multiple groups of LEDs chase each other.
+* that fade away
+*
+*
+* Parameters:
+* 	stringNumber the string to address
+* 	numLEDs		the total number of LEDs in the string
+*   red	 		Red Color
+*   green	 	Green Color
+*   blue	 	Blue Color
+*   WaveDelay	Delay for the chase effect
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+void ws2812_RunningLights(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t WaveDelay)
+{
+	uint32_t Position = 0;
+
+	for(uint32_t j = 0; j < numLEDs*2; j++)
+	{
+		Position++; // = 0; //Position + Rate;
+		for(uint32_t i = 0; i < numLEDs; i++)
+		{
+			// sine wave, 3 offset waves make a rainbow!
+			//float level = sin(i+Position) * 127 + 128;
+			//setPixel(i,level,0,0);
+			//float level = sin(i+Position) * 127 + 128;
+			ws2812HAL_setPixelRGB(stringNumber, i, ((sin(i+Position) * 127 + 128)/255)*red,
+					((sin(i+Position) * 127 + 128)/255)*green,
+					((sin(i+Position) * 127 + 128)/255)*blue);
+		}
+		while(ws2812HAL_updateString(stringNumber) == false);
+		vTaskDelay(pdMS_TO_TICKS(WaveDelay));
+	}
+}
+
+/*******************************************************************************
+* Function Name: ws2812_ColorWipe()
+********************************************************************************
+* Summary: This function will makes multiple groups of LEDs chase each other.
+* that fade away
+*
+*
+* Parameters:
+* 	stringNumber the string to address
+* 	numLEDs		the total number of LEDs in the string
+*   red	 		Red Color
+*   green	 	Green Color
+*   blue	 	Blue Color
+*   SpeedDelay	Delay for the effect
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+void ws2812_ColorWipe(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t SpeedDelay)
+{
+	for(uint32_t i = 0; i < numLEDs; i++)
+	{
+		/* Turn the selected LED and update */
+		ws2812HAL_setPixelRGB(stringNumber, i, red, green, blue);
+		while(ws2812HAL_updateString(stringNumber) == false);
+		vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
+	}
+}
+
+/*******************************************************************************
+* Function Name: ws2812_Rainbow()
+********************************************************************************
+* Summary: This function will display a rainbow
+*
+*
+* Parameters:
+* 	stringNumber the string to address
+* 	numLEDs		the total number of LEDs in the string
+* 	startColor	index for the LUT start color (0...23)
+*   SpeedDelay	Delay for the effect
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+void ws2812_Rainbow(uint8_t stringNumber, uint32_t numLEDs, uint32_t startColor, uint32_t SpeedDelay)
+{
+	uint32_t ledPosition = 0; // LED position when setting color
+    uint32_t color = 0;       // Temp color to set LED
+
+    /* Set new start color */
+    color = startColor;
+
+    /* Loop through all LEDs giving each one a different color from the color wheel */
+    for(ledPosition = 0; ledPosition <= numLEDs; ledPosition++)
+    {
+    	ws2812HAL_setPixelColor(stringNumber, ledPosition, ws2812_getColor( color ));
+    	color++;
+    	if(color >= ws2812_CWHEEL_SIZE) color = 0;
+    }
+
+    /* Show the LEDs */
+    while(ws2812HAL_updateString(stringNumber) == false);
+    vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
+}
+
+/*******************************************************************************
+* Function Name: ws2812_RainbowCycle()
+********************************************************************************
+* Summary: This function will display a rainbow cycle
+*
+*
+* Parameters:
+* 	stringNumber the string to address
+* 	numLEDs		the total number of LEDs in the string
+*   SpeedDelay	Delay for the effect
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+void ws2812_RainbowCycle(uint8_t stringNumber, uint32_t numLEDs, uint32_t SpeedDelay)
+{
+	/* Cycles of all colors on wheel */
+	for(uint16_t j = 0; j < ws2812_CWHEEL_SIZE; j++)
+	{
+		ws2812_Rainbow(stringNumber, numLEDs, j, SpeedDelay);
+	}
+}
+
+/*******************************************************************************
+* Function Name: ws2812_TheaterChase()
+********************************************************************************
+* Summary: This function will show the effect LEDs are chasing each other
+* like what you’d see in an old Theater
+*
+*
+* Parameters:
+* 	stringNumber the string to address
+* 	numLEDs		the total number of LEDs in the string
+*   red	 		Red Color
+*   green	 	Green Color
+*   blue	 	Blue Color
+*   SpeedDelay	Delay for the effect
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+void ws2812_TheaterChase(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t SpeedDelay)
+{
+	//do 10 cycles of chasing
+	for (uint32_t j = 0; j < 10; j++)
+	{
+		for (uint32_t q = 0; q < 3; q++)
+		{
+			for (uint32_t i = 0; i < numLEDs; i = i+3)
+			{
+				ws2812HAL_setPixelRGB(stringNumber, i+q, red, green, blue);    //turn every third pixel on
+			}
+			/* Show the LEDs */
+			while(ws2812HAL_updateString(stringNumber) == false);
+			vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
+
+			for (uint32_t i = 0; i < numLEDs; i = i+3)
+			{
+				ws2812HAL_setPixelRGB(stringNumber, i+q, 0, 0, 0);        //turn every third pixel off
+			}
+		}
+	}
+}
+
+/*******************************************************************************
+* Function Name: ws2812_TheaterChaseRainbow()
+********************************************************************************
+* Summary: This function will combine Rainbow and TheatreChase.
+*
+*
+* Parameters:
+* 	stringNumber the string to address
+* 	numLEDs		the total number of LEDs in the string
+*   SpeedDelay	Delay for the effect
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+void ws2812_TheaterChaseRainbow(uint8_t stringNumber, uint32_t numLEDs, uint32_t SpeedDelay)
+{
+	uint32_t color = 0;       // Temp color to set LED
+	/* Cycles of all colors on wheel */
+	for(uint16_t j = 0; j < ws2812_CWHEEL_SIZE; j++)
+	{
+		for (uint32_t q = 0; q < 3; q++)
+		{
+			for (uint32_t i = 0; i < numLEDs; i = i+3)
+			{
+				ws2812HAL_setPixelColor(stringNumber, i + q, ws2812_getColor( color ));    //turn every third pixel on
+				color++;
+				if(color >= ws2812_CWHEEL_SIZE) color = 0;
+			}
+			/* Show the LEDs */
+			while(ws2812HAL_updateString(stringNumber) == false);
+			vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
+
+			for (uint32_t i = 0; i < numLEDs; i = i+3)
+			{
+				ws2812HAL_setPixelRGB(stringNumber, i+q, 0, 0, 0);        //turn every third pixel off
+			}
+		}
+	}
+
+}
+
+/*******************************************************************************
+* Function Name: ws2812_Fire()
+********************************************************************************
+* Summary: This function simulates a one LED wide “fire”,
+*
+*
+* Parameters:
+* 	stringNumber the string to address
+* 	numLEDs		the total number of LEDs in the string
+* 	Cooling: how fast a flame cools down
+* 	Sparking: the chance (out of 255) that a spark will ignite. Higher values
+* 	 make the fire more active
+*   SpeedDelay	Delay for the effect
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+void ws2812_Fire(uint8_t stringNumber, uint32_t numLEDs, uint32_t Cooling, uint32_t Sparking, uint32_t SpeedDelay)
+{
+	//TODO: this parameter needs to be a constant..now set at 24...need a better solution
+	static uint8_t heat[24];
+	uint32_t cooldown;
+
+	/* Step 1.  Cool down every cell a little */
+	for(uint32_t i = 0; i < numLEDs; i++)
+	{
+		cooldown = ws2812_GetRandom(((Cooling * 10) / numLEDs) + 2, 0);
+
+		if(cooldown > heat[i])
+		{
+			heat[i] = 0;
+		}
+		else
+		{
+			heat[i] = heat[i] - cooldown;
+		}
+	}
+
+	/* Step 2.  Heat from each cell drifts 'up' and diffuses a little */
+	for(uint32_t k = numLEDs - 1; k >= 2; k--)
+	{
+		heat[k] = (heat[k - 1] + heat[k - 2] + heat[k - 2]) / 3;
+	}
+
+	/* Step 3.  Randomly ignite new 'sparks' near the bottom */
+	if( ws2812_GetRandom(255, 0) < Sparking )
+	{
+		uint32_t y = ws2812_GetRandom(7, 0);
+		heat[y] = heat[y] + ws2812_GetRandom(255, 160);
+
+	}
+
+	/* Step 4.  Convert heat to LED colors */
+	for(uint32_t j = 0; j < numLEDs; j++)
+	{
+		setPixelHeatColor(stringNumber, j, heat[j] );
+	}
+
+	/* Show the LEDs */
+	while(ws2812HAL_updateString(stringNumber) == false);
+	vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
+}
+
+void setPixelHeatColor (uint8_t stringNumber, uint32_t Pixel, uint8_t temperature)
+{
+	/* Scale 'heat' down from 0-255 to 0-191 */
+	uint8_t t192 = round((temperature/255.0)*191);
+
+	/* calculate ramp up from */
+	uint8_t heatramp = t192 & 0x3F; /* 0..63 */
+	heatramp <<= 2; /* scale up to 0..252 */
+
+	/* figure out which third of the spectrum we're in: */
+
+	if( t192 > 0x80)
+	{
+		/* hottest */
+		ws2812HAL_setPixelRGB(stringNumber, Pixel, 255, 255, heatramp);
+	}
+	else if( t192 > 0x40 )
+	{
+		/* middle */
+		ws2812HAL_setPixelRGB(stringNumber, Pixel, 255, heatramp, 0);
+	}
+	else
+	{
+		/* coolest */
+		ws2812HAL_setPixelRGB(stringNumber, Pixel, heatramp, 0, 0);
+	}
+}
+
+/*******************************************************************************
+* Function Name: ws2812_BouncingBalls()
+********************************************************************************
+* Summary: This function simulates a number of bouncing balls,
+*
+*
+* Parameters:
+* 	stringNumber the string to address
+* 	numLEDs		the total number of LEDs in the string
+*   red	 		Red Color
+*   green	 	Green Color
+*   blue	 	Blue Color
+*   BallCount	number of balls to see
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+void ws2812_BouncingBalls(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t BallCount)
+{
+
+	float Gravity = -9.81;
+	uint32_t StartHeight = 1;
+
+	float Height[BallCount];
+	float ImpactVelocityStart = sqrt( -2 * Gravity * StartHeight );
+	float ImpactVelocity[BallCount];
+	float TimeSinceLastBounce[BallCount];
+	uint32_t   Position[BallCount];
+	long  ClockTimeSinceLastBounce[BallCount];
+	float Dampening[BallCount];
+
+	for (uint32_t i = 0 ; i < BallCount ; i++)
+	{
+		ClockTimeSinceLastBounce[i] = xTaskGetTickCount();
+		Height[i] = StartHeight;
+		Position[i] = 0;
+		ImpactVelocity[i] = ImpactVelocityStart;
+		TimeSinceLastBounce[i] = 0;
+		Dampening[i] = 0.90 - (float)i / pow(BallCount, 2.0);
+	}
+
+	while (true)
+	{
+		for (int i = 0 ; i < BallCount ; i++)
+		{
+			TimeSinceLastBounce[i] =  xTaskGetTickCount() - ClockTimeSinceLastBounce[i];
+			Height[i] = 0.5 * Gravity * pow( TimeSinceLastBounce[i]/1000 , 2.0 ) + ImpactVelocity[i] * TimeSinceLastBounce[i]/1000;
+
+			if ( Height[i] < 0 ) {
+				Height[i] = 0;
+				ImpactVelocity[i] = Dampening[i] * ImpactVelocity[i];
+				ClockTimeSinceLastBounce[i] = xTaskGetTickCount();
+
+				if ( ImpactVelocity[i] < 0.01 ) {
+					ImpactVelocity[i] = ImpactVelocityStart;
+				}
+			}
+			Position[i] = round( Height[i] * (numLEDs - 1) / StartHeight);
+		}
+
+		for (int i = 0 ; i < BallCount ; i++) {
+			ws2812HAL_setPixelRGB(stringNumber, Position[i],red,green,blue);
+		}
+
+		/* Show the LEDs */
+		while(ws2812HAL_updateString(stringNumber) == false);
+		vTaskDelay(pdMS_TO_TICKS(10));
+		ws2812HAL_setAllColor(stringNumber, ws2812_BLACK);
+
+	}
 }

@@ -95,42 +95,73 @@ void ws2812LightShowTask(void *arg)
 		}
 	}
 
-	/* Test the Display Clear */
+//	/* Test the Display Clear */
 //	ws2812_DisplayClear(0, ws2812_ORANGE);
 //	vTaskDelay(pdMS_TO_TICKS(500));
 //	/* Test the RGB Mix */
 //	ws2812_MixColorRGB(0, numOfLeds[0]);
 //	vTaskDelay(pdMS_TO_TICKS(500));
-//	/* Test the FadeInFadeOutRGB */
-//	ws2812_FadeInFadeOutRGB(0, 0xFF, 0xF0, 0xF0, 1, 1);
-//	vTaskDelay(pdMS_TO_TICKS(1000));
-//	/* Test the FadeInFadeOutColor */
-//	ws2812_FadeInFadeOutColor(0, ws2812_GREEN, 1, 1);
-//	vTaskDelay(pdMS_TO_TICKS(1000));
-//	/* Test the ws2812_StrobeRGB */
-//	ws2812_StrobeRGB(0, 0xFF, 0xFF, 0xFF, 20, 50, 100);
-//	vTaskDelay(pdMS_TO_TICKS(1000));
-//	/* Test the ws2812_StrobeColor */
-//	ws2812_StrobeColor(0, ws2812_FIRE_LIGHT, 20, 50, 100);
-//	vTaskDelay(pdMS_TO_TICKS(1000));
-//	/* Test the ws2812_NewKITT */
-//	ws2812_NewKITT(0, numOfLeds[0], 0xFF, 0x00, 0x00, 4, 100, 100);
-//	vTaskDelay(pdMS_TO_TICKS(1000));
-	/* Test the ws2812_HalloweenEyesRGB */
-	ws2812_HalloweenEyesRGB(0, numOfLeds[0], 0xFF, 0x00, 0x00, 1, 3, true, 50, 60, 1000);
-	vTaskDelay(pdMS_TO_TICKS(1000));
-	/* Test the ws2812_TwinkleRGB */
-//	ws2812_TwinkleRGB(0, numOfLeds[0], 0xFF, 0xFF, 0xFF, 10, 100, true);
-//	vTaskDelay(pdMS_TO_TICKS(1000));
-//	/* Test the ws2812_TwinkleRGB */
-//	ws2812_TwinkleRGB(0, numOfLeds[0], 0xFF, 0xFF, 0xFF, 10, 100, false);
-//	vTaskDelay(pdMS_TO_TICKS(1000));
-//	/* Test the Display Clear */
-//	ws2812_DisplayClear(0, ws2812_BLACK);
-//	vTaskDelay(pdMS_TO_TICKS(500));
+
 
 	while(1)
 	{
+//		/* Test the FadeInFadeOutRGB */
+//		ws2812_FadeInFadeOutRGB(0, 0xFF, 0xF0, 0xF0, 1, 1);
+//		vTaskDelay(pdMS_TO_TICKS(1000));
+//		/* Test the FadeInFadeOutColor */
+//		ws2812_FadeInFadeOutColor(0, ws2812_GREEN, 1, 1);
+//		vTaskDelay(pdMS_TO_TICKS(1000));
+//		/* Test the ws2812_StrobeRGB */
+//		ws2812_StrobeRGB(0, 0xFF, 0xFF, 0xFF, 20, 50, 100);
+//		vTaskDelay(pdMS_TO_TICKS(1000));
+//		/* Test the ws2812_StrobeColor */
+//		ws2812_StrobeColor(0, ws2812_FIRE_LIGHT, 20, 50, 100);
+//		vTaskDelay(pdMS_TO_TICKS(1000));
+//		/* Test the ws2812_NewKITT */
+//		ws2812_NewKITT(0, numOfLeds[0], 0xFF, 0x00, 0x00, 4, 100, 100);
+//		vTaskDelay(pdMS_TO_TICKS(1000));
+//		/* Test the ws2812_HalloweenEyesRGB */
+//		ws2812_HalloweenEyesRGB(0, numOfLeds[0], 0xFF, 0x00, 0x00, 1, 3, true, 50, 60, 1000);
+//		vTaskDelay(pdMS_TO_TICKS(1000));
+//		/* Test the ws2812_TwinkleRGB */
+//		ws2812_TwinkleRGB(0, numOfLeds[0], 0xFF, 0xFF, 0xFF, 10, 100, true);
+//		vTaskDelay(pdMS_TO_TICKS(1000));
+//		/* Test the ws2812_TwinkleRGB */
+//		ws2812_TwinkleRGB(0, numOfLeds[0], 0xFF, 0xFF, 0xFF, 10, 100, false);
+//		vTaskDelay(pdMS_TO_TICKS(1000));
+//		/* Test the ws2812_TwinkleRandom */
+//		ws2812_TwinkleRandom(0, numOfLeds[0], 10, 100, false);
+//		vTaskDelay(pdMS_TO_TICKS(500));
+//		/* Test the ws2812_TwinkleRandom */
+//		ws2812_TwinkleRandom(0, numOfLeds[0], 10, 100, true);
+//		vTaskDelay(pdMS_TO_TICKS(500));
+//		/* Test the ws2812_SparkleRGB */
+//		ws2812_SparkleRGB(0, numOfLeds[0], 0xFF, 0xF0, 0xF0, 100);
+//		vTaskDelay(pdMS_TO_TICKS(100));
+//		/* Test the ws2812_SnowSparkle */
+//		ws2812_SnowSparkle(0, numOfLeds[0], 0x10, 0x10, 0x10, 20, 200);
+//		vTaskDelay(pdMS_TO_TICKS(100));
+//		/* Test the ws2812_RunningLights */
+//		ws2812_RunningLights(0, numOfLeds[0], 0xFF, 0x00, 0x00, 50);
+//		vTaskDelay(pdMS_TO_TICKS(100));
+//		/* Test the ws2812_ColorWipe */
+//		ws2812_ColorWipe(0, numOfLeds[0], 0x00, 0xFF, 0x00, 50);
+//		ws2812_ColorWipe(0, numOfLeds[0], 0x00, 0x00, 0x00, 50);
+//		ws2812_ColorWipe(0, numOfLeds[0], 0xFF, 0x00, 0x00, 50);
+//		ws2812_ColorWipe(0, numOfLeds[0], 0x00, 0x00, 0x00, 50);
+//		vTaskDelay(pdMS_TO_TICKS(100));
+//		/* Test the ws2812_Rainbow */
+//		ws2812_Rainbow(0, numOfLeds[0], 10, 100);
+//		/* Test the ws2812_RainbowCycle */
+//		ws2812_RainbowCycle(0, numOfLeds[0], 100);
+//		/* Test the ws2812_TheaterChase */
+//		ws2812_TheaterChase(0, numOfLeds[0], 0xFF, 0, 0, 50);
+//		/* Test the ws2812_TheaterChaseRainbow */
+//		ws2812_TheaterChaseRainbow(0, numOfLeds[0], 50);
+//		/* Test the ws2812_Fire */
+//		ws2812_Fire(0, numOfLeds[0], 55, 120, 15);
+		/* Test the ws2812_BouncingBalls */
+		ws2812_BouncingBalls(0, numOfLeds[0], 0xFF, 0, 0, 3);
 		vTaskDelay(pdMS_TO_TICKS(100));
 	}
 }

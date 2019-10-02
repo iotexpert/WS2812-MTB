@@ -129,7 +129,17 @@ extern void ws2812_RightToLeft(uint8_t stringNumber, uint32_t numLEDs, uint8_t r
 extern void ws2812_HalloweenEyesRGB(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeWidth, uint32_t EyeSpace,
 		bool Fade, uint32_t Steps, uint32_t FadeDelay, uint32_t EndPause);
 extern void ws2812_TwinkleRGB(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t Count, uint32_t SpeedDelay, bool OnlyOne);
-
+extern void ws2812_TwinkleRandom(uint8_t stringNumber, uint32_t numLEDs, uint32_t Count, uint32_t SpeedDelay, bool OnlyOne) ;
+extern void ws2812_SparkleRGB(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t SpeedDelay);
+extern void ws2812_SnowSparkle(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t SparkleDelay, uint32_t SpeedDelay);
+extern void ws2812_RunningLights(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t WaveDelay);
+extern void ws2812_ColorWipe(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t SpeedDelay);
+extern void ws2812_Rainbow(uint8_t stringNumber, uint32_t numLEDs, uint32_t startColor, uint32_t SpeedDelay);
+extern void ws2812_RainbowCycle(uint8_t stringNumber, uint32_t numLEDs, uint32_t SpeedDelay);
+extern void ws2812_TheaterChase(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t SpeedDelay) ;
+extern void ws2812_TheaterChaseRainbow(uint8_t stringNumber, uint32_t numLEDs, uint32_t SpeedDelay) ;
+extern void ws2812_Fire(uint8_t stringNumber, uint32_t numLEDs, uint32_t Cooling, uint32_t Sparking, uint32_t SpeedDelay);
+extern void ws2812_BouncingBalls(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t BallCount);
 extern void ws2812_DisplayClear(uint8_t stringNumber, uint32_t color);
 extern uint32_t ws2812_getColor( uint32_t color);
 extern uint32_t ws2812_RgbBlend(uint32_t fromColor, uint32_t toColor, uint32_t pct);

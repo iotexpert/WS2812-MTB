@@ -140,6 +140,8 @@ extern void ws2812_TheaterChase(uint8_t stringNumber, uint32_t numLEDs, uint8_t 
 extern void ws2812_TheaterChaseRainbow(uint8_t stringNumber, uint32_t numLEDs, uint32_t SpeedDelay) ;
 extern void ws2812_Fire(uint8_t stringNumber, uint32_t numLEDs, uint32_t Cooling, uint32_t Sparking, uint32_t SpeedDelay);
 extern void ws2812_BouncingBalls(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t BallCount);
+extern void ws2812_BouncingColoredBalls(uint8_t stringNumber, uint32_t numLEDs, uint32_t BallCount, uint8_t colors[][3]);
+
 extern void ws2812_DisplayClear(uint8_t stringNumber, uint32_t color);
 extern uint32_t ws2812_getColor( uint32_t color);
 extern uint32_t ws2812_RgbBlend(uint32_t fromColor, uint32_t toColor, uint32_t pct);

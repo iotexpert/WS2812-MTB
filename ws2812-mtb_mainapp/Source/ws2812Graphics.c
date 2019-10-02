@@ -184,6 +184,7 @@ void ws2812_TheaterChaseRainbow(uint8_t stringNumber, uint32_t numLEDs, uint32_t
 void ws2812_Fire(uint8_t stringNumber, uint32_t numLEDs, uint32_t Cooling, uint32_t Sparking, uint32_t SpeedDelay);
 void setPixelHeatColor (uint8_t stringNumber, uint32_t Pixel, uint8_t temperature);
 void ws2812_BouncingBalls(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t BallCount);
+void ws2812_BouncingColoredBalls(uint8_t stringNumber, uint32_t numLEDs, uint32_t BallCount, uint8_t colors[][3]);
 
 void ws2812_DisplayClear(uint8_t stringNumber, uint32_t color);
 uint32_t ws2812_getColor( uint32_t color);
@@ -1230,5 +1231,77 @@ void ws2812_BouncingBalls(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, u
 		vTaskDelay(pdMS_TO_TICKS(10));
 		ws2812HAL_setAllColor(stringNumber, ws2812_BLACK);
 
+	}
+}
+
+/*******************************************************************************
+* Function Name: ws2812_BouncingBalls()
+********************************************************************************
+* Summary: This function simulates a number of bouncing balls,
+*
+*
+* Parameters:
+* 	stringNumber the string to address
+* 	numLEDs		the total number of LEDs in the string
+*   BallCount	number of balls to see
+*   color: 2 dimensional array [balls][color RGB]
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+void ws2812_BouncingColoredBalls(uint8_t stringNumber, uint32_t numLEDs, uint32_t BallCount, uint8_t colors[][3])
+{
+	float Gravity = -9.81;
+	int StartHeight = 1;
+
+	float Height[BallCount];
+	float ImpactVelocityStart = sqrt( -2 * Gravity * StartHeight );
+	float ImpactVelocity[BallCount];
+	float TimeSinceLastBounce[BallCount];
+	int   Position[BallCount];
+	long  ClockTimeSinceLastBounce[BallCount];
+	float Dampening[BallCount];
+
+	for (uint32_t i = 0 ; i < BallCount ; i++)
+	{
+		ClockTimeSinceLastBounce[i] = xTaskGetTickCount();
+		Height[i] = StartHeight;
+		Position[i] = 0;
+		ImpactVelocity[i] = ImpactVelocityStart;
+		TimeSinceLastBounce[i] = 0;
+		Dampening[i] = 0.90 - (float)i/pow(BallCount,2);
+	}
+
+	while (true)
+	{
+		for (uint32_t i = 0 ; i < BallCount ; i++)
+		{
+			TimeSinceLastBounce[i] =  xTaskGetTickCount() - ClockTimeSinceLastBounce[i];
+			Height[i] = 0.5 * Gravity * pow( TimeSinceLastBounce[i]/1000 , 2.0 ) + ImpactVelocity[i] * TimeSinceLastBounce[i]/1000;
+
+			if ( Height[i] < 0 )
+			{
+				Height[i] = 0;
+				ImpactVelocity[i] = Dampening[i] * ImpactVelocity[i];
+				ClockTimeSinceLastBounce[i] = xTaskGetTickCount();
+
+				if ( ImpactVelocity[i] < 0.01 )
+				{
+					ImpactVelocity[i] = ImpactVelocityStart;
+				}
+			}
+			Position[i] = round( Height[i] * (numLEDs - 1) / StartHeight);
+		}
+
+		for (uint32_t i = 0 ; i < BallCount ; i++)
+		{
+			ws2812HAL_setPixelRGB(stringNumber, Position[i], colors[i][0], colors[i][1], colors[i][2]);
+		}
+
+		/* Show the LEDs */
+		while(ws2812HAL_updateString(stringNumber) == false);
+		vTaskDelay(pdMS_TO_TICKS(10));
+		ws2812HAL_setAllColor(stringNumber, ws2812_BLACK);
 	}
 }

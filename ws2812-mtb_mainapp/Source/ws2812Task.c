@@ -102,7 +102,11 @@ void ws2812LightShowTask(void *arg)
 //	ws2812_MixColorRGB(0, numOfLeds[0]);
 //	vTaskDelay(pdMS_TO_TICKS(500));
 
-
+	/* Test the ws2812_BouncingColoredBalls */
+			uint8_t colors[3][3] = 	{ {0xff, 0, 0},
+									{0xff, 0xff, 0xff},
+									{0   , 0   , 0xff} };
+			ws2812_BouncingColoredBalls(0, numOfLeds[0], 3, colors);
 	while(1)
 	{
 //		/* Test the FadeInFadeOutRGB */
@@ -160,8 +164,14 @@ void ws2812LightShowTask(void *arg)
 //		ws2812_TheaterChaseRainbow(0, numOfLeds[0], 50);
 //		/* Test the ws2812_Fire */
 //		ws2812_Fire(0, numOfLeds[0], 55, 120, 15);
-		/* Test the ws2812_BouncingBalls */
-		ws2812_BouncingBalls(0, numOfLeds[0], 0xFF, 0, 0, 3);
+//		/* Test the ws2812_BouncingBalls */
+//		ws2812_BouncingBalls(0, numOfLeds[0], 0xFF, 0, 0, 3);
+		/* Test the ws2812_BouncingColoredBalls */
+		uint8_t colors[3][3] = 	{ {0xff, 0, 0},
+								{0xff, 0xff, 0xff},
+								{0   , 0   , 0xff} };
+		ws2812_BouncingColoredBalls(0, numOfLeds[0], 3, colors);
+
 		vTaskDelay(pdMS_TO_TICKS(100));
 	}
 }

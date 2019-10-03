@@ -115,17 +115,17 @@
 /* ==================== function prototypes =========================== */
 /* ==================================================================== */
 /* Function prototypes for public (external) functions go here */
-extern uint32_t ws2812_ColorInc(uint32_t incValue);
-extern void ws2812_FadeInFadeOutColor(uint8_t stringNumber, uint32_t color, bool fadeIn, bool fadeOut);
-extern void ws2812_FadeInFadeOutRGB(uint8_t stringNumber, uint8_t red, uint8_t blue, uint8_t green, bool fadeIn, bool fadeOut);
-extern void ws2812_MixColorRGB(uint32_t stringNumber, uint32_t numLEDs);
+extern void ws2812_MixColorRGB(uint32_t stringNumber, uint32_t row, uint32_t numLEDs);
+extern void ws2812_FadeInFadeOutRGB(uint8_t stringNumber, uint32_t row, uint32_t column, uint8_t red, uint8_t blue, uint8_t green, bool fadeIn, bool fadeOut);
+extern void ws2812_FadeInFadeOutColor(uint8_t stringNumber,  uint32_t row, uint32_t column, uint32_t color, bool fadeIn, bool fadeOut);
 extern void ws2812_StrobeRGB(uint8_t stringNumber, uint8_t red, uint8_t green, uint8_t blue, uint32_t StrobeCount, uint32_t FlashDelay, uint32_t EndPause);
 extern void ws2812_StrobeColor(uint8_t stringNumber, uint32_t colorRequested, uint32_t StrobeCount, uint32_t FlashDelay, uint32_t EndPause);
-extern void ws2812_NewKITT(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
-extern void ws2812_CenterToOutside(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
-extern void ws2812_OutsideToCenter(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
-extern void ws2812_LeftToRight(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
-extern void ws2812_RightToLeft(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
+extern void ws2812_NewKITT(uint8_t stringNumber, uint32_t numLEDs, uint8_t row, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
+extern void ws2812_CenterToOutside(uint8_t stringNumber, uint32_t numLEDs, uint8_t row, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
+extern void ws2812_OutsideToCenter(uint8_t stringNumber, uint32_t numLEDs, uint8_t row, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
+extern void ws2812_LeftToRight(uint8_t stringNumber, uint32_t numLEDs, uint8_t row, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
+extern void ws2812_RightToLeft(uint8_t stringNumber, uint32_t numLEDs, uint8_t row, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
+
 extern void ws2812_HalloweenEyesRGB(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeWidth, uint32_t EyeSpace,
 		bool Fade, uint32_t Steps, uint32_t FadeDelay, uint32_t EndPause);
 extern void ws2812_TwinkleRGB(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t Count, uint32_t SpeedDelay, bool OnlyOne);
@@ -145,5 +145,5 @@ extern void ws2812_BouncingColoredBalls(uint8_t stringNumber, uint32_t numLEDs, 
 extern void ws2812_DisplayClear(uint8_t stringNumber, uint32_t color);
 extern uint32_t ws2812_getColor( uint32_t color);
 extern uint32_t ws2812_RgbBlend(uint32_t fromColor, uint32_t toColor, uint32_t pct);
-
+extern uint32_t ws2812_ColorInc(uint32_t incValue);
 #endif

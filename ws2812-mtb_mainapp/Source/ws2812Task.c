@@ -75,7 +75,7 @@ void ws2812LightShowTask(void *arg)
 
 	int8_t retChannelStatus = -1;
 
-	retChannelStatus = ws2812HAL_CreateString(GPIO_PRT9, 0, 24, 1, 24, ws2812_LED_LAYOUT_STANDARD);
+	retChannelStatus = ws2812HAL_CreateString(GPIO_PRT9, 0, 24, 1, 24, ws2812_LED_LAYOUT_STANDARD, ws2812_COORD_NONE);
 	if(retChannelStatus == -1)
 	{
 		printf("Third channel Not Created\r\n");
@@ -95,50 +95,61 @@ void ws2812LightShowTask(void *arg)
 		}
 	}
 
-//	/* Test the Display Clear */
-//	ws2812_DisplayClear(0, ws2812_ORANGE);
-//	vTaskDelay(pdMS_TO_TICKS(500));
+	/* Test the Display Clear */
+	ws2812_DisplayClear(0, ws2812_RED);
+	vTaskDelay(pdMS_TO_TICKS(1000));
 //	/* Test the RGB Mix */
-//	ws2812_MixColorRGB(0, numOfLeds[0]);
+//	ws2812_MixColorRGB(0, 0, numOfLeds[0]);
 //	vTaskDelay(pdMS_TO_TICKS(500));
+//
+//	/* Test the Display Clear */
+//	ws2812_DisplayClear(0, ws2812_BLACK);
+//	vTaskDelay(pdMS_TO_TICKS(1000));
+//	ws2812HAL_setPixelArrayColor(0, 0, 10, ws2812_RED);
+//	/* Update the LEDs in the string */
+//	while(ws2812HAL_updateString(0) == false);
+//	vTaskDelay(pdMS_TO_TICKS(100));
+//	ws2812HAL_setPixelArrayRGB(0, 0, 15, 0xFF, 0xFF, 0xFF);
+//	/* Update the LEDs in the string */
+//	while(ws2812HAL_updateString(0) == false);
+//	vTaskDelay(pdMS_TO_TICKS(1000));
+//	uint32_t newcolor = ws2812_GetPixelColor(0, 0, 10);
+//	ws2812HAL_setPixelArrayColor(0, 0, 16, newcolor);
+//	/* Update the LEDs in the string */
+//	while(ws2812HAL_updateString(0) == false);
 
-	/* Test the ws2812_BouncingColoredBalls */
-			uint8_t colors[3][3] = 	{ {0xff, 0, 0},
-									{0xff, 0xff, 0xff},
-									{0   , 0   , 0xff} };
-			ws2812_BouncingColoredBalls(0, numOfLeds[0], 3, colors);
 	while(1)
 	{
 //		/* Test the FadeInFadeOutRGB */
-//		ws2812_FadeInFadeOutRGB(0, 0xFF, 0xF0, 0xF0, 1, 1);
+//		ws2812_FadeInFadeOutRGB(0, 0, 5, 0xFF, 0xF0, 0xF0, 1, 1);
 //		vTaskDelay(pdMS_TO_TICKS(1000));
 //		/* Test the FadeInFadeOutColor */
-//		ws2812_FadeInFadeOutColor(0, ws2812_GREEN, 1, 1);
+//		ws2812_FadeInFadeOutColor(0, 0, 10, ws2812_GREEN, 1, 1);
 //		vTaskDelay(pdMS_TO_TICKS(1000));
-//		/* Test the ws2812_StrobeRGB */
-//		ws2812_StrobeRGB(0, 0xFF, 0xFF, 0xFF, 20, 50, 100);
-//		vTaskDelay(pdMS_TO_TICKS(1000));
-//		/* Test the ws2812_StrobeColor */
-//		ws2812_StrobeColor(0, ws2812_FIRE_LIGHT, 20, 50, 100);
-//		vTaskDelay(pdMS_TO_TICKS(1000));
+		/* Test the ws2812_StrobeRGB */
+		ws2812_StrobeRGB(0, 0xFF, 0xFF, 0xFF, 20, 50, 100);
+		vTaskDelay(pdMS_TO_TICKS(1000));
+		/* Test the ws2812_StrobeColor */
+		ws2812_StrobeColor(0, ws2812_FIRE_LIGHT, 20, 50, 100);
+		vTaskDelay(pdMS_TO_TICKS(1000));
 //		/* Test the ws2812_NewKITT */
-//		ws2812_NewKITT(0, numOfLeds[0], 0xFF, 0x00, 0x00, 4, 100, 100);
+//		ws2812_NewKITT(0, numOfLeds[0], 0, 0xFF, 0x00, 0x00, 4, 200, 200);
 //		vTaskDelay(pdMS_TO_TICKS(1000));
 //		/* Test the ws2812_HalloweenEyesRGB */
 //		ws2812_HalloweenEyesRGB(0, numOfLeds[0], 0xFF, 0x00, 0x00, 1, 3, true, 50, 60, 1000);
 //		vTaskDelay(pdMS_TO_TICKS(1000));
 //		/* Test the ws2812_TwinkleRGB */
-//		ws2812_TwinkleRGB(0, numOfLeds[0], 0xFF, 0xFF, 0xFF, 10, 100, true);
+//		ws2812_TwinkleRGB(0, numOfLeds[0], 0xFF, 0xFF, 0xFF, 30, 100, true);
 //		vTaskDelay(pdMS_TO_TICKS(1000));
 //		/* Test the ws2812_TwinkleRGB */
-//		ws2812_TwinkleRGB(0, numOfLeds[0], 0xFF, 0xFF, 0xFF, 10, 100, false);
+//		ws2812_TwinkleRGB(0, numOfLeds[0], 0xFF, 0xFF, 0xFF, 30, 100, false);
 //		vTaskDelay(pdMS_TO_TICKS(1000));
-//		/* Test the ws2812_TwinkleRandom */
-//		ws2812_TwinkleRandom(0, numOfLeds[0], 10, 100, false);
-//		vTaskDelay(pdMS_TO_TICKS(500));
-//		/* Test the ws2812_TwinkleRandom */
-//		ws2812_TwinkleRandom(0, numOfLeds[0], 10, 100, true);
-//		vTaskDelay(pdMS_TO_TICKS(500));
+		/* Test the ws2812_TwinkleRandom */
+		ws2812_TwinkleRandom(0, numOfLeds[0], 10, 100, false);
+		vTaskDelay(pdMS_TO_TICKS(500));
+		/* Test the ws2812_TwinkleRandom */
+		ws2812_TwinkleRandom(0, numOfLeds[0], 10, 100, true);
+		vTaskDelay(pdMS_TO_TICKS(500));
 //		/* Test the ws2812_SparkleRGB */
 //		ws2812_SparkleRGB(0, numOfLeds[0], 0xFF, 0xF0, 0xF0, 100);
 //		vTaskDelay(pdMS_TO_TICKS(100));
@@ -166,11 +177,11 @@ void ws2812LightShowTask(void *arg)
 //		ws2812_Fire(0, numOfLeds[0], 55, 120, 15);
 //		/* Test the ws2812_BouncingBalls */
 //		ws2812_BouncingBalls(0, numOfLeds[0], 0xFF, 0, 0, 3);
-		/* Test the ws2812_BouncingColoredBalls */
-		uint8_t colors[3][3] = 	{ {0xff, 0, 0},
-								{0xff, 0xff, 0xff},
-								{0   , 0   , 0xff} };
-		ws2812_BouncingColoredBalls(0, numOfLeds[0], 3, colors);
+//		/* Test the ws2812_BouncingBalls */
+//		uint8_t colors[3][3] = 	{ {0xff, 0, 0},
+//								{0xff, 0xff, 0xff},
+//								{0   , 0   , 0xff} };
+//		ws2812_BouncingColoredBalls(0, numOfLeds[0], 3, colors);
 
 		vTaskDelay(pdMS_TO_TICKS(100));
 	}

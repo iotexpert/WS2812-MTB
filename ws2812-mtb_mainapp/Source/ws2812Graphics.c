@@ -5,6 +5,9 @@
 ** @modified ____7/25/2019__Hassane El-Khoury__  __description of edit__</replaceable>
 ** @@
 **
+**Library ported from the great work done by:
+**https://www.tweaking4all.com/hardware/arduino/adruino-led-strip-effects/
+**Ported into PSoC6 and ModusToolbox, with FreeRTOS
 ********************************************************************/
 
 /* ==================================================================== */
@@ -47,25 +50,6 @@ const uint8_t ws2812_gamma[] = {
   177,180,182,184,186,189,191,193,196,198,200,203,205,208,210,213,
   215,218,220,223,225,228,231,233,236,239,241,244,247,249,252,255 };
 #endif
-
-
- uint8_t const ws2812_cTrans[16][16] =  {
-	/*  0  */  {  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15},
-    /*  1  */  { 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16},
-	/*  2  */  { 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47},
-	/*  3  */  { 63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49, 48},
-	/*  4  */  { 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79},
-	/*  5  */  { 95, 94, 93, 92, 91, 90, 89, 88, 87, 86, 85, 84, 83, 82, 81, 80},
-	/*  6  */  { 96, 97, 98, 99,100,101,102,103,104,105,106,107,108,109,110,111},
-	/*  7  */  {127,126,125,124,123,122,121,120,119,118,117,116,115,114,113,112},
-	/*  8  */  {128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143},
-	/*  9  */  {159,158,157,156,155,154,153,152,151,150,149,148,147,146,145,144},
-	/* 10  */  {160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175},
-	/* 11  */  {191,190,189,188,187,186,185,184,183,182,181,180,179,178,177,176},
-	/* 12  */  {192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207},
-	/* 13  */  {223,222,221,220,219,218,217,216,215,214,213,212,211,210,209,208},
-	/* 14  */  {224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239},
-	/* 15  */  {255,254,253,252,251,250,249,248,247,246,245,244,243,242,241,240}};
 
 const uint32 ws2812_CLUT[ ] = {
 //xxBBRRGG (WS2812)
@@ -158,17 +142,17 @@ const uint32 ws2812_CLUT[ ] = {
 /* ==================== function prototypes =========================== */
 /* ==================================================================== */
 /* Function prototypes for public (external) functions go here */
-uint32_t ws2812_ColorInc(uint32_t incValue);
-void ws2812_FadeInFadeOutColor(uint8_t stringNumber, uint32_t color, bool fadeIn, bool fadeOut);
-void ws2812_FadeInFadeOutRGB(uint8_t stringNumber, uint8_t red, uint8_t blue, uint8_t green, bool fadeIn, bool fadeOut);
-void ws2812_MixColorRGB(uint32_t stringNumber, uint32_t numLEDs);
+void ws2812_MixColorRGB(uint32_t stringNumber, uint32_t row, uint32_t numLEDs);
+void ws2812_FadeInFadeOutRGB(uint8_t stringNumber, uint32_t row, uint32_t column, uint8_t red, uint8_t blue, uint8_t green, bool fadeIn, bool fadeOut);
+void ws2812_FadeInFadeOutColor(uint8_t stringNumber,  uint32_t row, uint32_t column, uint32_t color, bool fadeIn, bool fadeOut);
 void ws2812_StrobeRGB(uint8_t stringNumber, uint8_t red, uint8_t green, uint8_t blue, uint32_t StrobeCount, uint32_t FlashDelay, uint32_t EndPause);
 void ws2812_StrobeColor(uint8_t stringNumber, uint32_t colorRequested, uint32_t StrobeCount, uint32_t FlashDelay, uint32_t EndPause);
-void ws2812_NewKITT(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
-void ws2812_CenterToOutside(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
-void ws2812_OutsideToCenter(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
-void ws2812_LeftToRight(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
-void ws2812_RightToLeft(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
+void ws2812_NewKITT(uint8_t stringNumber, uint32_t numLEDs, uint8_t row, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
+void ws2812_CenterToOutside(uint8_t stringNumber, uint32_t numLEDs, uint8_t row, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
+void ws2812_OutsideToCenter(uint8_t stringNumber, uint32_t numLEDs, uint8_t row, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
+void ws2812_LeftToRight(uint8_t stringNumber, uint32_t numLEDs, uint8_t row, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
+void ws2812_RightToLeft(uint8_t stringNumber, uint32_t numLEDs, uint8_t row, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay);
+
 void ws2812_HalloweenEyesRGB(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeWidth, uint32_t EyeSpace,
 		bool Fade, uint32_t Steps, uint32_t FadeDelay, uint32_t EndPause);
 void ws2812_TwinkleRGB(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t Count, uint32_t SpeedDelay, bool OnlyOne);
@@ -189,7 +173,7 @@ void ws2812_BouncingColoredBalls(uint8_t stringNumber, uint32_t numLEDs, uint32_
 void ws2812_DisplayClear(uint8_t stringNumber, uint32_t color);
 uint32_t ws2812_getColor( uint32_t color);
 uint32_t ws2812_RgbBlend(uint32_t fromColor, uint32_t toColor, uint32_t pct);
-
+uint32_t ws2812_ColorInc(uint32_t incValue);
 static uint32_t ws2812_GetRandom(uint32_t min, uint32_t max);
 
 /* ==================================================================== */
@@ -210,12 +194,20 @@ static uint32_t ws2812_GetRandom(uint32_t min, uint32_t max);
 *******************************************************************************/
 static uint32_t ws2812_GetRandom(uint32_t max, uint32_t min)
 {
+	/* Declare the randomNumber and set to 0 */
 	uint32_t randomNumber = 0;
 
+	//TODO: Need to get a seed from an ADC or something, so there is no overrun if system is running longer than uint32
+	/* Seed the random number generator with a semi-random number */
+	srand(xTaskGetTickCount());
+
+	/* Retrieve the random number between the min and max values provided */
 	randomNumber = (random() % (max - min + 1)) + min;
 
+	/* Return the value */
 	return randomNumber;
 }
+
 /*******************************************************************************
 * Function Name: ws2812_ColorInc
 ********************************************************************************
@@ -231,20 +223,63 @@ static uint32_t ws2812_GetRandom(uint32_t max, uint32_t min)
 *******************************************************************************/
 uint32_t ws2812_ColorInc(uint32_t incValue)
 {
+	/* Declare the variables used */
 	uint32_t color;
 	extern const uint32_t ws2812_CLUT[];
+	/* Holds the index value between calls */
 	static uint32_t colorIndex = 0;
 
+	/* Increase the index value with the offset provided */
 	colorIndex += incValue;
 	colorIndex = colorIndex % ws2812_CWHEEL_SIZE;
 
-	#if(ws2812_MEMORY_TYPE == ws2812_MEMORY_RGB)
+	/* Retrieve and return the color code from the LUT */
 	color = ws2812_CLUT[ colorIndex ];
-	#else
-	color = colorIndex;
-	#endif
-
     return(color);
+}
+
+/*******************************************************************************
+* Function Name: ws2812_getColor
+********************************************************************************
+*
+* Summary:
+*  Get Pixel Color from the LUT
+*
+* Parameters:
+*  color index
+*
+* Return:
+*  color code
+*******************************************************************************/
+uint32_t ws2812_getColor( uint32_t color)
+{
+    color = ws2812_CLUT[color];
+    return(color);
+}
+
+/*******************************************************************************
+* Function Name: ws2812_RgbBlend()
+********************************************************************************
+* Summary:  Blend two colors into one.
+*
+*    newColor = (pct * toColor)  + ((100-pct) * fromColor)
+*
+* Parameters:
+*  void
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+uint32_t ws2812_RgbBlend(uint32_t fromColor, uint32_t toColor, uint32_t pct)
+{
+    uint32_t newColor = 0;
+
+    newColor |= (((pct * (toColor & 0x00FF0000)) + ((100-pct) * (fromColor & 0x00FF0000)))/100) & 0x00FF0000;
+    newColor |= (((pct * (toColor & 0x0000FF00)) + ((100-pct) * (fromColor & 0x0000FF00)))/100) & 0x0000FF00;
+    newColor |= (((pct * (toColor & 0x000000FF)) + ((100-pct) * (fromColor & 0x000000FF)))/100) & 0x000000FF;
+
+   return(newColor);
 }
 
 /*******************************************************************************
@@ -281,59 +316,25 @@ void ws2812_DisplayClear(uint8_t stringNumber, uint32_t color)
 *  void
 *
 *******************************************************************************/
-void ws2812_MixColorRGB(uint32_t stringNumber, uint32_t numLEDs)
+void ws2812_MixColorRGB(uint32_t stringNumber, uint32_t row, uint32_t numLEDs)
 {
 	/* Cycle through all LEDs and set the RGB pattern to all LEDs in the string passed */
     for(uint32_t i = 0; i < numLEDs; i++)
     {
-        switch(i%3)
+        switch(i % 3)
         {
             case 0:
-            	ws2812HAL_setPixelColor(stringNumber, i, ws2812_RED); // red
+            	ws2812HAL_setPixelArrayColor(stringNumber, row, i, ws2812_RED); // red
                 break;
             case 1:
-            	ws2812HAL_setPixelColor(stringNumber, i, ws2812_GREEN); // green
+            	ws2812HAL_setPixelArrayColor(stringNumber, row, i, ws2812_GREEN); // green
                 break;
             case 2:
-            	ws2812HAL_setPixelColor(stringNumber, i, ws2812_BLUE); // blue
+            	ws2812HAL_setPixelArrayColor(stringNumber, row, i, ws2812_BLUE); // blue
                 break;
         }
     }
     while(ws2812HAL_updateString(stringNumber) == false);
-}
-
-/*******************************************************************************
-* Function Name: ws2812_FadeInFadeOutColor
-********************************************************************************
-* Summary:
-*   Fades in and out with a given value
-*
-* Parameters:
-*  uint8_t stringNumber: string to control
-*  uint32 color: Color to clear display.
-*  bool fadeIn: request fade in
-*  bool fadeOut: request fade out
-*
-* Return:
-*  void
-*
-*******************************************************************************/
-void ws2812_FadeInFadeOutColor(uint8_t stringNumber, uint32_t colorRequested, bool fadeIn, bool fadeOut)
-{
-	typedef union {
-			uint8_t uint8_ts[4];
-			uint32_t word;
-		} WS_colorUnion;
-
-	WS_colorUnion color;
-	color.word = colorRequested;
-	/* Parse the color code into the three components */
-	uint8_t red = color.uint8_ts[1];
-	uint8_t blue = color.uint8_ts[2];
-	uint8_t green = color.uint8_ts[0];
-
-	/* Pass the parameters to the RGB equivalent function */
-	ws2812_FadeInFadeOutRGB(stringNumber, red, green, blue, fadeIn, fadeOut);
 }
 
 /*******************************************************************************
@@ -354,7 +355,7 @@ void ws2812_FadeInFadeOutColor(uint8_t stringNumber, uint32_t colorRequested, bo
 *  void
 *
 *******************************************************************************/
-void ws2812_FadeInFadeOutRGB(uint8_t stringNumber, uint8_t red, uint8_t blue, uint8_t green, bool fadeIn, bool fadeOut)
+void ws2812_FadeInFadeOutRGB(uint8_t stringNumber, uint32_t row, uint32_t column, uint8_t red, uint8_t green, uint8_t blue, bool fadeIn, bool fadeOut)
 {
 	float r, g, b;
 
@@ -367,7 +368,7 @@ void ws2812_FadeInFadeOutRGB(uint8_t stringNumber, uint8_t red, uint8_t blue, ui
 			g = (k/256.0)*green;
 			b = (k/256.0)*blue;
 			/* Update the LEDs in the string to the new value */
-			ws2812HAL_setAllRGB(stringNumber, r, g, b);
+			ws2812HAL_setPixelArrayRGB(stringNumber, row, column, r, g, b);
 			/* Update the LEDs in the string */
 			while(ws2812HAL_updateString(stringNumber) == false);
 			vTaskDelay(pdMS_TO_TICKS(10));
@@ -382,12 +383,46 @@ void ws2812_FadeInFadeOutRGB(uint8_t stringNumber, uint8_t red, uint8_t blue, ui
 			g = (k/256.0)*green;
 			b = (k/256.0)*blue;
 			/* Update the LEDs in the string to the new value */
-			ws2812HAL_setAllRGB(stringNumber, r, g, b);
+			ws2812HAL_setPixelArrayRGB(stringNumber, row, column, r, g, b);
 			/* Update the LEDs in the string */
 			while(ws2812HAL_updateString(stringNumber) == false);
 			vTaskDelay(pdMS_TO_TICKS(10));
 		}
 	}
+}
+
+/*******************************************************************************
+* Function Name: ws2812_FadeInFadeOutColor
+********************************************************************************
+* Summary:
+*   Fades in and out with a given value
+*
+* Parameters:
+*  uint8_t stringNumber: string to control
+*  uint32 color: Color to clear display.
+*  bool fadeIn: request fade in
+*  bool fadeOut: request fade out
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+void ws2812_FadeInFadeOutColor(uint8_t stringNumber, uint32_t row, uint32_t column, uint32_t colorRequested, bool fadeIn, bool fadeOut)
+{
+	typedef union {
+			uint8_t uint8_ts[4];
+			uint32_t word;
+		} WS_colorUnion;
+
+	WS_colorUnion color;
+	color.word = colorRequested;
+	/* Parse the color code into the three components */
+	uint8_t red = color.uint8_ts[1];
+	uint8_t blue = color.uint8_ts[2];
+	uint8_t green = color.uint8_ts[0];
+
+	/* Pass the parameters to the RGB equivalent function */
+	ws2812_FadeInFadeOutRGB(stringNumber, row, column, red, green, blue, fadeIn, fadeOut);
 }
 
 /*******************************************************************************
@@ -464,20 +499,42 @@ void ws2812_StrobeColor(uint8_t stringNumber, uint32_t colorRequested, uint32_t 
 	ws2812_StrobeRGB(stringNumber, red, green, blue, StrobeCount, FlashDelay, EndPause);
 }
 
-
-void ws2812_NewKITT(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay)
+/*******************************************************************************
+* Function Name: ws2812_NewKITT
+********************************************************************************
+* Summary:
+*   This function creates the KITT pattern using all the functions below it
+*
+* Parameters:
+*  uint8_t stringNumber: string to control
+*  numLEDs the total number of LEDs in the string
+*  row: the row on which to display the pattern
+*  uint8_t red: red component display.
+*  uint8_t blue: blue component to display
+*  uint8_t green: green component to display
+*  uint32_t StrobeCount: how many flashes to perform
+*  uint32_t FlashDelay: the delay between flashes
+*  uint32_t EndPause: the end of the cycle delay
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+void ws2812_NewKITT(uint8_t stringNumber, uint32_t numLEDs, uint8_t row, uint8_t red, uint8_t green, uint8_t blue,
+		uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay)
 {
-	ws2812_RightToLeft(stringNumber, numLEDs, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
-	ws2812_LeftToRight(stringNumber, numLEDs, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
-	ws2812_OutsideToCenter(stringNumber, numLEDs, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
-	ws2812_CenterToOutside(stringNumber, numLEDs, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
-	ws2812_LeftToRight(stringNumber, numLEDs, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
-	ws2812_RightToLeft(stringNumber, numLEDs, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
-	ws2812_OutsideToCenter(stringNumber, numLEDs, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
-	ws2812_CenterToOutside(stringNumber, numLEDs, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
+	ws2812_RightToLeft(stringNumber, numLEDs, row, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
+	ws2812_LeftToRight(stringNumber, numLEDs, row, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
+	ws2812_OutsideToCenter(stringNumber, numLEDs, row, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
+	ws2812_CenterToOutside(stringNumber, numLEDs, row, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
+	ws2812_LeftToRight(stringNumber, numLEDs, row, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
+	ws2812_RightToLeft(stringNumber, numLEDs, row, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
+	ws2812_OutsideToCenter(stringNumber, numLEDs, row, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
+	ws2812_CenterToOutside(stringNumber, numLEDs, row, red, green, blue, EyeSize, SpeedDelay, ReturnDelay);
 }
 
-void ws2812_CenterToOutside(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay)
+void ws2812_CenterToOutside(uint8_t stringNumber, uint32_t numLEDs, uint8_t row, uint8_t red, uint8_t green, uint8_t blue,
+		uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay)
 {
 	for(uint32_t i =((numLEDs - EyeSize)/2); i >= 0; i--)
 	{
@@ -485,19 +542,19 @@ void ws2812_CenterToOutside(uint8_t stringNumber, uint32_t numLEDs, uint8_t red,
 		ws2812HAL_setAllColor(stringNumber, ws2812_BLACK);
 		while(ws2812HAL_updateString(stringNumber) == false);
 
-		ws2812HAL_setPixelRGB(stringNumber, i, red/10, green/10, blue/10);
+		ws2812HAL_setPixelArrayRGB(stringNumber, row, i, red/10, green/10, blue/10);
 		for(uint32_t j = 1; j <= EyeSize; j++)
 		{
-			ws2812HAL_setPixelRGB(stringNumber, i+j, red, green, blue);
+			ws2812HAL_setPixelArrayRGB(stringNumber, row, i+j, red, green, blue);
 		}
-		ws2812HAL_setPixelRGB(stringNumber, i+EyeSize+1, red/10, green/10, blue/10);
+		ws2812HAL_setPixelArrayRGB(stringNumber, row, i+EyeSize+1, red/10, green/10, blue/10);
 
-		ws2812HAL_setPixelRGB(stringNumber, numLEDs-i, red/10, green/10, blue/10);
+		ws2812HAL_setPixelArrayRGB(stringNumber, row, numLEDs-i, red/10, green/10, blue/10);
 		for(uint32_t j = 1; j <= EyeSize; j++)
 		{
-			ws2812HAL_setPixelRGB(stringNumber, numLEDs-i-j, red, green, blue);
+			ws2812HAL_setPixelArrayRGB(stringNumber, row, numLEDs-i-j, red, green, blue);
 		}
-		ws2812HAL_setPixelRGB(stringNumber, numLEDs-i-EyeSize-1, red/10, green/10, blue/10);
+		ws2812HAL_setPixelArrayRGB(stringNumber, row, numLEDs-i-EyeSize-1, red/10, green/10, blue/10);
 
 		while(ws2812HAL_updateString(stringNumber) == false);
 		vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
@@ -505,7 +562,7 @@ void ws2812_CenterToOutside(uint8_t stringNumber, uint32_t numLEDs, uint8_t red,
 	vTaskDelay(pdMS_TO_TICKS(ReturnDelay));
 }
 
-void ws2812_OutsideToCenter(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay)
+void ws2812_OutsideToCenter(uint8_t stringNumber, uint32_t numLEDs, uint8_t row, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay)
 {
 	for(uint32_t i = 0; i<=((numLEDs-EyeSize)/2); i++)
 	{
@@ -513,19 +570,19 @@ void ws2812_OutsideToCenter(uint8_t stringNumber, uint32_t numLEDs, uint8_t red,
 		ws2812HAL_setAllColor(stringNumber, ws2812_BLACK);
 		while(ws2812HAL_updateString(stringNumber) == false);
 
-		ws2812HAL_setPixelRGB(stringNumber, i, red/10, green/10, blue/10);
+		ws2812HAL_setPixelArrayRGB(stringNumber, row, i, red/10, green/10, blue/10);
 		for(uint32_t j = 1; j <= EyeSize; j++)
 		{
-			ws2812HAL_setPixelRGB(stringNumber, i+j, red, green, blue);
+			ws2812HAL_setPixelArrayRGB(stringNumber, row, i+j, red, green, blue);
 		}
-		ws2812HAL_setPixelRGB(stringNumber, i+EyeSize+1, red/10, green/10, blue/10);
+		ws2812HAL_setPixelArrayRGB(stringNumber, row, i+EyeSize+1, red/10, green/10, blue/10);
 
-		ws2812HAL_setPixelRGB(stringNumber, numLEDs-i, red/10, green/10, blue/10);
+		ws2812HAL_setPixelArrayRGB(stringNumber, row, numLEDs-i, red/10, green/10, blue/10);
 		for(uint32_t j = 1; j <= EyeSize; j++)
 		{
-			ws2812HAL_setPixelRGB(stringNumber, numLEDs-i-j, red, green, blue);
+			ws2812HAL_setPixelArrayRGB(stringNumber, row, numLEDs-i-j, red, green, blue);
 		}
-		ws2812HAL_setPixelRGB(stringNumber, numLEDs-i-EyeSize-1, red/10, green/10, blue/10);
+		ws2812HAL_setPixelArrayRGB(stringNumber, row, numLEDs-i-EyeSize-1, red/10, green/10, blue/10);
 
 		while(ws2812HAL_updateString(stringNumber) == false);
 		vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
@@ -533,89 +590,43 @@ void ws2812_OutsideToCenter(uint8_t stringNumber, uint32_t numLEDs, uint8_t red,
 	vTaskDelay(pdMS_TO_TICKS(ReturnDelay));
 }
 
-void ws2812_LeftToRight(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay)
+void ws2812_LeftToRight(uint8_t stringNumber, uint32_t numLEDs, uint8_t row, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay)
 {
 	for(uint32_t i = 0; i < numLEDs-EyeSize-2; i++) {
 		/* Turn off the string and update */
 		ws2812HAL_setAllColor(stringNumber, ws2812_BLACK);
 		while(ws2812HAL_updateString(stringNumber) == false);
-		ws2812HAL_setPixelRGB(stringNumber, i, red/10, green/10, blue/10);
+		ws2812HAL_setPixelArrayRGB(stringNumber, row, i, red/10, green/10, blue/10);
 		for(uint32_t j = 1; j <= EyeSize; j++)
 		{
-			ws2812HAL_setPixelRGB(stringNumber, i+j, red, green, blue);
+			ws2812HAL_setPixelArrayRGB(stringNumber, row, i+j, red, green, blue);
 		}
-		ws2812HAL_setPixelRGB(stringNumber, i+EyeSize+1, red/10, green/10, blue/10);
+		ws2812HAL_setPixelArrayRGB(stringNumber, row, i+EyeSize+1, red/10, green/10, blue/10);
 		while(ws2812HAL_updateString(stringNumber) == false);
 		vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
 	}
 	vTaskDelay(pdMS_TO_TICKS(ReturnDelay));
 }
 
-void ws2812_RightToLeft(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay)
+void ws2812_RightToLeft(uint8_t stringNumber, uint32_t numLEDs, uint8_t row, uint8_t red, uint8_t green, uint8_t blue, uint32_t EyeSize, uint32_t SpeedDelay, uint32_t ReturnDelay)
 {
 	for(uint32_t i = numLEDs-EyeSize-2; i > 0; i--)
 	{
 		/* Turn off the string and update */
 		ws2812HAL_setAllColor(stringNumber, ws2812_BLACK);
 		while(ws2812HAL_updateString(stringNumber) == false);
-		ws2812HAL_setPixelRGB(stringNumber, i, red/10, green/10, blue/10);
+		ws2812HAL_setPixelArrayRGB(stringNumber, row, i, red/10, green/10, blue/10);
 		for(uint32_t j = 1; j <= EyeSize; j++)
 		{
-			ws2812HAL_setPixelRGB(stringNumber, i+j, red, green, blue);
+			ws2812HAL_setPixelArrayRGB(stringNumber, row, i+j, red, green, blue);
 		}
-		ws2812HAL_setPixelRGB(stringNumber, i+EyeSize+1, red/10, green/10, blue/10);
+		ws2812HAL_setPixelArrayRGB(stringNumber, row, i+EyeSize+1, red/10, green/10, blue/10);
 		while(ws2812HAL_updateString(stringNumber) == false);
 		vTaskDelay(pdMS_TO_TICKS(SpeedDelay));
 	}
 	vTaskDelay(pdMS_TO_TICKS(ReturnDelay));
 }
 
-/*******************************************************************************
-* Function Name: ws2812_getColor
-********************************************************************************
-*
-* Summary:
-*  Get Pixel Color from the LUT
-*
-* Parameters:
-*  color index
-*
-* Return:
-*  color code
-*******************************************************************************/
-uint32_t ws2812_getColor( uint32_t color)
-{
-    #if(ws2812_MEMORY_TYPE == ws2812_MEMORY_RGB)
-    color = ws2812_CLUT[color];
-    #endif
-
-    return(color);
-}
-
-/*******************************************************************************
-* Function Name: ws2812_RgbBlend()
-********************************************************************************
-* Summary:  Blend two colors into one.
-*
-*    newColor = (pct * toColor)  + ((100-pct) * fromColor)
-*
-* Parameters:
-*  void
-*
-* Return:
-*  void
-*
-*******************************************************************************/
-uint32_t ws2812_RgbBlend(uint32_t fromColor, uint32_t toColor, uint32_t pct)
-{
-    uint32_t newColor = 0;
-
-    newColor |= (((pct * (toColor & 0x00FF0000)) + ((100-pct) * (fromColor & 0x00FF0000)))/100) & 0x00FF0000;
-    newColor |= (((pct * (toColor & 0x0000FF00)) + ((100-pct) * (fromColor & 0x0000FF00)))/100) & 0x0000FF00;
-    newColor |= (((pct * (toColor & 0x000000FF)) + ((100-pct) * (fromColor & 0x000000FF)))/100) & 0x000000FF;
-
-   return(newColor);
-}
 
 /*******************************************************************************
 * Function Name: ws2812_HalloweenEyesRGB()
@@ -1203,6 +1214,7 @@ void ws2812_BouncingBalls(uint8_t stringNumber, uint32_t numLEDs, uint8_t red, u
 		Dampening[i] = 0.90 - (float)i / pow(BallCount, 2.0);
 	}
 
+	//TODO: Need to create a global variable to break this
 	while (true)
 	{
 		for (int i = 0 ; i < BallCount ; i++)
@@ -1273,6 +1285,7 @@ void ws2812_BouncingColoredBalls(uint8_t stringNumber, uint32_t numLEDs, uint32_
 		Dampening[i] = 0.90 - (float)i/pow(BallCount,2);
 	}
 
+	//TODO: Need to create a global variable to break this
 	while (true)
 	{
 		for (uint32_t i = 0 ; i < BallCount ; i++)

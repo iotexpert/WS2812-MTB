@@ -93,6 +93,7 @@ typedef struct {
 	cy_stc_dma_descriptor_t *dmaDescr;
 	uint32_t numLeds;
 	uint8_t ledLayout;
+	uint8_t coordWarp;
 	uint32_t columns;
 	uint32_t rows;
 	uint32_t arrayColumns;
@@ -101,12 +102,27 @@ typedef struct {
 	uint32_t maxX;
 	uint32_t minY;
 	uint32_t maxY;
-	#if(ws2812_MEMORY_TYPE == ws2812_MEMORY_RGB)
 	uint32_t  **ledArray;
-	#else
-	uint8_t   **ledArray;
-	#endif
 } ledString_t;
+
+uint8_t const ws2812_cTrans[16][16] =  {
+	/*  0  */  {  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15},
+    /*  1  */  { 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16},
+	/*  2  */  { 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47},
+	/*  3  */  { 63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49, 48},
+	/*  4  */  { 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79},
+	/*  5  */  { 95, 94, 93, 92, 91, 90, 89, 88, 87, 86, 85, 84, 83, 82, 81, 80},
+	/*  6  */  { 96, 97, 98, 99,100,101,102,103,104,105,106,107,108,109,110,111},
+	/*  7  */  {127,126,125,124,123,122,121,120,119,118,117,116,115,114,113,112},
+	/*  8  */  {128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143},
+	/*  9  */  {159,158,157,156,155,154,153,152,151,150,149,148,147,146,145,144},
+	/* 10  */  {160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175},
+	/* 11  */  {191,190,189,188,187,186,185,184,183,182,181,180,179,178,177,176},
+	/* 12  */  {192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207},
+	/* 13  */  {223,222,221,220,219,218,217,216,215,214,213,212,211,210,209,208},
+	/* 14  */  {224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239},
+	/* 15  */  {255,254,253,252,251,250,249,248,247,246,245,244,243,242,241,240}};
+
 
 /* Define the variable with the max number of strings possible */
 ledString_t ledStrings[MAX_LED_STRINGS];
@@ -131,12 +147,14 @@ static uint32_t ws2812HAL_convert3Code(uint8_t input);
 
 uint32_t ws2812HAL_getNumLeds(uint8_t string);
 void ws2812HAL_Start(void);
-int8_t ws2812HAL_CreateString(GPIO_PRT_Type *spiPrt, uint32_t spiPin, uint32_t numLeds, uint32_t numRows, uint32_t numColumns, uint8_t ledLayout);
+int8_t ws2812HAL_CreateString(GPIO_PRT_Type *spiPrt, uint32_t spiPin, uint32_t numLeds, uint32_t numRows, uint32_t numColumns, uint8_t ledLayout, uint8_t coordWarp);
 bool ws2812HAL_updateString(uint8_t string);
 void ws2812HAL_setPixelRGB(uint8_t string, uint32_t led, uint8_t red, uint8_t green, uint8_t blue);
 void ws2812HAL_setAllRGB(uint8_t string, uint8_t red, uint8_t green, uint8_t blue);
 void ws2812HAL_setPixelColor(uint8_t string, uint32_t led, uint32_t color);
 void ws2812HAL_setAllColor(uint8_t string, uint32_t color);
+void ws2812HAL_setPixelArrayColor(uint8_t string, uint32_t y, uint32_t x, uint32_t color);
+void ws2812HAL_setPixelArrayRGB(uint8_t string, uint32_t y, uint32_t x, uint8_t red, uint8_t green, uint8_t blue);
 
 uint32_t ws2812_GetPixelColor(uint8_t stringNumber, int32_t x, int32_t y);
 
@@ -192,7 +210,7 @@ void ws2812HAL_Start(void)
 *  Index for the created string
 *
 *******************************************************************************/
-int8_t ws2812HAL_CreateString(GPIO_PRT_Type *spiPrt, uint32_t spiPin, uint32_t numLeds, uint32_t numRows, uint32_t numColumns, uint8_t ledLayout)
+int8_t ws2812HAL_CreateString(GPIO_PRT_Type *spiPrt, uint32_t spiPin, uint32_t numLeds, uint32_t numRows, uint32_t numColumns, uint8_t ledLayout, uint8_t coordWarp)
 {
 	/* Declare the return value nd set to -1; Error*/
 	uint8_t rval =- 1;
@@ -279,7 +297,6 @@ int8_t ws2812HAL_CreateString(GPIO_PRT_Type *spiPrt, uint32_t spiPin, uint32_t n
 			printf("frameBufferMemory %d Length is %lu\r\n", rval, ledStrings[numLedStrings].frameBufferSize);
 		}
 		/* Allocate the size of x, y array for the rows and columns of the string used */
-		#if(ws2812_MEMORY_TYPE == ws2812_MEMORY_RGB)
 		ledStrings[numLedStrings].ledArray = malloc(ledStrings[numLedStrings].rows * sizeof(uint32_t));
 		if (ledStrings[numLedStrings].ledArray == NULL)
 		{
@@ -290,19 +307,10 @@ int8_t ws2812HAL_CreateString(GPIO_PRT_Type *spiPrt, uint32_t spiPin, uint32_t n
 			memset(ledStrings[numLedStrings].ledArray, 0, (ledStrings[numLedStrings].rows * sizeof(uint32_t)));
 			printf("ledArray Length is %lu\r\n", (ledStrings[numLedStrings].rows * sizeof(uint32_t)));
 		}
-		#else
-		ledStrings[numLedStrings].ledArray = malloc(ledStrings[numLedStrings].rows * sizeof(uint8_t));
-		memset(ledStrings[numLedStrings].ledArray, 0, (ledStrings[numLedStrings].rows * sizeof(uint8_t)));
-		#endif
 		for (uint32_t r = 0; r < ledStrings[numLedStrings].arrayRows; r++)
 		{
-			#if(ws2812_MEMORY_TYPE == ws2812_MEMORY_RGB)
 			ledStrings[numLedStrings].ledArray[r] = malloc(ledStrings[numLedStrings].arrayColumns * sizeof(uint32_t));
 			memset(ledStrings[numLedStrings].ledArray[r], 0, (ledStrings[numLedStrings].arrayColumns * sizeof(uint32_t)));
-			#else
-			ledStrings[numLedStrings].ledArray[r] = malloc(ledStrings[numLedStrings].arrayColumns * sizeof(uint8_t));
-			memset(ledStrings[numLedStrings].ledArray[r], 0, (ledStrings[numLedStrings].arrayColumns * sizeof(uint8_t)));
-			#endif
 		}
 		if (!ledStrings[numLedStrings].ledArray) printf("Error creating LED Array %d\r\n", numLedStrings);
 		/* Declare and setup the DMA descriptors */
@@ -537,56 +545,6 @@ void ws2812HAL_setPixelRGB(uint8_t string, uint32_t led, uint8_t red, uint8_t gr
 
     WS_colorUnion color;
 
-//    // Swap X-Y Coordinates
-//#if(ws2812_SWAP_XY_COORD == ws2812_XY_SWAPED)
-//    uint32_t xyTmp;
-//    xyTmp = x;
-//    x = y;
-//    y = xyTmp;
-//#endif
-//
-//    // X-Wrap
-//#if (ws2812_COORD_WRAP & ws2812_COORD_XAXIS )
-//    x = x % (ledStrings[stringNumber].maxX + 1);
-//#endif
-//
-//    // Y-Wrap
-//#if (ws2812_COORD_WRAP & ws2812_COORD_YAXIS )
-//    y = y % (ledStrings[stringNumber].maxY + 1);
-//#endif
-//
-//    // Flip X-Axis
-//#if (ws2812_FLIP_X_COORD == ws2812_FLIP_COORD )
-//    x = ledStrings[stringNumber].maxX - x;
-//#endif
-//
-//    // Flip Y-Axis
-//#if (ws2812_FLIP_Y_COORD == ws2812_FLIP_COORD )
-//    y = ledStrings[stringNumber].maxY - y;
-//#endif
-//
-//    // Make sure X-Y values are in range
-//    if((x >= ledStrings[string].minX) && (y >= ledStrings[string].minY) && (x <= ledStrings[string].maxX) && (y <= ledStrings[string].maxY))
-//    {
-//
-//#if (ws2812_LED_LAYOUT == ws2812_LED_LAYOUT_STANDARD)
-//    	// Do nothing special
-//#elif (ws2812_LED_LAYOUT == ws2812_LED_LAYOUT_SPIRAL)
-//    	x = x + (y * ledStrings[stringNumber].Columns);
-//    	y = 0;
-//
-//#elif (ws2812_LED_LAYOUT == ws2812_LED_LAYOUT_GRID16X16)
-//    	x = (((x/(int32_t)16)*(int32_t)256) + (uint32_t)ws2812_cTrans[y % 16][x % 16]);
-//    	y = (y/(int32_t)16);
-//#endif
-//
-//#if(ws2812_MEMORY_TYPE == ws2812_MEMORY_RGB)
-//    	ledStrings[string].ledArray[y][x] = color;
-//#else  /* Else use lookup table */
-//    	ledStrings[stringNumber].ledArray[y][x] = (uint8_t)color;
-//#endif
-//    }
-
     color.word = ws2812HAL_convert3Code(green);
     ledStrings[string].frameBuffer[led*WS_BYTES_PER_PIXEL+WS_ZOFFSET] = color.bytes[2];
     ledStrings[string].frameBuffer[led*WS_BYTES_PER_PIXEL+1+WS_ZOFFSET] = color.bytes[1];
@@ -601,6 +559,42 @@ void ws2812HAL_setPixelRGB(uint8_t string, uint32_t led, uint8_t red, uint8_t gr
     ledStrings[string].frameBuffer[led*WS_BYTES_PER_PIXEL+6+WS_ZOFFSET] = color.bytes[2];
     ledStrings[string].frameBuffer[led*WS_BYTES_PER_PIXEL+7+WS_ZOFFSET] = color.bytes[1];
     ledStrings[string].frameBuffer[led*WS_BYTES_PER_PIXEL+8+WS_ZOFFSET] = color.bytes[0];
+}
+
+/*******************************************************************************
+* Function Name: ws2812HAL_setPixelColor
+********************************************************************************
+* Summary:
+*  Function This function sets the string to specified color
+*
+* Parameters:
+*  stringNumbner: The string number to address
+*  color: the requested color
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+void ws2812HAL_setPixelColor(uint8_t string, uint32_t led, uint32_t color)
+{
+	typedef union {
+		uint8_t bytes[4];
+		uint32_t word;
+	} WS_colorUnion;
+
+	uint8_t red;
+	uint8_t blue;
+	uint8_t green;
+
+	WS_colorUnion requestedColor;
+
+	requestedColor.word = color;
+	/* Configure command Parameters */
+	red = requestedColor.bytes[1];
+	blue = requestedColor.bytes[2];
+	green = requestedColor.bytes[0];
+
+	ws2812HAL_setPixelRGB(string, led, red, green, blue);
 }
 
 /*******************************************************************************
@@ -665,39 +659,167 @@ void ws2812HAL_setAllColor(uint8_t string, uint32_t color)
 }
 
 /*******************************************************************************
-* Function Name: ws2812HAL_setAllColor
+* Function Name: ws2812HAL_setPixelArrayColor
 ********************************************************************************
 * Summary:
-*  Function This function sets the string to specified color
+*  Function This function Takes a position and a color
 *
 * Parameters:
 *  stringNumbner: The string number to address
-*  color: the requested color
+*  y:	the row the LED is in
+*  x: the column the LED is in
+*  color: the color to be displayed
 *
 * Return:
 *  void
 *
 *******************************************************************************/
-void ws2812HAL_setPixelColor(uint8_t string, uint32_t led, uint32_t color)
+void ws2812HAL_setPixelArrayColor(uint8_t string, uint32_t y, uint32_t x, uint32_t color)
+{
+	// Swap X-Y Coordinates
+	if(ledStrings[string].coordWarp == ws2812_COORD_XYAXIS)
+	{
+		uint32_t xyTmp;
+		xyTmp = x;
+		x = y;
+		y = xyTmp;
+	}
+
+	// X-Wrap
+	if(ledStrings[string].coordWarp == ws2812_COORD_XAXIS )
+	{
+		x = x % (ledStrings[string].maxX + 1);
+	}
+
+	// Y-Wrap
+	if(ledStrings[string].coordWarp == ws2812_COORD_YAXIS )
+	{
+		y = y % (ledStrings[string].maxY + 1);
+	}
+
+//	// Flip X-Axis
+//	if(ledStrings[string].coordWarp == ws2812_FLIP_COORD )
+//	{
+//		x = ledStrings[string].maxX - x;
+//	}
+//
+//	// Flip Y-Axis
+//	if(ledStrings[string].coordWarp == ws2812_FLIP_COORD )
+//	{
+//		y = ledStrings[string].maxY - y;
+//	}
+
+	// Make sure X-Y values are in range
+	if((x >= ledStrings[string].minX) && (y >= ledStrings[string].minY) && (x <= ledStrings[string].maxX) && (y <= ledStrings[string].maxY))
+	{
+
+		if(ledStrings[string].ledLayout == ws2812_LED_LAYOUT_STANDARD)
+		{
+			// Do nothing special
+		}
+		else if (ledStrings[string].ledLayout == ws2812_LED_LAYOUT_SPIRAL)
+		{
+			x = x + (y * ledStrings[string].columns);
+			y = 0;
+		}
+		else if (ledStrings[string].ledLayout == ws2812_LED_LAYOUT_GRID16X16)
+		{
+			x = (((x/(int32_t)16)*(int32_t)256) + (uint32_t)ws2812_cTrans[y % 16][x % 16]);
+			y = (y/(int32_t)16);
+		}
+
+		ledStrings[string].ledArray[y][x] = color;
+		ws2812HAL_setPixelColor(string, (y*x)+x, color );
+	}
+}
+
+/*******************************************************************************
+* Function Name: ws2812HAL_setPixelArrayRGB
+********************************************************************************
+* Summary:
+*  Function This function Takes a position and a color
+*
+* Parameters:
+*  stringNumbner: The string number to address
+*  y:	the row the LED is in
+*  x: the column the LED is in
+*  red: Hex code for RED
+*  green: Hex code for GREEN
+*  blue: HEX code for BLUE
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+void ws2812HAL_setPixelArrayRGB(uint8_t string, uint32_t y, uint32_t x, uint8_t red, uint8_t green, uint8_t blue)
 {
 	typedef union {
 		uint8_t bytes[4];
 		uint32_t word;
 	} WS_colorUnion;
 
-	uint8_t red;
-	uint8_t blue;
-	uint8_t green;
-
 	WS_colorUnion requestedColor;
 
-	requestedColor.word = color;
 	/* Configure command Parameters */
-	red = requestedColor.bytes[1];
-	blue = requestedColor.bytes[2];
-	green = requestedColor.bytes[0];
+	requestedColor.bytes[1] = red;
+	requestedColor.bytes[2] = blue;
+	requestedColor.bytes[0] = green;
 
-	ws2812HAL_setPixelRGB(string, led, red, green, blue);
+	// Swap X-Y Coordinates
+	if(ledStrings[string].coordWarp == ws2812_COORD_XYAXIS)
+	{
+		uint32_t xyTmp;
+		xyTmp = x;
+		x = y;
+		y = xyTmp;
+	}
+
+	// X-Wrap
+	if(ledStrings[string].coordWarp == ws2812_COORD_XAXIS )
+	{
+		x = x % (ledStrings[string].maxX + 1);
+	}
+
+	// Y-Wrap
+	if(ledStrings[string].coordWarp == ws2812_COORD_YAXIS )
+	{
+		y = y % (ledStrings[string].maxY + 1);
+	}
+
+//	// Flip X-Axis
+//	if(ledStrings[string].coordWarp == ws2812_FLIP_COORD )
+//	{
+//		x = ledStrings[string].maxX - x;
+//	}
+//
+//	// Flip Y-Axis
+//	if(ledStrings[string].coordWarp == ws2812_FLIP_COORD )
+//	{
+//		y = ledStrings[string].maxY - y;
+//	}
+
+	// Make sure X-Y values are in range
+	if((x >= ledStrings[string].minX) && (y >= ledStrings[string].minY) && (x <= ledStrings[string].maxX) && (y <= ledStrings[string].maxY))
+	{
+
+		if(ledStrings[string].ledLayout == ws2812_LED_LAYOUT_STANDARD)
+		{
+			// Do nothing special
+		}
+		else if (ledStrings[string].ledLayout == ws2812_LED_LAYOUT_SPIRAL)
+		{
+			x = x + (y * ledStrings[string].columns);
+			y = 0;
+		}
+		else if (ledStrings[string].ledLayout == ws2812_LED_LAYOUT_GRID16X16)
+		{
+			x = (((x/(int32_t)16)*(int32_t)256) + (uint32_t)ws2812_cTrans[y % 16][x % 16]);
+			y = (y/(int32_t)16);
+		}
+
+		ledStrings[string].ledArray[y][x] = requestedColor.word;
+		ws2812HAL_setPixelRGB(string, (y*x)+x, red, green, blue );
+	}
 }
 
 /*******************************************************************************
@@ -713,36 +835,36 @@ void ws2812HAL_setPixelColor(uint8_t string, uint32_t led, uint32_t color)
 * Return:
 *  None
 *******************************************************************************/
-uint32_t ws2812_GetPixelColor(uint8_t stringNumber, int32_t x, int32_t y)
+uint32_t ws2812_GetPixelColor(uint8_t string, int32_t y, int32_t x)
 {
     uint32_t color = 0;
-    #if (ws2812_COORD_WRAP & ws2812_COORD_XAXIS )
-        x = x % (ws2812_MAX_X+1);
-    #endif
-    #if (ws2812_COORD_WRAP & ws2812_COORD_YAXIS )
-        y = y % (ws2812_MAX_Y+1);
-    #endif
+    if(ledStrings[string].coordWarp == ws2812_COORD_XAXIS )
+    {
+        x = x % (ledStrings[string].maxX + 1);
+    }
+    if(ledStrings[string].coordWarp == ws2812_COORD_YAXIS )
+    {
+        y = y % (ledStrings[string].maxY + 1);
+    }
 
-    if((x>=0) && (y>=0) && (x < ledStrings[stringNumber].arrayColumns) && (y < ledStrings[stringNumber].arrayRows))
+    if((x>=0) && (y>=0) && (x < ledStrings[string].arrayColumns) && (y < ledStrings[string].arrayRows))
     {
 
-        #if (ws2812_LED_LAYOUT == ws2812_LED_LAYOUT_STANDARD)
+       if(ledStrings[string].ledLayout == ws2812_LED_LAYOUT_STANDARD)
+       {
 
-        #elif (ws2812_LED_LAYOUT == ws2812_LED_LAYOUT_SPIRAL)
-            x = x + (y * ws2812_COLUMNS);
+       }
+       else if (ledStrings[string].ledLayout == ws2812_LED_LAYOUT_SPIRAL)
+       {
+            x = x + (y * ledStrings[string].columns);
             y = 0;
-
-        #elif (ws2812_LED_LAYOUT == ws2812_LED_LAYOUT_GRID16X16)
-            	x = (((x/(int32_t)16)*(int32_t)256) + (uint32_t)ws2812_cTrans[y % 16][x % 16]);
-		        y = (y/(int32-t)16);
-        #endif
-
-		#if(ws2812_MEMORY_TYPE == ws2812_MEMORY_RGB)
-		    color = ledStrings[stringNumber].ledArray[y][x];
-        #else  /* Else use lookup table */
-		    color = (uint32_t)ledStrings[stringNumber].ledArray[y][x];
-        #endif
-
+       }
+       else if (ledStrings[string].ledLayout == ws2812_LED_LAYOUT_GRID16X16)
+       {
+            	x = (((x/(uint32_t)16)*(uint32_t)256) + (uint32_t)ws2812_cTrans[y % 16][x % 16]);
+		        y = (y/(int32_t)16);
+       }
+		    color = ledStrings[string].ledArray[y][x];
     }
     return(color);
 }

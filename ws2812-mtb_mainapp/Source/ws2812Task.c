@@ -87,7 +87,7 @@ void ws2812Task(void *arg)
 
 	vTaskDelay(100);
 
-	WS_CreateString(GPIO_PRT0,2,5);
+	WS_CreateString(GPIO_PRT0,2,144);
 
 	// This queue handles messages from the keyboard
     ws2812QueueHandle = xQueueCreate( 10,sizeof(ws2812_msg_t));

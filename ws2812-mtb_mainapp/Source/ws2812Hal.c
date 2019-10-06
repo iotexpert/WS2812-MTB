@@ -19,7 +19,6 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "ws2812Hal.h"
-#include "ws2812Graphics.h"
 
 /* ==================================================================== */
 /* ============================ constants ============================= */
@@ -55,30 +54,30 @@ typedef struct {
 const ledMapElement_t ledStringTable[]= {
 		{GPIO_PRT0,2,P0_2_SCB0_SPI_MOSI,SCB0,PCLK_SCB0_CLOCK,DW0,16,TRIG_OUT_1TO1_0_SCB0_TX_TO_PDMA0_TR_IN16},
 
-		{GPIO_PRT2,0,P2_0_SCB1_SPI_MOSI,SCB1,PCLK_SCB1_CLOCK,DW0,18,TRIG_OUT_1TO1_0_SCB1_TX_TO_PDMA0_TR_IN18},
-		{GPIO_PRT10,0,P10_0_SCB1_SPI_MOSI,SCB1,PCLK_SCB1_CLOCK,DW0,18,TRIG_OUT_1TO1_0_SCB1_TX_TO_PDMA0_TR_IN18},
+		{GPIO_PRT1,0,P1_0_SCB7_SPI_MOSI,SCB7,PCLK_SCB7_CLOCK,DW1,10,TRIG_OUT_1TO1_1_SCB7_TX_TO_PDMA1_TR_IN10},
 
+
+		{GPIO_PRT2,0,P2_0_SCB1_SPI_MOSI,SCB1,PCLK_SCB1_CLOCK,DW0,18,TRIG_OUT_1TO1_0_SCB1_TX_TO_PDMA0_TR_IN18},
 		{GPIO_PRT3,0,P3_0_SCB2_SPI_MOSI,SCB2,PCLK_SCB2_CLOCK,DW0,20,TRIG_OUT_1TO1_0_SCB2_TX_TO_PDMA0_TR_IN20},
-		{GPIO_PRT9,0,P9_0_SCB2_SPI_MOSI,SCB2,PCLK_SCB2_CLOCK,DW0,20,TRIG_OUT_1TO1_0_SCB2_TX_TO_PDMA0_TR_IN20},
+		{GPIO_PRT4,0,P4_0_SCB7_SPI_MOSI,SCB7,PCLK_SCB7_CLOCK,DW1,10,TRIG_OUT_1TO1_1_SCB7_TX_TO_PDMA1_TR_IN10},
+		{GPIO_PRT5,0,P5_0_SCB5_SPI_MOSI,SCB5,PCLK_SCB5_CLOCK,DW0,26,TRIG_OUT_1TO1_0_SCB5_TX_TO_PDMA0_TR_IN26},
 
 		{GPIO_PRT6,0,P6_0_SCB3_SPI_MOSI,SCB3,PCLK_SCB3_CLOCK,DW0,22,TRIG_OUT_1TO1_0_SCB3_TX_TO_PDMA0_TR_IN22},
+
+		{GPIO_PRT6,4,P6_4_SCB6_SPI_MOSI,SCB6,PCLK_SCB6_CLOCK,DW1,8,TRIG_OUT_1TO1_1_SCB6_TX_TO_PDMA1_TR_IN8},
 
 		{GPIO_PRT7,0,P7_0_SCB4_SPI_MOSI,SCB4,PCLK_SCB4_CLOCK,DW0,24,TRIG_OUT_1TO1_0_SCB4_TX_TO_PDMA0_TR_IN24},
 		{GPIO_PRT8,0,P8_0_SCB4_SPI_MOSI,SCB4,PCLK_SCB4_CLOCK,DW0,24,TRIG_OUT_1TO1_0_SCB4_TX_TO_PDMA0_TR_IN24},
 
+		{GPIO_PRT9,0,P9_0_SCB2_SPI_MOSI,SCB2,PCLK_SCB2_CLOCK,DW0,20,TRIG_OUT_1TO1_0_SCB2_TX_TO_PDMA0_TR_IN20},
+		{GPIO_PRT10,0,P10_0_SCB1_SPI_MOSI,SCB1,PCLK_SCB1_CLOCK,DW0,18,TRIG_OUT_1TO1_0_SCB1_TX_TO_PDMA0_TR_IN18},
+
 		{GPIO_PRT11,0,P11_0_SCB5_SPI_MOSI,SCB5,PCLK_SCB5_CLOCK,DW0,26,TRIG_OUT_1TO1_0_SCB5_TX_TO_PDMA0_TR_IN26},
-		{GPIO_PRT5,0,P5_0_SCB5_SPI_MOSI,SCB5,PCLK_SCB5_CLOCK,DW0,26,TRIG_OUT_1TO1_0_SCB5_TX_TO_PDMA0_TR_IN26},
 
 		{GPIO_PRT12,0,P12_0_SCB6_SPI_MOSI,SCB6,PCLK_SCB6_CLOCK,DW1,8,TRIG_OUT_1TO1_1_SCB6_TX_TO_PDMA1_TR_IN8},
 		{GPIO_PRT13,0,P13_0_SCB6_SPI_MOSI,SCB6,PCLK_SCB6_CLOCK,DW1,8,TRIG_OUT_1TO1_1_SCB6_TX_TO_PDMA1_TR_IN8},
-		{GPIO_PRT6,4,P6_4_SCB6_SPI_MOSI,SCB6,PCLK_SCB6_CLOCK,DW1,8,TRIG_OUT_1TO1_1_SCB6_TX_TO_PDMA1_TR_IN8},
-
-		{GPIO_PRT1,0,P1_0_SCB7_SPI_MOSI,SCB7,PCLK_SCB7_CLOCK,DW1,10,TRIG_OUT_1TO1_1_SCB7_TX_TO_PDMA1_TR_IN10},
-		{GPIO_PRT4,0,P4_0_SCB7_SPI_MOSI,SCB7,PCLK_SCB7_CLOCK,DW1,10,TRIG_OUT_1TO1_1_SCB7_TX_TO_PDMA1_TR_IN10},
-
-		{GPIO_PRT6,0,P6_0_SCB8_SPI_MOSI,SCB8,PCLK_SCB8_CLOCK,DW1,12,TRIG_OUT_1TO1_1_SCB8_TX_TO_PDMA1_TR_IN12},
-		{GPIO_PRT6,4,P6_4_SCB8_SPI_MOSI,SCB8,PCLK_SCB8_CLOCK,DW1,12,TRIG_OUT_1TO1_1_SCB8_TX_TO_PDMA1_TR_IN12},
 };
+
 
 /* Number of possible HW/Channel possibilities. Used in looping through the lookup table */
 const uint32_t numPossibleElements = sizeof(ledStringTable)/sizeof(ledMapElement_t);
@@ -149,6 +148,8 @@ uint32_t ws2812HAL_getNumLeds(uint8_t string);
 void ws2812HAL_Start(void);
 int8_t ws2812HAL_CreateString(GPIO_PRT_Type *spiPrt, uint32_t spiPin, uint32_t numLeds, uint32_t numRows, uint32_t numColumns, uint8_t ledLayout, uint8_t coordWarp);
 bool ws2812HAL_updateString(uint8_t string);
+void ws2812HAL_DmaInterrupt(void);
+
 void ws2812HAL_setPixelRGB(uint8_t string, uint32_t led, uint8_t red, uint8_t green, uint8_t blue);
 void ws2812HAL_setAllRGB(uint8_t string, uint8_t red, uint8_t green, uint8_t blue);
 void ws2812HAL_setPixelColor(uint8_t string, uint32_t led, uint32_t color);
@@ -384,8 +385,33 @@ int8_t ws2812HAL_CreateString(GPIO_PRT_Type *spiPrt, uint32_t spiPin, uint32_t n
 		/* Initialize Pin */
 		Cy_GPIO_Pin_Init(ledStrings[numLedStrings].map->spiPort, ledStrings[numLedStrings].map->spiPin, &pinConfig);
 
-		/* Configure and enable the DMA */
+		/* Configure the DMA */
 		ws2812HAL_DMAConfigure(numLedStrings);
+
+		/* Configure the interrupt for the associated DMA channel */
+		uint32_t dwintbase;
+
+		if(ledStrings[numLedStrings].map->dwHW == DW0)
+		{
+			dwintbase = cpuss_interrupts_dw0_0_IRQn;
+		}
+		else
+		{
+			dwintbase = cpuss_interrupts_dw1_0_IRQn;
+		}
+
+		/* Set the DMA interrupt configuration */
+		cy_stc_sysint_t dmaIntConfig = {
+		.intrSrc      = dwintbase + ledStrings[numLedStrings].map->channel,
+		.intrPriority = 7,
+		};
+		/* Initialize and enable the Interrupt */
+		(void) Cy_SysInt_Init(&dmaIntConfig, &ws2812HAL_DmaInterrupt);
+		NVIC_EnableIRQ(dmaIntConfig.intrSrc);
+		/* Set the interrupt Mask */
+		Cy_DMA_Channel_SetInterruptMask (ledStrings[numLedStrings].map->dwHW, ledStrings[numLedStrings].map->channel, CY_DMA_INTR_MASK);
+
+		/* Enable the DMA */
 		Cy_DMA_Enable(ledStrings[numLedStrings].map->dwHW);
 
 		/* Increment the stringNumber for the next loop */
@@ -450,6 +476,34 @@ static void ws2812HAL_DMAConfigure(uint8_t string)
     Cy_DMA_Descriptor_SetNextDescriptor(&ledStrings[string].dmaDescr[ledStrings[string].numDescriptors-1], 0);
     Cy_DMA_Descriptor_SetChannelState(&ledStrings[string].dmaDescr[ledStrings[string].numDescriptors-1], CY_DMA_CHANNEL_DISABLED);
 
+}
+
+/*******************************************************************************
+* Function Name: ws2812HAL_DmaInterrupt
+********************************************************************************
+* Summary:
+*  Function This function sets or clears the bit associated with the triggered
+*  channel interrupt
+*
+* Parameters:
+*  void
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+void ws2812HAL_DmaInterrupt(void)
+{
+	/* Loop through the led strings */
+	for(int i = 0; i < numLedStrings; i++)
+	{
+		if(Cy_DMA_Channel_GetInterruptStatus(ledStrings[i].map->dwHW, ledStrings[i].map->channel))
+		{
+			//TODO: Set or clear the even bit
+			Cy_DMA_Channel_ClearInterrupt(ledStrings[i].map->dwHW, ledStrings[i].map->channel);
+
+		}
+	}
 }
 
 /*******************************************************************************

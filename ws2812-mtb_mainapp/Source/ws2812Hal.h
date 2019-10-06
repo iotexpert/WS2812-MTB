@@ -53,6 +53,55 @@
 
 #define ws2812_GRIDMODE_NORMAL  1
 #define ws2812_GRIDMODE_WRAP    0
+
+#define ws2812_CWHEEL_SIZE  24
+
+#define ws2812_RED_MASK   0x0000FF00
+#define ws2812_GREEN_MASK 0x000000FF
+#define ws2812_BLUE_MASK  0x00FF0000
+
+#define ws2812_YELLOW      ws2812HAL_getColor(1)
+#define ws2812_GREEN       ws2812HAL_getColor((70 + ws2812_CWHEEL_SIZE))
+#define ws2812_ORANGE      ws2812HAL_getColor(20)
+#define ws2812_BLACK       ws2812HAL_getColor((0 + ws2812_CWHEEL_SIZE))
+#define ws2812_OFF         ws2812HAL_getColor((0 + ws2812_CWHEEL_SIZE))
+#define ws2812_LTBLUE      ws2812HAL_getColor((1 + ws2812_CWHEEL_SIZE))
+#define ws2812_MBLUE       ws2812HAL_getColor((2 + ws2812_CWHEEL_SIZE))
+#define ws2812_BLUE        ws2812HAL_getColor((3 + ws2812_CWHEEL_SIZE))
+#define ws2812_LTGREEN     ws2812HAL_getColor((4 + ws2812_CWHEEL_SIZE))
+#define ws2812_MGREEN      ws2812HAL_getColor((8 + ws2812_CWHEEL_SIZE))
+//#define ws2812_GREEN       (12 + ws2812_CWHEEL_SIZE)
+#define ws2812_LTRED       ws2812HAL_getColor((16 + ws2812_CWHEEL_SIZE))
+#define ws2812_LTYELLOW    ws2812HAL_getColor((20 + ws2812_CWHEEL_SIZE))
+#define ws2812_MGRED       ws2812HAL_getColor((32 + ws2812_CWHEEL_SIZE))
+#define ws2812_RED         ws2812HAL_getColor((48 + ws2812_CWHEEL_SIZE))
+#define ws2812_MAGENTA     ws2812HAL_getColor((51 + ws2812_CWHEEL_SIZE))
+#define ws2812_RGB_WHITE   ws2812HAL_getColor((63 + ws2812_CWHEEL_SIZE))
+
+#define ws2812_SPRING_GREEN ws2812HAL_getColor((64 + ws2812_CWHEEL_SIZE))
+#define ws2812_TURQUOSE    ws2812HAL_getColor((65 + ws2812_CWHEEL_SIZE))
+#define ws2812_CYAN        ws2812HAL_getColor((66 + ws2812_CWHEEL_SIZE))
+#define ws2812_OCEAN       ws2812HAL_getColor((67 + ws2812_CWHEEL_SIZE))
+#define ws2812_VIOLET      ws2812HAL_getColor((68 + ws2812_CWHEEL_SIZE))
+#define ws2812_RASPBERRY   ws2812HAL_getColor((69 + ws2812_CWHEEL_SIZE))
+#define ws2812_DIM_WHITE   ws2812HAL_getColor((71 + ws2812_CWHEEL_SIZE))
+#define ws2812_DIM_BLUE    ws2812HAL_getColor((72 + ws2812_CWHEEL_SIZE))
+#define ws2812_INVISIBLE   ws2812HAL_getColor((73 + ws2812_CWHEEL_SIZE))
+
+#define ws2812_COLD_TEMP   ws2812HAL_getColor((80 + ws2812_CWHEEL_SIZE))
+#define ws2812_HOT_TEMP    ws2812HAL_getColor((95 + ws2812_CWHEEL_SIZE))
+
+#define ws2812_FIRE_DARK   ws2812HAL_getColor((74 + ws2812_CWHEEL_SIZE))
+#define ws2812_FIRE_LIGHT  ws2812HAL_getColor((75 + ws2812_CWHEEL_SIZE))
+
+#define ws2812_FULL_WHITE  ws2812HAL_getColor((76 + ws2812_CWHEEL_SIZE))
+#define ws2812_WHITE_LED   ws2812HAL_getColor((77 + ws2812_CWHEEL_SIZE))
+#define ws2812_WHITE_RGB50 ws2812HAL_getColor((78 + ws2812_CWHEEL_SIZE))
+#define ws2812_WHITE_RGB25 ws2812HAL_getColor((79 + ws2812_CWHEEL_SIZE))
+
+#define ws2812_CLUT_SIZE  (96 + ws2812_CWHEEL_SIZE)
+
+//#define ws2812_WHITE   ws2812HAL_getColor((63 + ws2812_CWHEEL_SIZE))
 /* ==================================================================== */
 /* ======================== global variables ========================== */
 /* ==================================================================== */
@@ -80,5 +129,9 @@ extern void ws2812HAL_setAllColor(uint8_t string, uint32_t color);
 extern void ws2812HAL_setPixelArrayColor(uint8_t string, uint32_t y, uint32_t x, uint32_t color);
 extern void ws2812HAL_setPixelArrayRGB(uint8_t string, uint32_t y, uint32_t x, uint8_t red, uint8_t green, uint8_t blue);
 extern uint32_t ws2812_GetPixelColor(uint8_t string, int32_t x, int32_t y);
+
+extern uint32_t ws2812HAL_getColor( uint32_t color);
+extern uint32_t ws2812HAL_ColorInc(uint32_t incValue);
+extern uint32_t ws2812HAL_RgbBlend(uint32_t fromColor, uint32_t toColor, uint32_t pct);
 
 #endif
